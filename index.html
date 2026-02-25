@@ -2,408 +2,697 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Hodely.net</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-  <!-- Favicon -->
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Screenshot</title>
   <link rel="icon" type="image/png" href="/favicon.png">
-
-  <!-- Fonts (variety on purpose) -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=JetBrains+Mono:wght@400;700&family=DM+Serif+Display&family=Space+Grotesk:wght@400;700&display=swap" rel="stylesheet">
-
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-
+    *{margin:0;padding:0;box-sizing:border-box}
     body{
-      background:#fff;
-      color:#000;
       font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-      min-height:100vh;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      overflow:hidden;
+      background:#fff;color:#000;
+      height:100vh; overflow:hidden;
     }
 
-    .container{
-      width:100%;
-      max-width:1100px;
-      padding: 28px 18px;
-      text-align:center;
-    }
-
-    h1{
-      font-size:4rem;
-      font-weight:800;
-      letter-spacing:-2px;
-      line-height:1;
-    }
-
-    .line{
-      width:90px;
-      height:2px;
-      background:#000;
-      margin:18px auto;
-      opacity:0.95;
-    }
-
-    h2{
-      font-size:1rem;
-      font-weight:400;
-      letter-spacing:4px;
-      text-transform:uppercase;
-      opacity:0.75;
-    }
-
-    /* Marquee */
-    .marquee{
-      width:100%;
-      overflow:hidden;
-      user-select:none;
-      -webkit-user-select:none;
-      margin: 22px 0;
-    }
-
-    .track{
-      display:flex;
-      width:max-content;
-      gap: 0px;
-      animation: scroll-left 18s linear infinite;
-    }
-
-    .marquee.bottom .track{
-      animation: scroll-right 18s linear infinite;
-    }
-
-    /* duplicate blocks so it never "runs out" */
-    .block{
-      display:flex;
-      align-items:center;
-      white-space:nowrap;
-      padding-right: 60px;
-      font-size: 1.8rem;
-      line-height:1;
-    }
-
-    /* different font segments */
-    .f1{ font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
-    .f2{ font-family: "DM Serif Display", Georgia, "Times New Roman", serif; }
-    .f3{ font-family: "Space Grotesk", Inter, system-ui, sans-serif; }
-    .f4{ font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; }
-
-    .seg{ opacity:0.92; }
-    .dot{ opacity:0.35; padding: 0 18px; }
-
-    @keyframes scroll-left{
-      0%   { transform: translateX(0); }
-      100% { transform: translateX(-50%); }
-    }
-    @keyframes scroll-right{
-      0%   { transform: translateX(-50%); }
-      100% { transform: translateX(0); }
-    }
-
-    @media (max-width: 650px){
-      h1{ font-size:2.6rem; }
-      .block{ font-size:1.35rem; }
-      h2{ font-size:0.95rem; letter-spacing:3px; }
-    }
-
-    /* =========================
-       MENU BUTTON + SIDEBAR
-       ========================= */
-
+    /* ===== Menu button ===== */
     .menu-btn{
-      position: fixed;
-      top: 14px;
-      left: 14px;
-      width: 38px;
-      height: 34px;
-      border: 1px solid rgba(0,0,0,0.12);
-      background: rgba(255,255,255,0.55);
-      backdrop-filter: blur(6px);
-      border-radius: 10px;
-      cursor: pointer;
-      display: grid;
-      place-items: center;
-      z-index: 50;
-      transition: opacity .2s ease, transform .2s ease, background .2s ease;
-      opacity: 0.75;
+      position:fixed; top:14px; left:14px;
+      width:40px; height:36px;
+      border:1px solid rgba(0,0,0,0.12);
+      background:rgba(255,255,255,0.62);
+      backdrop-filter: blur(8px);
+      border-radius:12px;
+      cursor:pointer;
+      display:grid; place-items:center;
+      z-index:1000;
+      opacity:.82;
+      transition: transform .15s ease, opacity .15s ease, background .15s ease;
     }
-    .menu-btn:hover{
-      opacity: 1;
-      transform: translateY(-1px);
-      background: rgba(255,255,255,0.75);
-    }
-    .burger{
-      width: 18px;
-      height: 12px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-    }
-    .burger span{
-      display:block;
-      height: 2px;
-      background:#000;
-      border-radius: 2px;
-      opacity:0.85;
-    }
+    .menu-btn:hover{ transform: translateY(-1px); opacity:1; background:rgba(255,255,255,0.78); }
+    .burger{ width:18px; height:12px; display:flex; flex-direction:column; justify-content:space-between; }
+    .burger span{ height:2px; background:#000; border-radius:2px; opacity:.85; }
 
+    /* ===== Sidebar ===== */
     .overlay{
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.18);
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity .22s ease;
-      z-index: 40;
+      position:fixed; inset:0;
+      background:rgba(0,0,0,0.18);
+      opacity:0; pointer-events:none;
+      transition: opacity .2s ease;
+      z-index:900;
     }
-    .overlay.show{
-      opacity: 1;
-      pointer-events: auto;
-    }
+    .overlay.show{ opacity:1; pointer-events:auto; }
 
     .sidebar{
-      position: fixed;
-      top: 0;
-      left: 0;
-      height: 100vh;
-      width: 280px;
-      background: rgba(255,255,255,0.92);
-      backdrop-filter: blur(10px);
-      border-right: 1px solid rgba(0,0,0,0.10);
+      position:fixed; top:0; left:0;
+      width:330px; max-width:86vw;
+      height:100vh;
+      background:rgba(255,255,255,0.94);
+      backdrop-filter: blur(12px);
+      border-right:1px solid rgba(0,0,0,0.10);
       transform: translateX(-105%);
       transition: transform .24s ease;
-      z-index: 45;
-      padding: 18px 16px;
+      z-index:950;
+      padding:16px;
       display:flex;
-      flex-direction: column;
-      gap: 14px;
+      flex-direction:column;
+      gap:14px;
     }
-    .sidebar.open{
-      transform: translateX(0);
-    }
+    .sidebar.open{ transform: translateX(0); }
 
-    .side-title{
-      display:flex;
-      align-items: baseline;
-      justify-content: space-between;
+    .brand{
+      display:flex; align-items:baseline; justify-content:space-between;
       padding: 6px 6px 10px 6px;
     }
-    .side-title .brand{
-      font-weight: 800;
-      letter-spacing: -0.8px;
-      font-size: 1.05rem;
-    }
-    .side-title .mini{
-      font-size: 0.75rem;
-      letter-spacing: 2px;
-      opacity: 0.55;
-      text-transform: uppercase;
+    .brand .t{ font-weight:800; letter-spacing:-0.8px; }
+    .brand .s{
+      font-family: "JetBrains Mono", ui-monospace, monospace;
+      font-size:0.78rem; opacity:.65;
+      padding:2px 8px;
+      border:1px solid rgba(0,0,0,0.12);
+      border-radius:999px;
     }
 
-    .nav{
-      display:flex;
-      flex-direction: column;
-      gap: 10px;
-      padding: 6px;
+    .stepbox{
+      border:1px solid rgba(0,0,0,0.10);
+      border-radius:16px;
+      padding:12px;
+      background:rgba(255,255,255,0.55);
     }
-    .nav a{
-      text-decoration: none;
-      color:#000;
-      border: 1px solid rgba(0,0,0,0.10);
-      background: rgba(255,255,255,0.6);
-      border-radius: 12px;
-      padding: 12px 12px;
-      display:flex;
-      align-items:center;
-      justify-content: space-between;
+    .step{
+      display:flex; gap:10px; align-items:flex-start;
+      padding:8px 6px;
+      border-radius:12px;
+    }
+    .step.active{ background:rgba(0,0,0,0.03); }
+    .n{
+      width:26px;height:26px;border-radius:9px;
+      border:1px solid rgba(0,0,0,0.12);
+      display:grid;place-items:center;
+      font-weight:700;
+      font-size:0.85rem;
+      opacity:.9;
+    }
+    .st{
+      font-size:0.92rem;
+      line-height:1.25;
+    }
+    .st b{ font-weight:800; }
+    .st small{
+      display:block; margin-top:3px;
+      opacity:.68;
+      font-size:0.82rem;
+      line-height:1.25;
+    }
+
+    .btns{
+      display:flex; flex-wrap:wrap; gap:10px;
+      padding: 0 6px;
+    }
+    button.action{
+      border:1px solid rgba(0,0,0,0.12);
+      background:rgba(255,255,255,0.72);
+      backdrop-filter: blur(8px);
+      border-radius:14px;
+      padding:10px 12px;
+      cursor:pointer;
+      font-weight:700;
       transition: transform .15s ease, background .15s ease, border .15s ease;
     }
-    .nav a:hover{
-      transform: translateX(2px);
-      background: rgba(0,0,0,0.03);
-      border-color: rgba(0,0,0,0.18);
+    button.action:hover{ transform: translateY(-1px); background:rgba(0,0,0,0.03); border-color: rgba(0,0,0,0.20); }
+    button.action:disabled{ opacity:.45; cursor:not-allowed; transform:none; }
+
+    .muted{
+      padding: 0 6px;
+      font-size:0.84rem;
+      opacity:.62;
+      line-height:1.35;
     }
-    .nav a .left{
-      display:flex;
-      gap:10px;
-      align-items:center;
+
+    .row{
+      display:flex; gap:10px; align-items:center; justify-content:space-between;
+      padding: 0 6px;
     }
     .pill{
       font-family: "JetBrains Mono", ui-monospace, monospace;
-      font-size: 0.78rem;
-      padding: 3px 8px;
-      border-radius: 999px;
-      border: 1px solid rgba(0,0,0,0.12);
-      opacity: 0.85;
-    }
-    .arrow{
-      opacity:0.45;
+      font-size:0.78rem;
+      padding:3px 8px;
+      border-radius:999px;
+      border:1px solid rgba(0,0,0,0.12);
+      opacity:.72;
     }
 
-    .hint{
-      margin-top: auto;
-      padding: 10px 8px;
-      font-size: 0.8rem;
-      opacity: 0.55;
+    /* ===== Main views ===== */
+    .view{
+      position:fixed; inset:0;
+      width:100%; height:100%;
+    }
+
+    /* Browse mode (web) */
+    #browseView{
+      background:#fff;
+    }
+    #webFrame{
+      position:absolute; inset:0;
+      width:100%; height:100%;
+      border:none;
+    }
+
+    /* Capture mode full screen */
+    #captureView{
+      background:#fff;
+      display:none;
+      z-index:800; /* below menu & sidebar */
+    }
+    .captureStage{
+      position:absolute; inset:0;
+      display:grid; place-items:center;
+      background: #fff;
+    }
+    #previewCanvas{
+      width:100%;
+      height:100%;
+      display:block;
+    }
+    #overlayCanvas{
+      position:absolute; inset:0;
+      width:100%; height:100%;
+      cursor: crosshair;
+    }
+
+    /* Tiny status badge */
+    .statusBadge{
+      position:fixed;
+      bottom:14px; right:16px;
+      z-index:1000;
+      font-family:"JetBrains Mono", ui-monospace, monospace;
+      font-size:0.78rem;
+      padding:6px 10px;
+      border-radius:999px;
+      border:1px solid rgba(0,0,0,0.12);
+      background:rgba(255,255,255,0.65);
+      backdrop-filter: blur(8px);
+      opacity:.75;
+      user-select:none;
     }
   </style>
 </head>
-
 <body>
 
-  <!-- Menu Button -->
+  <!-- Menu button -->
   <button class="menu-btn" id="menuBtn" aria-label="Open menu">
-    <div class="burger" aria-hidden="true">
-      <span></span><span></span><span></span>
-    </div>
+    <div class="burger" aria-hidden="true"><span></span><span></span><span></span></div>
   </button>
 
-  <!-- Overlay -->
-  <div class="overlay" id="overlay"></div>
-
-  <!-- Sidebar -->
-  <aside class="sidebar" id="sidebar" aria-label="Navigation menu">
-    <div class="side-title">
-      <div class="brand">Hodely</div>
-      <div class="mini">menu</div>
+  <!-- Sidebar + overlay -->
+  <div class="overlay" id="shade"></div>
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">
+      <div class="t">Screenshot</div>
+      <div class="s" id="modePill">idle</div>
     </div>
 
-    <nav class="nav">
-      <a href="https://hodely.net" title="Go to hodely.net">
-        <div class="left">
-          <span class="pill">/</span>
-          <span>Home</span>
-        </div>
-        <span class="arrow">↗</span>
-      </a>
+    <div class="stepbox" id="stepBox">
+      <div class="step" id="s1">
+        <div class="n">1</div>
+        <div class="st"><b>Share</b><small>Choose screen / window / tab.</small></div>
+      </div>
+      <div class="step" id="s2">
+        <div class="n">2</div>
+        <div class="st"><b>Browse</b><small>You can return to the web while sharing.</small></div>
+      </div>
+      <div class="step" id="s3">
+        <div class="n">3</div>
+        <div class="st"><b>Select</b><small>Open Capture mode → drag to select area.</small></div>
+      </div>
+      <div class="step" id="s4">
+        <div class="n">4</div>
+        <div class="st"><b>Download</b><small>Download the selected rectangle as PNG.</small></div>
+      </div>
+    </div>
 
-      <a href="https://hodely.net/a" title="Go to hodely.net/a">
-        <div class="left">
-          <span class="pill">/a</span>
-          <span> A </span>
-        </div>
-        <span class="arrow">↗</span>
-      </a>
+    <div class="btns">
+      <button class="action" id="btnShare">Share screen</button>
+      <button class="action" id="btnStop" disabled>Stop</button>
+      <button class="action" id="btnBrowse" disabled>Browse mode</button>
+      <button class="action" id="btnCapture" disabled>Capture mode</button>
+      <button class="action" id="btnFreeze" disabled>Freeze frame</button>
+      <button class="action" id="btnClear" disabled>Clear selection</button>
+      <button class="action" id="btnDownload" disabled>Download</button>
+    </div>
 
-      
-      <a href="https://hodely.net/VerdaNet" title="Go to hodely.net/VerdaNet">
-        <div class="left">
-          <span class="pill">/VerdaNet</span>
-          <span>VerdaNet</span>
-        </div>
-        <span class="arrow">↗</span>
-      </a>
+    <div class="row">
+      <div class="pill" id="selInfo">selection: none</div>
+      <div class="pill" id="fpsInfo">fps</div>
+    </div>
 
-      <a href="https://hodely.net/screenshot" title="Go to hodely.net/screenshot">
-        <div class="left">
-          <span class="pill">/screenshot</span>
-          <span>Screenshot</span>
-        </div>
-        <span class="arrow">↗</span>
-      </a>
-      
-      <a href="https://hodely.net/periodictable" title="Go to hodely.net/periodictable">
-        <div class="left">
-          <span class="pill">/table</span>
-          <span>Periodic Table</span>
-        </div>
-        <span class="arrow">↗</span>
-      </a>
-      
-    </nav>
-
-    <div class="hint">Tip: press <b>ESC</b> to close.</div>
+    <div class="muted">
+      Controls: <b>ESC</b> closes menu. In Capture mode, drag to select.  
+      Tip: Freeze frame for perfect crops.
+    </div>
   </aside>
 
-  <div class="container">
-
-    <!-- TOP MARQUEE (right -> left) -->
-    <div class="marquee top" aria-hidden="true">
-      <div class="track">
-        <!-- First half -->
-        <div class="block">
-          <span class="seg f1">⌘ ⟁ ∆ Ø Ξ Λ ⌬</span><span class="dot">•</span>
-          <span class="seg f2">✦ ✧ † ꙮ ⊕</span><span class="dot">•</span>
-          <span class="seg f3">ᚠ ⌁ ⚑ ⟡</span><span class="dot">•</span>
-          <span class="seg f4">H O D E L Y</span><span class="dot">•</span>
-          <span class="seg f1">⧉ ⌂ ⊗ ⊘</span><span class="dot">•</span>
-          <span class="seg f2">✶ ✷ ✸ ✹</span><span class="dot">•</span>
-          <span class="seg f3">⟟ ⟠ ⟐ ⟑</span>
-        </div>
-        <!-- Duplicate for seamless loop -->
-        <div class="block">
-          <span class="seg f1">⌘ ⟁ ∆ Ø Ξ Λ ⌬</span><span class="dot">•</span>
-          <span class="seg f2">✦ ✧ † ꙮ ⊕</span><span class="dot">•</span>
-          <span class="seg f3">ᚠ ⌁ ⚑ ⟡</span><span class="dot">•</span>
-          <span class="seg f4">H O D E L Y</span><span class="dot">•</span>
-          <span class="seg f1">⧉ ⌂ ⊗ ⊘</span><span class="dot">•</span>
-          <span class="seg f2">✶ ✷ ✸ ✹</span><span class="dot">•</span>
-          <span class="seg f3">⟟ ⟠ ⟐ ⟑</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- TITLE -->
-    <h1>Hodely</h1>
-    <div class="line"></div>
-    <h2>Hodely.net</h2>
-
-    <!-- BOTTOM MARQUEE (left -> right) -->
-    <div class="marquee bottom" aria-hidden="true">
-      <div class="track">
-        <!-- First half -->
-        <div class="block">
-          <span class="seg f3">⟑ ⟐ ⟠ ⟟</span><span class="dot">•</span>
-          <span class="seg f2">✹ ✸ ✷ ✶</span><span class="dot">•</span>
-          <span class="seg f1">⊘ ⊗ ⌂ ⧉</span><span class="dot">•</span>
-          <span class="seg f4">H O D E L Y . N E T</span><span class="dot">•</span>
-          <span class="seg f3">⟡ ⚑ ⌁ ᚠ</span><span class="dot">•</span>
-          <span class="seg f2">⊕ ꙮ † ✧ ✦</span><span class="dot">•</span>
-          <span class="seg f1">⌬ Λ Ξ Ø ∆ ⟁ ⌘</span>
-        </div>
-        <!-- Duplicate for seamless loop -->
-        <div class="block">
-          <span class="seg f3">⟑ ⟐ ⟠ ⟟</span><span class="dot">•</span>
-          <span class="seg f2">✹ ✸ ✷ ✶</span><span class="dot">•</span>
-          <span class="seg f1">⊘ ⊗ ⌂ ⧉</span><span class="dot">•</span>
-          <span class="seg f4">H O D E L Y . N E T</span><span class="dot">•</span>
-          <span class="seg f3">⟡ ⚑ ⌁ ᚠ</span><span class="dot">•</span>
-          <span class="seg f2">⊕ ꙮ † ✧ ✦</span><span class="dot">•</span>
-          <span class="seg f1">⌬ Λ Ξ Ø ∆ ⟁ ⌘</span>
-        </div>
-      </div>
-    </div>
-
+  <!-- Main: Browse view (web) -->
+  <div class="view" id="browseView">
+    <iframe id="webFrame" src="https://hodely.net" title="Web"></iframe>
   </div>
 
+  <!-- Main: Capture view (FULL SCREEN selection) -->
+  <div class="view" id="captureView" aria-hidden="true">
+    <div class="captureStage">
+      <canvas id="previewCanvas"></canvas>
+      <canvas id="overlayCanvas"></canvas>
+    </div>
+  </div>
+
+  <div class="statusBadge" id="statusBadge">idle</div>
+
+  <!-- Hidden video for stream -->
+  <video id="video" autoplay playsinline style="display:none;"></video>
+
   <script>
+    // ===== UI elements
     const menuBtn = document.getElementById('menuBtn');
     const sidebar = document.getElementById('sidebar');
-    const overlay = document.getElementById('overlay');
+    const shade = document.getElementById('shade');
+
+    const modePill = document.getElementById('modePill');
+    const statusBadge = document.getElementById('statusBadge');
+
+    const btnShare = document.getElementById('btnShare');
+    const btnStop = document.getElementById('btnStop');
+    const btnBrowse = document.getElementById('btnBrowse');
+    const btnCapture = document.getElementById('btnCapture');
+    const btnFreeze = document.getElementById('btnFreeze');
+    const btnClear = document.getElementById('btnClear');
+    const btnDownload = document.getElementById('btnDownload');
+
+    const selInfo = document.getElementById('selInfo');
+    const fpsInfo = document.getElementById('fpsInfo');
+
+    const browseView = document.getElementById('browseView');
+    const captureView = document.getElementById('captureView');
+
+    const s1 = document.getElementById('s1');
+    const s2 = document.getElementById('s2');
+    const s3 = document.getElementById('s3');
+    const s4 = document.getElementById('s4');
+
+    // ===== Capture elements
+    const video = document.getElementById('video');
+    const previewCanvas = document.getElementById('previewCanvas');
+    const overlayCanvas = document.getElementById('overlayCanvas');
+    const pctx = previewCanvas.getContext('2d');
+    const octx = overlayCanvas.getContext('2d');
+
+    // ===== State
+    let stream = null;
+    let raf = null;
+
+    let currentMode = 'idle';     // idle | sharing | browse | capture
+    let frozen = false;
+    let frozenImageData = null;
+
+    let isDragging = false;
+    let sel = null;              // {x,y,w,h} in canvas px
+
+    // FPS tracking (tiny)
+    let lastT = performance.now();
+    let frameCount = 0;
+
+    function setMode(m){
+      currentMode = m;
+      modePill.textContent = m;
+      statusBadge.textContent = m;
+      statusBadge.style.opacity = (m === 'idle') ? .65 : .9;
+
+      // step highlight
+      [s1,s2,s3,s4].forEach(x => x.classList.remove('active'));
+      if(m === 'idle') s1.classList.add('active');
+      if(m === 'sharing') s1.classList.add('active');
+      if(m === 'browse') s2.classList.add('active');
+      if(m === 'capture') s3.classList.add('active');
+      if(sel) s4.classList.add('active');
+    }
 
     function openMenu(){
       sidebar.classList.add('open');
-      overlay.classList.add('show');
+      shade.classList.add('show');
     }
     function closeMenu(){
       sidebar.classList.remove('open');
-      overlay.classList.remove('show');
+      shade.classList.remove('show');
     }
-    function toggleMenu(){
-      if(sidebar.classList.contains('open')) closeMenu();
-      else openMenu();
-    }
-
-    menuBtn.addEventListener('click', toggleMenu);
-    overlay.addEventListener('click', closeMenu);
-
+    menuBtn.addEventListener('click', () => {
+      sidebar.classList.contains('open') ? closeMenu() : openMenu();
+    });
+    shade.addEventListener('click', closeMenu);
     document.addEventListener('keydown', (e) => {
       if(e.key === 'Escape') closeMenu();
     });
-  </script>
 
+    // ===== View switching
+    function showBrowse(){
+      browseView.style.display = 'block';
+      captureView.style.display = 'none';
+      if(stream) setMode('browse');
+      captureView.setAttribute('aria-hidden', 'true');
+    }
+    function showCapture(){
+      browseView.style.display = 'none';
+      captureView.style.display = 'block';
+      if(stream) setMode('capture');
+      captureView.setAttribute('aria-hidden', 'false');
+      resizeCanvases();
+      // draw a frame immediately so user sees it
+      if(stream && !frozen) drawLiveFrame();
+      drawOverlay();
+    }
+
+    // ===== Canvas sizing (FULL SCREEN in capture mode)
+    function resizeCanvases(){
+      const rect = captureView.getBoundingClientRect();
+      const dpr = Math.max(1, window.devicePixelRatio || 1);
+
+      previewCanvas.width = Math.round(rect.width * dpr);
+      previewCanvas.height = Math.round(rect.height * dpr);
+      previewCanvas.style.width = rect.width + 'px';
+      previewCanvas.style.height = rect.height + 'px';
+
+      overlayCanvas.width = previewCanvas.width;
+      overlayCanvas.height = previewCanvas.height;
+      overlayCanvas.style.width = previewCanvas.style.width;
+      overlayCanvas.style.height = previewCanvas.style.height;
+
+      // if frozen, keep it consistent (best effort)
+      if(frozen && frozenImageData &&
+         frozenImageData.width === previewCanvas.width &&
+         frozenImageData.height === previewCanvas.height){
+        pctx.putImageData(frozenImageData, 0, 0);
+      } else if (frozen) {
+        // invalidate freeze on resize to avoid wrong crops
+        frozen = false;
+        frozenImageData = null;
+        if(stream) setMode('capture');
+      }
+      drawOverlay();
+      updateSelectionUI();
+    }
+
+    window.addEventListener('resize', () => {
+      if(currentMode === 'capture') resizeCanvases();
+    });
+
+    // ===== Draw video frame into canvas (cover fit)
+    function drawLiveFrame(){
+      const cw = previewCanvas.width;
+      const ch = previewCanvas.height;
+
+      const vw = video.videoWidth || 1280;
+      const vh = video.videoHeight || 720;
+
+      const cr = cw / ch;
+      const vr = vw / vh;
+
+      let sx=0, sy=0, sw=vw, sh=vh;
+      if(vr > cr){
+        sw = vh * cr;
+        sx = (vw - sw) / 2;
+      } else {
+        sh = vw / cr;
+        sy = (vh - sh) / 2;
+      }
+
+      pctx.clearRect(0,0,cw,ch);
+      pctx.drawImage(video, sx, sy, sw, sh, 0, 0, cw, ch);
+    }
+
+    function drawOverlay(){
+      octx.clearRect(0,0,overlayCanvas.width, overlayCanvas.height);
+      if(!sel) return;
+
+      octx.save();
+      octx.fillStyle = 'rgba(0,0,0,0.18)';
+      octx.fillRect(0,0,overlayCanvas.width, overlayCanvas.height);
+
+      octx.globalCompositeOperation = 'destination-out';
+      octx.fillRect(sel.x, sel.y, sel.w, sel.h);
+
+      octx.globalCompositeOperation = 'source-over';
+      octx.strokeStyle = 'rgba(0,0,0,0.90)';
+      octx.lineWidth = Math.max(2, Math.round((window.devicePixelRatio||1)));
+      octx.strokeRect(sel.x + 0.5, sel.y + 0.5, sel.w, sel.h);
+
+      // corners
+      const s = 8 * (window.devicePixelRatio||1);
+      octx.fillStyle = 'rgba(0,0,0,0.90)';
+      octx.fillRect(sel.x - 1, sel.y - 1, s, s);
+      octx.fillRect(sel.x + sel.w - s + 1, sel.y - 1, s, s);
+      octx.fillRect(sel.x - 1, sel.y + sel.h - s + 1, s, s);
+      octx.fillRect(sel.x + sel.w - s + 1, sel.y + sel.h - s + 1, s, s);
+
+      octx.restore();
+    }
+
+    function clampRect(r){
+      let x = Math.min(r.x, r.x + r.w);
+      let y = Math.min(r.y, r.y + r.h);
+      let w = Math.abs(r.w);
+      let h = Math.abs(r.h);
+
+      x = Math.max(0, Math.min(x, overlayCanvas.width));
+      y = Math.max(0, Math.min(y, overlayCanvas.height));
+      w = Math.max(1, Math.min(w, overlayCanvas.width - x));
+      h = Math.max(1, Math.min(h, overlayCanvas.height - y));
+      return {x, y, w, h};
+    }
+
+    function updateSelectionUI(){
+      if(!sel){
+        selInfo.textContent = 'selection: none';
+        btnClear.disabled = true;
+        btnDownload.disabled = true;
+        // step 4 highlight off
+        s4.classList.remove('active');
+        return;
+      }
+      selInfo.textContent = `selection: ${Math.round(sel.w)}×${Math.round(sel.h)} px`;
+      btnClear.disabled = false;
+      btnDownload.disabled = false;
+      s4.classList.add('active');
+    }
+
+    function getPos(e){
+      const rect = overlayCanvas.getBoundingClientRect();
+      const dpr = Math.max(1, window.devicePixelRatio || 1);
+      return {
+        x: (e.clientX - rect.left) * dpr,
+        y: (e.clientY - rect.top) * dpr
+      };
+    }
+
+    overlayCanvas.addEventListener('mousedown', (e) => {
+      if(!stream) return;
+      if(currentMode !== 'capture') return;
+      isDragging = true;
+      const p = getPos(e);
+      sel = {x:p.x, y:p.y, w:1, h:1};
+      updateSelectionUI();
+      drawOverlay();
+    });
+
+    window.addEventListener('mousemove', (e) => {
+      if(!isDragging || !sel) return;
+      if(currentMode !== 'capture') return;
+      const p = getPos(e);
+      sel.w = p.x - sel.x;
+      sel.h = p.y - sel.y;
+      sel = clampRect(sel);
+      updateSelectionUI();
+      drawOverlay();
+    });
+
+    window.addEventListener('mouseup', () => {
+      if(!isDragging) return;
+      isDragging = false;
+      if(sel){
+        sel = clampRect(sel);
+        updateSelectionUI();
+        drawOverlay();
+      }
+    });
+
+    // ===== Render loop (only needed while sharing)
+    function loop(){
+      // FPS badge
+      frameCount++;
+      const now = performance.now();
+      if(now - lastT >= 600){
+        const fps = Math.round((frameCount * 1000) / (now - lastT));
+        fpsInfo.textContent = `${fps}fps`;
+        frameCount = 0; lastT = now;
+      }
+
+      // Always keep the latest frame in memory:
+      // - if frozen -> keep the frozen frame in canvas
+      // - else -> draw live, but ONLY meaningful in capture mode
+      if(stream && currentMode === 'capture'){
+        if(!frozen) drawLiveFrame();
+        drawOverlay();
+      }
+
+      raf = requestAnimationFrame(loop);
+    }
+
+    function stopLoop(){
+      if(raf) cancelAnimationFrame(raf);
+      raf = null;
+    }
+
+    // ===== Buttons actions
+    btnShare.addEventListener('click', async () => {
+      try{
+        stream = await navigator.mediaDevices.getDisplayMedia({
+          video: { frameRate: 30 },
+          audio: false
+        });
+
+        video.srcObject = stream;
+
+        const [track] = stream.getVideoTracks();
+        track.addEventListener('ended', () => cleanup());
+
+        await video.play();
+
+        // enable controls
+        btnStop.disabled = false;
+        btnBrowse.disabled = false;
+        btnCapture.disabled = false;
+        btnFreeze.disabled = false;
+
+        // IMPORTANT: right after sharing, go back to web (browse mode)
+        setMode('browse');
+        showBrowse();
+
+        // run loop
+        stopLoop();
+        requestAnimationFrame(loop);
+
+        // close menu so it feels like "step completed"
+        closeMenu();
+
+      }catch(err){
+        // user cancelled or browser blocked
+        console.log(err);
+      }
+    });
+
+    btnStop.addEventListener('click', cleanup);
+
+    function cleanup(){
+      stopLoop();
+      if(stream){
+        stream.getTracks().forEach(t => t.stop());
+      }
+      stream = null;
+      video.srcObject = null;
+
+      frozen = false;
+      frozenImageData = null;
+      sel = null;
+
+      btnStop.disabled = true;
+      btnBrowse.disabled = true;
+      btnCapture.disabled = true;
+      btnFreeze.disabled = true;
+      btnClear.disabled = true;
+      btnDownload.disabled = true;
+
+      // reset views
+      showBrowse();
+      setMode('idle');
+      updateSelectionUI();
+      fpsInfo.textContent = 'fps';
+    }
+
+    btnBrowse.addEventListener('click', () => {
+      if(!stream) return;
+      showBrowse();
+      closeMenu();
+    });
+
+    btnCapture.addEventListener('click', () => {
+      if(!stream) return;
+      // enter capture full screen selection
+      frozen = false;
+      frozenImageData = null;
+      sel = null;
+      updateSelectionUI();
+
+      showCapture();
+      closeMenu();
+    });
+
+    btnFreeze.addEventListener('click', () => {
+      if(!stream) return;
+
+      // Freeze requires capture view canvas sizing to be correct
+      if(currentMode !== 'capture'){
+        // if user hits freeze while browsing, jump to capture first
+        showCapture();
+      }
+      resizeCanvases();
+      drawLiveFrame();
+
+      frozenImageData = pctx.getImageData(0,0,previewCanvas.width, previewCanvas.height);
+      frozen = true;
+      setMode('capture'); // still capture
+      closeMenu();
+    });
+
+    btnClear.addEventListener('click', () => {
+      sel = null;
+      updateSelectionUI();
+      drawOverlay();
+    });
+
+    btnDownload.addEventListener('click', () => {
+      if(!stream || !sel) return;
+
+      // Ensure we have a stable image
+      if(currentMode !== 'capture'){
+        showCapture();
+        resizeCanvases();
+      }
+      if(!frozen){
+        drawLiveFrame();
+      }
+
+      const sx = Math.round(sel.x);
+      const sy = Math.round(sel.y);
+      const sw = Math.round(sel.w);
+      const sh = Math.round(sel.h);
+
+      const out = document.createElement('canvas');
+      out.width = sw;
+      out.height = sh;
+      const outCtx = out.getContext('2d');
+      outCtx.drawImage(previewCanvas, sx, sy, sw, sh, 0, 0, sw, sh);
+
+      out.toBlob((blob) => {
+        if(!blob) return;
+        const a = document.createElement('a');
+        const url = URL.createObjectURL(blob);
+        a.href = url;
+        a.download = `screenshot_${Date.now()}.png`;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+      }, 'image/png');
+    });
+
+    // init
+    setMode('idle');
+  </script>
 </body>
 </html>
