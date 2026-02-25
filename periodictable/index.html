@@ -3,1120 +3,1060 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Periodic Table — Interactive</title>
+  <title>Periodic Table</title>
+  <meta name="color-scheme" content="light dark" />
   <style>
     :root{
-      --bg:#0b1020;
-      --panel:#0f1730;
-      --panel2:#0c1328;
-      --text:#e9eeff;
-      --muted:#a8b3d6;
-      --stroke:rgba(255,255,255,.10);
-      --stroke2:rgba(255,255,255,.16);
-      --accent:#7aa8ff;
-      --good:#54f08a;
-      --warn:#ffcb5a;
-      --bad:#ff6b7a;
-      --shadow: 0 18px 60px rgba(0,0,0,.55);
-      --radius:18px;
+      --bg:#0b0c0f;
+      --panel:#11131a;
+      --panel2:#0f1117;
+      --text:#f4f6fb;
+      --muted:#a9afc0;
+      --line:rgba(255,255,255,.10);
+      --line2:rgba(255,255,255,.16);
+      --chip:rgba(255,255,255,.06);
+      --chip2:rgba(255,255,255,.10);
+      --focus:rgba(255,255,255,.35);
+      --shadow: 0 18px 50px rgba(0,0,0,.45);
+      --r:18px;
+      --r2:14px;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
     }
-
     *{box-sizing:border-box}
     html,body{height:100%}
     body{
       margin:0;
-      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial, sans-serif;
+      font-family:var(--sans);
       background:
-        radial-gradient(1000px 800px at 20% -10%, rgba(122,168,255,.22), transparent 60%),
-        radial-gradient(900px 700px at 90% 0%, rgba(84,240,138,.12), transparent 55%),
-        radial-gradient(900px 700px at 60% 110%, rgba(255,203,90,.10), transparent 60%),
-        var(--bg);
+        radial-gradient(1200px 700px at 20% -10%, rgba(255,255,255,.10), transparent 55%),
+        radial-gradient(900px 600px at 120% 0%, rgba(255,255,255,.06), transparent 55%),
+        linear-gradient(180deg, #06070a, var(--bg));
       color:var(--text);
-      overflow-x:hidden;
-    }
-
-    a{color:inherit}
-    .wrap{max-width:1400px; margin:0 auto; padding:20px 16px 28px;}
-
-    /* Top bar / tabs */
-    header{
-      position:sticky; top:0; z-index:40;
-      background: linear-gradient(to bottom, rgba(11,16,32,.92), rgba(11,16,32,.60));
-      backdrop-filter: blur(10px);
-      border-bottom:1px solid var(--stroke);
-    }
-    .top{
-      max-width:1400px; margin:0 auto; padding:14px 16px;
-      display:flex; gap:14px; align-items:center; justify-content:space-between;
-    }
-    .brand{
-      display:flex; align-items:center; gap:10px; min-width:240px;
-    }
-    .logo{
-      width:36px; height:36px; border-radius:12px;
-      background: linear-gradient(135deg, rgba(122,168,255,.9), rgba(84,240,138,.85));
-      box-shadow: 0 10px 30px rgba(0,0,0,.35);
-    }
-    .title{line-height:1.1}
-    .title b{display:block; font-size:14px; letter-spacing:.4px}
-    .title span{display:block; font-size:12px; color:var(--muted); margin-top:2px}
-
-    .tabs{
-      display:flex; gap:8px; flex-wrap:wrap; justify-content:center;
-    }
-    .tab{
-      border:1px solid var(--stroke);
-      background: rgba(15,23,48,.55);
-      color:var(--text);
-      padding:9px 12px;
-      border-radius:999px;
-      cursor:pointer;
-      font-weight:600;
-      letter-spacing:.2px;
-      transition:.18s ease;
-      user-select:none;
-    }
-    .tab:hover{transform: translateY(-1px); border-color:var(--stroke2)}
-    .tab.active{
-      background: rgba(122,168,255,.16);
-      border-color: rgba(122,168,255,.45);
-      box-shadow: 0 10px 30px rgba(0,0,0,.25);
-    }
-
-    .right{
-      display:flex; gap:10px; align-items:center; justify-content:flex-end; min-width:240px;
-    }
-    .search{
-      position:relative;
-      width:min(360px, 44vw);
-    }
-    .search input{
-      width:100%;
-      padding:10px 12px 10px 36px;
-      border-radius:999px;
-      border:1px solid var(--stroke);
-      background: rgba(15,23,48,.55);
-      color:var(--text);
-      outline:none;
-      transition:.15s ease;
-    }
-    .search input:focus{border-color:rgba(122,168,255,.55); box-shadow: 0 0 0 3px rgba(122,168,255,.16)}
-    .search .icon{
-      position:absolute; left:12px; top:50%; transform:translateY(-50%);
-      font-size:14px; opacity:.85; color:var(--muted);
-      pointer-events:none;
-    }
-
-    /* Sections */
-    main{padding-top:18px}
-    section{display:none}
-    section.active{display:block}
-
-    .grid2{
-      display:grid; grid-template-columns: 1.35fr .65fr; gap:14px;
-    }
-    @media (max-width: 1100px){
-      .grid2{grid-template-columns: 1fr; }
-      .brand,.right{min-width:auto}
-      .search{width: min(520px, 70vw);}
-    }
-
-    .card{
-      border:1px solid var(--stroke);
-      background: rgba(15,23,48,.55);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
       overflow:hidden;
     }
-    .cardHeader{
-      padding:14px 16px;
-      border-bottom:1px solid var(--stroke);
-      background: linear-gradient(to right, rgba(122,168,255,.10), transparent 55%);
-      display:flex; align-items:flex-start; justify-content:space-between; gap:12px;
+
+    /* Top tabs */
+    .topbar{
+      height:70px;
+      padding:14px 18px;
+      display:flex;
+      gap:12px;
+      align-items:center;
+      border-bottom:1px solid var(--line);
+      background:rgba(10,12,16,.65);
+      backdrop-filter: blur(10px);
+      position:sticky; top:0; z-index:50;
     }
-    .cardHeader h2{
-      margin:0; font-size:14px; letter-spacing:.4px;
-    }
-    .cardHeader p{
-      margin:6px 0 0; font-size:12px; color:var(--muted); line-height:1.35;
-    }
-    .pill{
-      padding:7px 10px;
+    .brand{
+      display:flex; align-items:center; gap:10px;
+      padding:10px 12px;
+      border:1px solid var(--line);
       border-radius:999px;
-      border:1px solid var(--stroke);
-      background: rgba(12,19,40,.65);
-      font-size:12px;
-      color:var(--muted);
+      background:rgba(255,255,255,.03);
+      box-shadow: 0 10px 30px rgba(0,0,0,.25);
+      user-select:none;
       white-space:nowrap;
     }
-
-    /* Periodic table layout */
-    .tableWrap{
-      padding:14px;
+    .brand .dot{
+      width:10px; height:10px; border-radius:999px;
+      background:rgba(255,255,255,.85);
+      box-shadow: 0 0 0 6px rgba(255,255,255,.06);
     }
-    .pt{
+    .brand b{letter-spacing:.6px}
+    .tabs{
+      display:flex;
+      gap:10px;
+      margin-left:auto;
+      background:rgba(255,255,255,.03);
+      border:1px solid var(--line);
+      border-radius:999px;
+      padding:6px;
+    }
+    .tab{
+      appearance:none;
+      border:0;
+      background:transparent;
+      color:var(--muted);
+      padding:10px 14px;
+      border-radius:999px;
+      cursor:pointer;
+      font-weight:650;
+      letter-spacing:.2px;
+      transition: background .15s ease, color .15s ease, transform .05s ease;
+      outline:none;
+    }
+    .tab:hover{background:rgba(255,255,255,.05); color:var(--text)}
+    .tab:active{transform:translateY(1px)}
+    .tab[aria-selected="true"]{
+      background:rgba(255,255,255,.10);
+      color:var(--text);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.12);
+    }
+
+    /* Pages */
+    .page{
+      height: calc(100vh - 70px);
+      display:none;
+      padding:16px;
+    }
+    .page.active{display:block}
+
+    /* Periodic layout */
+    .layout{
+      height:100%;
+      display:grid;
+      grid-template-columns: 1fr 340px;
+      gap:14px;
+    }
+    .tableWrap{
+      height:100%;
+      border-radius:var(--r);
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.02);
+      box-shadow:var(--shadow);
+      padding:12px;
+      overflow:auto;
+    }
+    .tableWrap::-webkit-scrollbar{height:10px;width:10px}
+    .tableWrap::-webkit-scrollbar-thumb{background:rgba(255,255,255,.12);border-radius:999px}
+    .tableWrap::-webkit-scrollbar-track{background:rgba(255,255,255,.03);border-radius:999px}
+
+    .grid{
       display:grid;
       grid-template-columns: repeat(18, minmax(46px, 1fr));
+      grid-template-rows: repeat(10, 56px);
       gap:8px;
-      align-items:stretch;
+      min-width: 980px;
     }
-    @media (max-width: 1100px){
-      .pt{grid-template-columns: repeat(18, minmax(42px, 1fr)); gap:7px}
-    }
-    @media (max-width: 860px){
-      .pt{grid-template-columns: repeat(18, minmax(38px, 1fr)); gap:6px}
-    }
-    @media (max-width: 760px){
-      .pt{grid-template-columns: repeat(18, minmax(34px, 1fr)); gap:5px}
+
+    .cell{
+      border-radius:14px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.03);
     }
 
     .el{
       position:relative;
-      border:1px solid rgba(255,255,255,.10);
       border-radius:14px;
-      background: rgba(12,19,40,.72);
-      padding:8px 8px 7px;
+      border:1px solid var(--line2);
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.02));
+      box-shadow: 0 10px 30px rgba(0,0,0,.25);
       cursor:pointer;
-      transition: transform .14s ease, border-color .14s ease, background .14s ease;
-      min-height:64px;
-      display:flex;
-      flex-direction:column;
-      justify-content:space-between;
+      padding:8px 8px 7px;
       user-select:none;
+      transition: transform .08s ease, border-color .12s ease, background .12s ease;
+      overflow:hidden;
     }
     .el:hover{
-      transform: translateY(-2px);
-      border-color: rgba(122,168,255,.35);
-      background: rgba(17,27,58,.78);
+      transform: translateY(-1px);
+      border-color: rgba(255,255,255,.25);
+      background: linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.03));
     }
-    .el .n{font-size:11px; color:var(--muted); opacity:.95}
-    .el .s{font-size:18px; font-weight:800; letter-spacing:.2px}
-    .el .name{font-size:10.5px; color:rgba(233,238,255,.88); opacity:.95; line-height:1.05}
-    .el .w{font-size:10px; color:var(--muted); margin-top:2px; line-height:1.05}
+    .el:active{transform: translateY(0px)}
+    .el.selected{
+      outline:2px solid var(--focus);
+      outline-offset:1px;
+      border-color: rgba(255,255,255,.34);
+    }
+    .el .num{
+      position:absolute; left:8px; top:7px;
+      font-size:11px;
+      color:rgba(255,255,255,.78);
+      font-family:var(--mono);
+    }
+    .el .sym{
+      margin-top:8px;
+      font-size:20px;
+      font-weight:800;
+      letter-spacing:.2px;
+      text-align:left;
+    }
+    .el .name{
+      font-size:10.5px;
+      color:rgba(255,255,255,.78);
+      margin-top:2px;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .el .mass{
+      position:absolute; right:8px; bottom:6px;
+      font-size:10px;
+      color:rgba(255,255,255,.65);
+      font-family:var(--mono);
+    }
 
-    .empty{visibility:hidden; pointer-events:none}
+    /* Category accents (still monochrome) */
+    .cat-alkali{box-shadow: 0 10px 30px rgba(255,255,255,.08)}
+    .cat-alkaline{background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.02))}
+    .cat-transition{background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02))}
+    .cat-post{background: linear-gradient(180deg, rgba(255,255,255,.09), rgba(255,255,255,.02))}
+    .cat-metalloid{background: linear-gradient(180deg, rgba(255,255,255,.075), rgba(255,255,255,.02))}
+    .cat-nonmetal{background: linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.02))}
+    .cat-halogen{background: linear-gradient(180deg, rgba(255,255,255,.085), rgba(255,255,255,.02))}
+    .cat-noble{background: linear-gradient(180deg, rgba(255,255,255,.11), rgba(255,255,255,.02))}
+    .cat-lanth{background: linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.02))}
+    .cat-act{background: linear-gradient(180deg, rgba(255,255,255,.065), rgba(255,255,255,.02))}
 
-    /* Category tinting (subtle) */
-    .cat-nonmetal{background: rgba(84,240,138,.11)}
-    .cat-noble{background: rgba(122,168,255,.14)}
-    .cat-alkali{background: rgba(255,107,122,.12)}
-    .cat-alkaline{background: rgba(255,203,90,.12)}
-    .cat-metalloid{background: rgba(255,203,90,.10)}
-    .cat-post{background: rgba(233,238,255,.08)}
-    .cat-transition{background: rgba(122,168,255,.08)}
-    .cat-lanth{background: rgba(188,122,255,.10)}
-    .cat-act{background: rgba(255,122,220,.10)}
-    .cat-halogen{background: rgba(84,240,138,.08)}
-
-    /* Side details */
-    .details{
+    /* Right detail panel */
+    .side{
+      height:100%;
+      border-radius:var(--r);
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.02);
+      box-shadow:var(--shadow);
       padding:14px;
-      display:flex; flex-direction:column; gap:12px;
+      overflow:auto;
     }
-    .mini{
-      border:1px solid var(--stroke);
-      background: rgba(12,19,40,.60);
-      border-radius: var(--radius);
+    .side h2{
+      margin:0 0 10px;
+      font-size:16px;
+      letter-spacing:.3px;
+    }
+    .card{
+      border:1px solid var(--line);
+      border-radius:var(--r2);
+      background:rgba(255,255,255,.03);
       padding:12px;
+      margin-bottom:12px;
     }
-    .mini h3{margin:0 0 8px; font-size:13px; letter-spacing:.3px}
-    .mini .row{
-      display:flex; justify-content:space-between; gap:10px;
-      padding:6px 0;
-      border-bottom:1px dashed rgba(255,255,255,.08);
+    .bigSymbol{
+      display:flex; align-items:flex-end; justify-content:space-between; gap:10px;
+    }
+    .bigSymbol .sym{
+      font-size:44px;
+      font-weight:900;
+      letter-spacing:.5px;
+      line-height:1;
+    }
+    .bigSymbol .num{
+      font-family:var(--mono);
+      color:rgba(255,255,255,.75);
       font-size:12px;
     }
-    .mini .row:last-child{border-bottom:0}
-    .mini .k{color:var(--muted)}
-    .mini .v{font-weight:700}
-    .legend{
-      display:grid; grid-template-columns: 1fr 1fr; gap:8px;
-    }
-    .legItem{
-      display:flex; gap:8px; align-items:center;
-      font-size:12px; color:var(--muted);
-      border:1px solid rgba(255,255,255,.08);
-      background: rgba(12,19,40,.35);
-      padding:8px 10px;
-      border-radius: 999px;
-    }
-    .dot{
-      width:10px; height:10px; border-radius:999px;
-      background: rgba(233,238,255,.25);
-      box-shadow: 0 0 0 3px rgba(233,238,255,.06);
-    }
-    .dot.nonmetal{background: rgba(84,240,138,.55); box-shadow: 0 0 0 3px rgba(84,240,138,.12)}
-    .dot.noble{background: rgba(122,168,255,.65); box-shadow: 0 0 0 3px rgba(122,168,255,.14)}
-    .dot.alkali{background: rgba(255,107,122,.75); box-shadow: 0 0 0 3px rgba(255,107,122,.12)}
-    .dot.alkaline{background: rgba(255,203,90,.75); box-shadow: 0 0 0 3px rgba(255,203,90,.12)}
-    .dot.transition{background: rgba(122,168,255,.35); box-shadow: 0 0 0 3px rgba(122,168,255,.10)}
-    .dot.post{background: rgba(233,238,255,.30); box-shadow: 0 0 0 3px rgba(233,238,255,.08)}
-    .dot.metalloid{background: rgba(255,203,90,.45); box-shadow: 0 0 0 3px rgba(255,203,90,.10)}
-    .dot.halogen{background: rgba(84,240,138,.30); box-shadow: 0 0 0 3px rgba(84,240,138,.08)}
-    .dot.lanth{background: rgba(188,122,255,.55); box-shadow: 0 0 0 3px rgba(188,122,255,.12)}
-    .dot.act{background: rgba(255,122,220,.50); box-shadow: 0 0 0 3px rgba(255,122,220,.12)}
-
-    /* Uses / More info pages */
-    .content{
-      padding:16px;
-      line-height:1.6;
-      color:rgba(233,238,255,.92);
-    }
-    .content h2{margin:0 0 10px; font-size:18px; letter-spacing:.2px}
-    .content h3{margin:14px 0 6px; font-size:14px; color:var(--text)}
-    .content p{margin:8px 0; color:rgba(233,238,255,.86)}
-    .content ul{margin:8px 0 8px 18px; color:rgba(233,238,255,.86)}
-    .callout{
+    .kv{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:10px 12px;
       margin-top:12px;
-      border:1px solid rgba(122,168,255,.25);
-      background: rgba(122,168,255,.08);
-      border-radius: var(--radius);
-      padding:12px;
-      color:rgba(233,238,255,.90);
     }
-    .kbd{
-      display:inline-flex; gap:6px; align-items:center;
-      padding:2px 10px;
-      border:1px solid rgba(255,255,255,.16);
-      background: rgba(12,19,40,.70);
-      border-radius:999px;
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+    .kv .k{
+      font-size:11px;
+      color:rgba(255,255,255,.62);
+      letter-spacing:.2px;
+    }
+    .kv .v{
+      font-family:var(--mono);
       font-size:12px;
-      color:var(--muted);
+      color:rgba(255,255,255,.88);
+      margin-top:2px;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .pillRow{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      margin-top:10px;
+    }
+    .pill{
+      font-size:11px;
+      color:rgba(255,255,255,.84);
+      padding:8px 10px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.03);
+      border-radius:999px;
+      font-family:var(--mono);
+    }
+    .hint{
+      font-size:12px;
+      color:rgba(255,255,255,.70);
+      line-height:1.45;
+    }
+
+    /* Uses page */
+    .usesGrid{
+      height:100%;
+      display:grid;
+      grid-template-columns: 1.3fr .7fr;
+      gap:14px;
+    }
+    .panel{
+      border-radius:var(--r);
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.02);
+      box-shadow:var(--shadow);
+      padding:14px;
+      overflow:auto;
+    }
+    .panel h1{margin:0 0 10px; font-size:20px; letter-spacing:.3px}
+    .panel p{margin:0 0 10px; color:rgba(255,255,255,.78); line-height:1.6}
+    .list{
+      display:grid; gap:10px;
+      margin-top:12px;
+    }
+    .item{
+      border:1px solid var(--line);
+      border-radius:var(--r2);
+      background:rgba(255,255,255,.03);
+      padding:12px;
+    }
+    .item b{display:block; margin-bottom:6px}
+    .item span{color:rgba(255,255,255,.75); line-height:1.55}
+
+    /* More info page */
+    .infoLayout{
+      height:100%;
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:14px;
     }
 
     /* Modal */
-    .modalBack{
-      position:fixed; inset:0; z-index:80;
-      background: rgba(0,0,0,.55);
-      backdrop-filter: blur(8px);
+    .overlay{
+      position:fixed; inset:0;
+      background:rgba(0,0,0,.68);
       display:none;
       align-items:center;
       justify-content:center;
-      padding:16px;
+      z-index:9999;
+      padding:18px;
     }
+    .overlay.show{display:flex}
     .modal{
-      width:min(520px, 95vw);
-      border-radius: 22px;
+      width:min(520px, 100%);
+      border-radius:22px;
       border:1px solid rgba(255,255,255,.14);
-      background: rgba(15,23,48,.75);
-      box-shadow: var(--shadow);
+      background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
+      box-shadow: 0 30px 80px rgba(0,0,0,.6);
+      padding:16px;
+      position:relative;
       overflow:hidden;
-      transform: translateY(6px);
-      animation: pop .16s ease-out forwards;
     }
-    @keyframes pop{to{transform: translateY(0)}}
-    .modalTop{
-      padding:14px 16px;
-      border-bottom:1px solid rgba(255,255,255,.10);
-      background: linear-gradient(to right, rgba(255,255,255,.05), transparent 55%);
+    .modal::before{
+      content:"";
+      position:absolute; inset:-80px;
+      background: radial-gradient(circle at 30% 10%, rgba(255,255,255,.10), transparent 40%),
+                  radial-gradient(circle at 90% 0%, rgba(255,255,255,.06), transparent 45%);
+      pointer-events:none;
+      filter: blur(2px);
+    }
+    .modal > *{position:relative}
+    .modalHeader{
       display:flex; align-items:center; justify-content:space-between; gap:10px;
+      margin-bottom:10px;
     }
-    .modalTop b{font-size:13px; letter-spacing:.3px}
-    .modalTop button{
-      border:1px solid rgba(255,255,255,.14);
-      background: rgba(12,19,40,.55);
-      color:var(--text);
-      border-radius: 12px;
+    .modalTitle{
+      font-weight:800;
+      letter-spacing:.3px;
+    }
+    .closeBtn{
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.03);
+      color:rgba(255,255,255,.8);
+      border-radius:12px;
       padding:8px 10px;
       cursor:pointer;
-      transition:.15s ease;
+      font-family:var(--mono);
     }
-    .modalTop button:hover{border-color:rgba(255,255,255,.22); transform: translateY(-1px)}
-    .modalBody{padding:14px 16px 16px}
-    .modalBody p{margin:0 0 12px; color:rgba(233,238,255,.86); font-size:13px; line-height:1.45}
+    .modalBody{
+      border:1px solid var(--line);
+      background:rgba(0,0,0,.22);
+      border-radius:16px;
+      padding:12px;
+    }
     .modalBody input{
       width:100%;
-      padding:12px 12px;
-      border-radius: 14px;
-      border:1px solid rgba(255,255,255,.14);
-      background: rgba(12,19,40,.65);
+      background:rgba(255,255,255,.03);
+      border:1px solid rgba(255,255,255,.16);
       color:var(--text);
-      outline:none;
+      padding:14px 12px;
+      border-radius:14px;
       font-size:14px;
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
-      letter-spacing:.6px;
+      font-family:var(--mono);
+      outline:none;
     }
-    .modalBody input:focus{border-color:rgba(122,168,255,.55); box-shadow: 0 0 0 3px rgba(122,168,255,.16)}
-    .modalActions{
-      display:flex; gap:10px; margin-top:12px; justify-content:flex-end;
+    .modalBody input:focus{border-color:rgba(255,255,255,.35)}
+    .modalFoot{
+      display:flex; gap:10px; justify-content:flex-end;
+      margin-top:12px;
     }
     .btn{
-      padding:10px 12px;
-      border-radius: 14px;
-      border:1px solid rgba(255,255,255,.14);
-      background: rgba(12,19,40,.55);
+      border:1px solid rgba(255,255,255,.16);
+      background:rgba(255,255,255,.06);
       color:var(--text);
-      font-weight:700;
+      border-radius:14px;
+      padding:10px 12px;
       cursor:pointer;
-      transition:.15s ease;
+      font-weight:700;
+      letter-spacing:.2px;
     }
-    .btn:hover{transform: translateY(-1px); border-color:rgba(255,255,255,.22)}
+    .btn:hover{background:rgba(255,255,255,.09)}
     .btn.primary{
-      border-color: rgba(122,168,255,.45);
-      background: rgba(122,168,255,.16);
+      background:rgba(255,255,255,.12);
+      border-color:rgba(255,255,255,.20);
     }
-    .msg{
-      margin-top:10px;
-      font-size:12px;
-      color:var(--muted);
-    }
-    .msg.bad{color: var(--bad)}
-    .msg.good{color: var(--good)}
 
-    /* Fullscreen iframe */
-    .frameCover{
-      position:fixed; inset:0; z-index:200;
+    /* Fullscreen iframe stage */
+    .stage{
+      position:fixed; inset:0;
       display:none;
       background:#000;
+      z-index:10000;
     }
-    .frameCover iframe{
-      width:100%; height:100%;
+    .stage.show{display:block}
+    .stage iframe{
+      width:100vw; height:100vh;
       border:0;
       display:block;
-    }
-
-    /* Tiny footer tip */
-    .tip{
-      margin-top:14px;
-      color:rgba(168,179,214,.9);
-      font-size:12px;
-      text-align:center;
-      opacity:.85;
     }
   </style>
 </head>
 <body>
-<header>
-  <div class="top">
-    <div class="brand">
-      <div class="logo" aria-hidden="true"></div>
-      <div class="title">
-        <b>Periodic Table</b>
-        <span>Interactive grid + quick facts (single HTML)</span>
-      </div>
+
+  <header class="topbar">
+    <div class="brand" title="Periodic Table">
+      <span class="dot"></span>
+      <b>PERIODIC</b>
+      <span style="color:var(--muted); font-weight:650; letter-spacing:.2px;">TABLE</span>
     </div>
 
-    <nav class="tabs" aria-label="Navigation tabs">
-      <button class="tab active" data-page="tablePage">Periodic Table</button>
-      <button class="tab" data-page="usesPage">Uses of the Periodic Table</button>
-      <button class="tab" data-page="morePage">More Information</button>
+    <nav class="tabs" role="tablist" aria-label="Sections">
+      <button class="tab" role="tab" aria-selected="true" data-page="page-table">Periodic Table</button>
+      <button class="tab" role="tab" aria-selected="false" data-page="page-uses">Uses</button>
+      <button class="tab" role="tab" aria-selected="false" data-page="page-info">More Information</button>
     </nav>
+  </header>
 
-    <div class="right">
-      <div class="search" title="Search by name, symbol, atomic number or category">
-        <span class="icon">⌕</span>
-        <input id="search" type="text" placeholder="Search: H, Oxygen, 8, noble gas..." autocomplete="off" />
-      </div>
-    </div>
-  </div>
-</header>
+  <!-- PAGE: TABLE -->
+  <main id="page-table" class="page active">
+    <div class="layout">
+      <section class="tableWrap" aria-label="Periodic table">
+        <div id="pt-grid" class="grid"></div>
+      </section>
 
-<main class="wrap">
-  <!-- PAGE 1 -->
-  <section id="tablePage" class="active">
-    <div class="grid2">
-      <div class="card">
-        <div class="cardHeader">
-          <div>
-            <h2>Periodic Table</h2>
-            <p>Click an element to see its details. Search filters the grid instantly.</p>
-          </div>
-          <div class="pill" id="countPill">118 elements</div>
-        </div>
-        <div class="tableWrap">
-          <div id="pt" class="pt" aria-label="Periodic table grid"></div>
-          <div class="tip">Tip: search “lanthanide”, “actinide”, “halogen”, or even “26”.</div>
-        </div>
-      </div>
+      <aside class="side" aria-label="Element details">
+        <h2>Element Details</h2>
 
-      <aside class="card">
-        <div class="cardHeader">
-          <div>
-            <h2>Element Details</h2>
-            <p id="sideHint">Select an element to view facts.</p>
-          </div>
-          <div class="pill" id="selectedPill">None</div>
-        </div>
-
-        <div class="details">
-          <div class="mini">
-            <h3>Quick Facts</h3>
-            <div class="row"><span class="k">Atomic number</span><span class="v" id="dNum">—</span></div>
-            <div class="row"><span class="k">Symbol</span><span class="v" id="dSym">—</span></div>
-            <div class="row"><span class="k">Name</span><span class="v" id="dName">—</span></div>
-            <div class="row"><span class="k">Atomic weight</span><span class="v" id="dWt">—</span></div>
-            <div class="row"><span class="k">Category</span><span class="v" id="dCat">—</span></div>
-            <div class="row"><span class="k">Group / Period</span><span class="v" id="dGP">—</span></div>
+        <div class="card" id="detailCard">
+          <div class="bigSymbol">
+            <div>
+              <div class="sym" id="dSym">H</div>
+              <div style="margin-top:6px; color:rgba(255,255,255,.78);" id="dName">Hydrogen</div>
+            </div>
+            <div class="num" id="dNum">#1</div>
           </div>
 
-          <div class="mini">
-            <h3>Legend (main groups)</h3>
-            <div class="legend">
-              <div class="legItem"><span class="dot alkali"></span>Alkali metal</div>
-              <div class="legItem"><span class="dot alkaline"></span>Alkaline earth</div>
-              <div class="legItem"><span class="dot transition"></span>Transition metal</div>
-              <div class="legItem"><span class="dot post"></span>Post-transition</div>
-              <div class="legItem"><span class="dot metalloid"></span>Metalloid</div>
-              <div class="legItem"><span class="dot nonmetal"></span>Nonmetal</div>
-              <div class="legItem"><span class="dot halogen"></span>Halogen</div>
-              <div class="legItem"><span class="dot noble"></span>Noble gas</div>
-              <div class="legItem"><span class="dot lanth"></span>Lanthanide</div>
-              <div class="legItem"><span class="dot act"></span>Actinide</div>
+          <div class="kv">
+            <div>
+              <div class="k">Atomic mass</div>
+              <div class="v" id="dMass">1.008</div>
+            </div>
+            <div>
+              <div class="k">Category</div>
+              <div class="v" id="dCat">Nonmetal</div>
+            </div>
+
+            <div>
+              <div class="k">Group</div>
+              <div class="v" id="dGroup">1</div>
+            </div>
+            <div>
+              <div class="k">Period</div>
+              <div class="v" id="dPeriod">1</div>
+            </div>
+
+            <div>
+              <div class="k">State (STP)</div>
+              <div class="v" id="dState">Gas</div>
+            </div>
+            <div>
+              <div class="k">Block</div>
+              <div class="v" id="dBlock">s</div>
+            </div>
+
+            <div>
+              <div class="k">Electron config</div>
+              <div class="v" id="dEC">1s1</div>
+            </div>
+            <div>
+              <div class="k">Electronegativity</div>
+              <div class="v" id="dEN">2.20</div>
             </div>
           </div>
 
-          <div class="mini">
-            <h3>What you’re looking at</h3>
-            <div style="font-size:12px;color:rgba(233,238,255,.84);line-height:1.45">
-              The grid is positioned by <b>group (columns 1–18)</b> and <b>period (rows)</b>.
-              Lanthanides and actinides appear in dedicated rows, like most printed tables.
-            </div>
+          <div class="pillRow" id="pillRow"></div>
+        </div>
+
+        <div class="card">
+          <div class="hint">
+            Click any element to show its main properties here.
           </div>
         </div>
       </aside>
     </div>
-  </section>
+  </main>
 
-  <!-- PAGE 2 -->
-  <section id="usesPage">
-    <div class="card">
-      <div class="cardHeader">
-        <div>
-          <h2>Uses of the Periodic Table</h2>
-          <p>Why it’s basically the “map” of chemistry.</p>
-        </div>
-        <div class="pill">Study + real-life</div>
-      </div>
-      <div class="content">
-        <h2>How people actually use it</h2>
+  <!-- PAGE: USES -->
+  <main id="page-uses" class="page">
+    <div class="usesGrid">
+      <section class="panel">
+        <h1>How to use the periodic table</h1>
         <p>
-          The periodic table organizes elements so you can predict behavior without memorizing everything.
-          Elements in the same column (group) often share similar properties because they have similar valence electron patterns.
+          The periodic table organizes elements by atomic number and recurring chemical behavior. It helps you predict
+          valence, bonding tendencies, reactivity patterns, and many physical properties at a glance.
         </p>
 
-        <h3>1) Predicting chemical reactions</h3>
-        <ul>
-          <li>Guessing which elements are likely to form ions (metals → positive, nonmetals → negative).</li>
-          <li>Estimating reactivity trends (alkali metals are famously “too enthusiastic”).</li>
-          <li>Spotting patterns in electronegativity, atomic size, and bonding types.</li>
-        </ul>
-
-        <h3>2) Writing formulas and balancing equations</h3>
-        <ul>
-          <li>Valence patterns + common oxidation states help build correct compound formulas.</li>
-          <li>Knowing atomic weights is essential for mole calculations and stoichiometry.</li>
-        </ul>
-
-        <h3>3) Materials, industry, and engineering</h3>
-        <ul>
-          <li>Choosing metals and alloys (strength, conductivity, corrosion resistance).</li>
-          <li>Electronics (silicon, gallium, rare earths for magnets, screens, and sensors).</li>
-          <li>Medicine and imaging (iodine, technetium, gadolinium, etc.).</li>
-        </ul>
-
-        <div class="callout">
-          <b>Speed tip:</b> If you learn just 5 “zones” (alkali, alkaline earth, transition, halogens, noble gases),
-          you instantly understand a huge chunk of typical exam questions.
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- PAGE 3 -->
-  <section id="morePage">
-    <div class="card">
-      <div class="cardHeader">
-        <div>
-          <h2>More Information</h2>
-          <p>Extra notes, patterns, and… a very specific key sequence.</p>
-        </div>
-        <div class="pill" id="morePill">Listening: OFF</div>
-      </div>
-      <div class="content">
-        <h2>Patterns worth knowing</h2>
-        <p>
-          The periodic table isn’t just a list: it’s a prediction machine.
-          As you move <b>left → right</b>, elements tend to become less metallic and more electronegative.
-          As you move <b>top → bottom</b>, atoms generally get larger and ionization energy tends to drop.
-        </p>
-
-        <h3>Core trend cheatsheet</h3>
-        <ul>
-          <li><b>Atomic radius:</b> increases down a group, decreases across a period.</li>
-          <li><b>Ionization energy:</b> decreases down a group, increases across a period.</li>
-          <li><b>Electronegativity:</b> generally increases across a period, decreases down a group.</li>
-          <li><b>Reactivity:</b> alkali metals increase down the group; halogens decrease down the group.</li>
-        </ul>
-
-        <div class="callout">
-          <b>Hidden action:</b> While on this page, type <span class="kbd">A</span> <span class="kbd">S</span> <span class="kbd">T</span> <span class="kbd">O</span> <span class="kbd">P</span> in order.
-          <div style="margin-top:8px;color:rgba(233,238,255,.85);font-size:12px">
-            Then enter <b>1469</b>, and after that enter the <b>minute+hour code</b> like:
-            if the time is 21:04 → code is <b>0421</b>.
+        <div class="list">
+          <div class="item">
+            <b>Predict common ions and valence</b>
+            <span>Group trends often indicate typical charges (e.g., alkali metals form +1 ions; halogens often form −1).</span>
+          </div>
+          <div class="item">
+            <b>Estimate reactivity</b>
+            <span>Metals get more reactive down a group; nonmetals often become more reactive up a group (with notable exceptions).</span>
+          </div>
+          <div class="item">
+            <b>Understand periodic trends</b>
+            <span>Atomic radius, ionization energy, and electronegativity follow patterns across periods and down groups.</span>
+          </div>
+          <div class="item">
+            <b>Build electron configurations</b>
+            <span>Blocks (s, p, d, f) map to the last filled subshell, which explains many similarities.</span>
+          </div>
+          <div class="item">
+            <b>Choose materials and applications</b>
+            <span>Categories hint at properties: noble gases are inert, alkali metals are highly reactive, transition metals conduct well.</span>
           </div>
         </div>
+      </section>
 
-        <p style="opacity:.85;font-size:12px;margin-top:12px">
-          (Yes, it’s dramatic. But chemistry deserves drama.)
+      <aside class="panel">
+        <h1>Quick legend</h1>
+        <p style="margin-bottom:12px;">The table here uses a monochrome style, but categories still differ subtly in shading.</p>
+        <div class="list" id="legendList"></div>
+      </aside>
+    </div>
+  </main>
+
+  <!-- PAGE: MORE INFO -->
+  <main id="page-info" class="page">
+    <div class="infoLayout">
+      <section class="panel">
+        <h1>More information</h1>
+        <p>
+          Explore how the layout connects to electron shells, families of elements, and the structure of matter.
         </p>
-      </div>
-    </div>
-  </section>
-</main>
+        <div class="list">
+          <div class="item">
+            <b>Groups and periods</b>
+            <span>Groups align with similar outer electron patterns; periods reflect increasing atomic number across a row.</span>
+          </div>
+          <div class="item">
+            <b>Blocks</b>
+            <span>The s, p, d, and f blocks correspond to which subshell is being filled.</span>
+          </div>
+          <div class="item">
+            <b>Families</b>
+            <span>Alkali metals, alkaline earth metals, halogens, and noble gases share strong trends and typical behaviors.</span>
+          </div>
+        </div>
+      </section>
 
-<!-- MODALS -->
-<div id="modalBack" class="modalBack" role="dialog" aria-modal="true" aria-hidden="true">
-  <div class="modal">
-    <div class="modalTop">
-      <b id="modalTitle">Panel</b>
-      <button id="closeModal" aria-label="Close">✕</button>
+      <aside class="panel">
+        <h1>Element browsing</h1>
+        <p>
+          Use the Periodic Table tab to select elements and read their properties in the detail panel.
+        </p>
+        <div class="list">
+          <div class="item">
+            <b>Tip</b>
+            <span>Try scanning across a period and compare how electronegativity changes from left to right.</span>
+          </div>
+          <div class="item">
+            <b>Note</b>
+            <span>Some values vary slightly across references due to measurement methods and conventions.</span>
+          </div>
+        </div>
+      </aside>
     </div>
-    <div class="modalBody">
-      <p id="modalText"></p>
-      <input id="modalInput" type="text" inputmode="numeric" autocomplete="off" />
-      <div class="modalActions">
-        <button class="btn" id="modalCancel">Cancel</button>
-        <button class="btn primary" id="modalOk">OK</button>
+  </main>
+
+  <!-- MODAL OVERLAY (hidden; no on-page hints) -->
+  <div id="overlay" class="overlay" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-label="Prompt">
+      <div class="modalHeader">
+        <div class="modalTitle" id="modalTitle">Enter code</div>
+        <button class="closeBtn" id="closeModal" aria-label="Close">ESC</button>
       </div>
-      <div class="msg" id="modalMsg"></div>
+      <div class="modalBody">
+        <input id="modalInput" type="password" inputmode="numeric" autocomplete="off" placeholder="" />
+      </div>
+      <div class="modalFoot">
+        <button class="btn" id="modalCancel">Cancel</button>
+        <button class="btn primary" id="modalOk">Continue</button>
+      </div>
     </div>
   </div>
-</div>
 
-<!-- FULLSCREEN IFRAME -->
-<div id="frameCover" class="frameCover" aria-hidden="true">
-  <iframe id="secretFrame" src="" title="Full screen content"></iframe>
-</div>
+  <!-- FULLSCREEN IFRAME STAGE -->
+  <div id="stage" class="stage" aria-hidden="true">
+    <iframe id="stageFrame" src="about:blank" referrerpolicy="no-referrer"></iframe>
+  </div>
 
-<script>
-  // -----------------------------
-  // 118 elements dataset (number, symbol, name, weight, group, period, category)
-  // Categories (for tinting/legend):
-  // alkali, alkaline, transition, post, metalloid, nonmetal, halogen, noble, lanthanide, actinide
-  // -----------------------------
-  const elements = [
-    {n:1,  s:"H",  name:"Hydrogen",      w:"1.008",      g:1,  p:1,  cat:"nonmetal"},
-    {n:2,  s:"He", name:"Helium",        w:"4.0026",     g:18, p:1,  cat:"noble"},
-    {n:3,  s:"Li", name:"Lithium",       w:"6.94",       g:1,  p:2,  cat:"alkali"},
-    {n:4,  s:"Be", name:"Beryllium",     w:"9.0122",     g:2,  p:2,  cat:"alkaline"},
-    {n:5,  s:"B",  name:"Boron",         w:"10.81",      g:13, p:2,  cat:"metalloid"},
-    {n:6,  s:"C",  name:"Carbon",        w:"12.011",     g:14, p:2,  cat:"nonmetal"},
-    {n:7,  s:"N",  name:"Nitrogen",      w:"14.007",     g:15, p:2,  cat:"nonmetal"},
-    {n:8,  s:"O",  name:"Oxygen",        w:"15.999",     g:16, p:2,  cat:"nonmetal"},
-    {n:9,  s:"F",  name:"Fluorine",      w:"18.998",     g:17, p:2,  cat:"halogen"},
-    {n:10, s:"Ne", name:"Neon",          w:"20.180",     g:18, p:2,  cat:"noble"},
+  <script>
+    // ---------------------------
+    // DATA (118 elements, positions, basic properties)
+    // ---------------------------
+    const elements = [
+      // Z, Symbol, Name, AtomicMass, Group, Period, Block, Category, State(STP), EN, ElectronConfig, x (group), y (periodRow)
+      [1,"H","Hydrogen","1.008",1,1,"s","nonmetal","gas","2.20","1s1",1,1],
+      [2,"He","Helium","4.0026",18,1,"s","noble gas","gas","—","1s2",18,1],
 
-    {n:11, s:"Na", name:"Sodium",        w:"22.990",     g:1,  p:3,  cat:"alkali"},
-    {n:12, s:"Mg", name:"Magnesium",     w:"24.305",     g:2,  p:3,  cat:"alkaline"},
-    {n:13, s:"Al", name:"Aluminum",      w:"26.982",     g:13, p:3,  cat:"post"},
-    {n:14, s:"Si", name:"Silicon",       w:"28.085",     g:14, p:3,  cat:"metalloid"},
-    {n:15, s:"P",  name:"Phosphorus",    w:"30.974",     g:15, p:3,  cat:"nonmetal"},
-    {n:16, s:"S",  name:"Sulfur",        w:"32.06",      g:16, p:3,  cat:"nonmetal"},
-    {n:17, s:"Cl", name:"Chlorine",      w:"35.45",      g:17, p:3,  cat:"halogen"},
-    {n:18, s:"Ar", name:"Argon",         w:"39.948",     g:18, p:3,  cat:"noble"},
+      [3,"Li","Lithium","6.94",1,2,"s","alkali metal","solid","0.98","[He] 2s1",1,2],
+      [4,"Be","Beryllium","9.0122",2,2,"s","alkaline earth metal","solid","1.57","[He] 2s2",2,2],
+      [5,"B","Boron","10.81",13,2,"p","metalloid","solid","2.04","[He] 2s2 2p1",13,2],
+      [6,"C","Carbon","12.011",14,2,"p","nonmetal","solid","2.55","[He] 2s2 2p2",14,2],
+      [7,"N","Nitrogen","14.007",15,2,"p","nonmetal","gas","3.04","[He] 2s2 2p3",15,2],
+      [8,"O","Oxygen","15.999",16,2,"p","nonmetal","gas","3.44","[He] 2s2 2p4",16,2],
+      [9,"F","Fluorine","18.998",17,2,"p","halogen","gas","3.98","[He] 2s2 2p5",17,2],
+      [10,"Ne","Neon","20.180",18,2,"p","noble gas","gas","—","[He] 2s2 2p6",18,2],
 
-    {n:19, s:"K",  name:"Potassium",     w:"39.098",     g:1,  p:4,  cat:"alkali"},
-    {n:20, s:"Ca", name:"Calcium",       w:"40.078",     g:2,  p:4,  cat:"alkaline"},
-    {n:21, s:"Sc", name:"Scandium",      w:"44.956",     g:3,  p:4,  cat:"transition"},
-    {n:22, s:"Ti", name:"Titanium",      w:"47.867",     g:4,  p:4,  cat:"transition"},
-    {n:23, s:"V",  name:"Vanadium",      w:"50.942",     g:5,  p:4,  cat:"transition"},
-    {n:24, s:"Cr", name:"Chromium",      w:"51.996",     g:6,  p:4,  cat:"transition"},
-    {n:25, s:"Mn", name:"Manganese",     w:"54.938",     g:7,  p:4,  cat:"transition"},
-    {n:26, s:"Fe", name:"Iron",          w:"55.845",     g:8,  p:4,  cat:"transition"},
-    {n:27, s:"Co", name:"Cobalt",        w:"58.933",     g:9,  p:4,  cat:"transition"},
-    {n:28, s:"Ni", name:"Nickel",        w:"58.693",     g:10, p:4,  cat:"transition"},
-    {n:29, s:"Cu", name:"Copper",        w:"63.546",     g:11, p:4,  cat:"transition"},
-    {n:30, s:"Zn", name:"Zinc",          w:"65.38",      g:12, p:4,  cat:"transition"},
-    {n:31, s:"Ga", name:"Gallium",       w:"69.723",     g:13, p:4,  cat:"post"},
-    {n:32, s:"Ge", name:"Germanium",     w:"72.630",     g:14, p:4,  cat:"metalloid"},
-    {n:33, s:"As", name:"Arsenic",       w:"74.922",     g:15, p:4,  cat:"metalloid"},
-    {n:34, s:"Se", name:"Selenium",      w:"78.971",     g:16, p:4,  cat:"nonmetal"},
-    {n:35, s:"Br", name:"Bromine",       w:"79.904",     g:17, p:4,  cat:"halogen"},
-    {n:36, s:"Kr", name:"Krypton",       w:"83.798",     g:18, p:4,  cat:"noble"},
+      [11,"Na","Sodium","22.990",1,3,"s","alkali metal","solid","0.93","[Ne] 3s1",1,3],
+      [12,"Mg","Magnesium","24.305",2,3,"s","alkaline earth metal","solid","1.31","[Ne] 3s2",2,3],
+      [13,"Al","Aluminium","26.982",13,3,"p","post-transition metal","solid","1.61","[Ne] 3s2 3p1",13,3],
+      [14,"Si","Silicon","28.085",14,3,"p","metalloid","solid","1.90","[Ne] 3s2 3p2",14,3],
+      [15,"P","Phosphorus","30.974",15,3,"p","nonmetal","solid","2.19","[Ne] 3s2 3p3",15,3],
+      [16,"S","Sulfur","32.06",16,3,"p","nonmetal","solid","2.58","[Ne] 3s2 3p4",16,3],
+      [17,"Cl","Chlorine","35.45",17,3,"p","halogen","gas","3.16","[Ne] 3s2 3p5",17,3],
+      [18,"Ar","Argon","39.948",18,3,"p","noble gas","gas","—","[Ne] 3s2 3p6",18,3],
 
-    {n:37, s:"Rb", name:"Rubidium",      w:"85.468",     g:1,  p:5,  cat:"alkali"},
-    {n:38, s:"Sr", name:"Strontium",     w:"87.62",      g:2,  p:5,  cat:"alkaline"},
-    {n:39, s:"Y",  name:"Yttrium",       w:"88.906",     g:3,  p:5,  cat:"transition"},
-    {n:40, s:"Zr", name:"Zirconium",     w:"91.224",     g:4,  p:5,  cat:"transition"},
-    {n:41, s:"Nb", name:"Niobium",       w:"92.906",     g:5,  p:5,  cat:"transition"},
-    {n:42, s:"Mo", name:"Molybdenum",    w:"95.95",      g:6,  p:5,  cat:"transition"},
-    {n:43, s:"Tc", name:"Technetium",    w:"(98)",       g:7,  p:5,  cat:"transition"},
-    {n:44, s:"Ru", name:"Ruthenium",     w:"101.07",     g:8,  p:5,  cat:"transition"},
-    {n:45, s:"Rh", name:"Rhodium",       w:"102.91",     g:9,  p:5,  cat:"transition"},
-    {n:46, s:"Pd", name:"Palladium",     w:"106.42",     g:10, p:5,  cat:"transition"},
-    {n:47, s:"Ag", name:"Silver",        w:"107.87",     g:11, p:5,  cat:"transition"},
-    {n:48, s:"Cd", name:"Cadmium",       w:"112.41",     g:12, p:5,  cat:"transition"},
-    {n:49, s:"In", name:"Indium",        w:"114.82",     g:13, p:5,  cat:"post"},
-    {n:50, s:"Sn", name:"Tin",           w:"118.71",     g:14, p:5,  cat:"post"},
-    {n:51, s:"Sb", name:"Antimony",      w:"121.76",     g:15, p:5,  cat:"metalloid"},
-    {n:52, s:"Te", name:"Tellurium",     w:"127.60",     g:16, p:5,  cat:"metalloid"},
-    {n:53, s:"I",  name:"Iodine",        w:"126.90",     g:17, p:5,  cat:"halogen"},
-    {n:54, s:"Xe", name:"Xenon",         w:"131.29",     g:18, p:5,  cat:"noble"},
+      [19,"K","Potassium","39.098",1,4,"s","alkali metal","solid","0.82","[Ar] 4s1",1,4],
+      [20,"Ca","Calcium","40.078",2,4,"s","alkaline earth metal","solid","1.00","[Ar] 4s2",2,4],
+      [21,"Sc","Scandium","44.956",3,4,"d","transition metal","solid","1.36","[Ar] 3d1 4s2",3,4],
+      [22,"Ti","Titanium","47.867",4,4,"d","transition metal","solid","1.54","[Ar] 3d2 4s2",4,4],
+      [23,"V","Vanadium","50.942",5,4,"d","transition metal","solid","1.63","[Ar] 3d3 4s2",5,4],
+      [24,"Cr","Chromium","51.996",6,4,"d","transition metal","solid","1.66","[Ar] 3d5 4s1",6,4],
+      [25,"Mn","Manganese","54.938",7,4,"d","transition metal","solid","1.55","[Ar] 3d5 4s2",7,4],
+      [26,"Fe","Iron","55.845",8,4,"d","transition metal","solid","1.83","[Ar] 3d6 4s2",8,4],
+      [27,"Co","Cobalt","58.933",9,4,"d","transition metal","solid","1.88","[Ar] 3d7 4s2",9,4],
+      [28,"Ni","Nickel","58.693",10,4,"d","transition metal","solid","1.91","[Ar] 3d8 4s2",10,4],
+      [29,"Cu","Copper","63.546",11,4,"d","transition metal","solid","1.90","[Ar] 3d10 4s1",11,4],
+      [30,"Zn","Zinc","65.38",12,4,"d","transition metal","solid","1.65","[Ar] 3d10 4s2",12,4],
+      [31,"Ga","Gallium","69.723",13,4,"p","post-transition metal","solid","1.81","[Ar] 3d10 4s2 4p1",13,4],
+      [32,"Ge","Germanium","72.630",14,4,"p","metalloid","solid","2.01","[Ar] 3d10 4s2 4p2",14,4],
+      [33,"As","Arsenic","74.922",15,4,"p","metalloid","solid","2.18","[Ar] 3d10 4s2 4p3",15,4],
+      [34,"Se","Selenium","78.971",16,4,"p","nonmetal","solid","2.55","[Ar] 3d10 4s2 4p4",16,4],
+      [35,"Br","Bromine","79.904",17,4,"p","halogen","liquid","2.96","[Ar] 3d10 4s2 4p5",17,4],
+      [36,"Kr","Krypton","83.798",18,4,"p","noble gas","gas","3.00","[Ar] 3d10 4s2 4p6",18,4],
 
-    {n:55, s:"Cs", name:"Cesium",        w:"132.91",     g:1,  p:6,  cat:"alkali"},
-    {n:56, s:"Ba", name:"Barium",        w:"137.33",     g:2,  p:6,  cat:"alkaline"},
-    {n:57, s:"La", name:"Lanthanum",     w:"138.91",     g:3,  p:6,  cat:"lanthanide"},
-    {n:72, s:"Hf", name:"Hafnium",       w:"178.49",     g:4,  p:6,  cat:"transition"},
-    {n:73, s:"Ta", name:"Tantalum",      w:"180.95",     g:5,  p:6,  cat:"transition"},
-    {n:74, s:"W",  name:"Tungsten",      w:"183.84",     g:6,  p:6,  cat:"transition"},
-    {n:75, s:"Re", name:"Rhenium",       w:"186.21",     g:7,  p:6,  cat:"transition"},
-    {n:76, s:"Os", name:"Osmium",        w:"190.23",     g:8,  p:6,  cat:"transition"},
-    {n:77, s:"Ir", name:"Iridium",       w:"192.22",     g:9,  p:6,  cat:"transition"},
-    {n:78, s:"Pt", name:"Platinum",      w:"195.08",     g:10, p:6,  cat:"transition"},
-    {n:79, s:"Au", name:"Gold",          w:"196.97",     g:11, p:6,  cat:"transition"},
-    {n:80, s:"Hg", name:"Mercury",       w:"200.59",     g:12, p:6,  cat:"transition"},
-    {n:81, s:"Tl", name:"Thallium",      w:"204.38",     g:13, p:6,  cat:"post"},
-    {n:82, s:"Pb", name:"Lead",          w:"207.2",      g:14, p:6,  cat:"post"},
-    {n:83, s:"Bi", name:"Bismuth",       w:"208.98",     g:15, p:6,  cat:"post"},
-    {n:84, s:"Po", name:"Polonium",      w:"(209)",      g:16, p:6,  cat:"post"},
-    {n:85, s:"At", name:"Astatine",      w:"(210)",      g:17, p:6,  cat:"halogen"},
-    {n:86, s:"Rn", name:"Radon",         w:"(222)",      g:18, p:6,  cat:"noble"},
+      [37,"Rb","Rubidium","85.468",1,5,"s","alkali metal","solid","0.82","[Kr] 5s1",1,5],
+      [38,"Sr","Strontium","87.62",2,5,"s","alkaline earth metal","solid","0.95","[Kr] 5s2",2,5],
+      [39,"Y","Yttrium","88.906",3,5,"d","transition metal","solid","1.22","[Kr] 4d1 5s2",3,5],
+      [40,"Zr","Zirconium","91.224",4,5,"d","transition metal","solid","1.33","[Kr] 4d2 5s2",4,5],
+      [41,"Nb","Niobium","92.906",5,5,"d","transition metal","solid","1.60","[Kr] 4d4 5s1",5,5],
+      [42,"Mo","Molybdenum","95.95",6,5,"d","transition metal","solid","2.16","[Kr] 4d5 5s1",6,5],
+      [43,"Tc","Technetium","(98)",7,5,"d","transition metal","solid","1.90","[Kr] 4d5 5s2",7,5],
+      [44,"Ru","Ruthenium","101.07",8,5,"d","transition metal","solid","2.20","[Kr] 4d7 5s1",8,5],
+      [45,"Rh","Rhodium","102.91",9,5,"d","transition metal","solid","2.28","[Kr] 4d8 5s1",9,5],
+      [46,"Pd","Palladium","106.42",10,5,"d","transition metal","solid","2.20","[Kr] 4d10",10,5],
+      [47,"Ag","Silver","107.87",11,5,"d","transition metal","solid","1.93","[Kr] 4d10 5s1",11,5],
+      [48,"Cd","Cadmium","112.41",12,5,"d","transition metal","solid","1.69","[Kr] 4d10 5s2",12,5],
+      [49,"In","Indium","114.82",13,5,"p","post-transition metal","solid","1.78","[Kr] 4d10 5s2 5p1",13,5],
+      [50,"Sn","Tin","118.71",14,5,"p","post-transition metal","solid","1.96","[Kr] 4d10 5s2 5p2",14,5],
+      [51,"Sb","Antimony","121.76",15,5,"p","metalloid","solid","2.05","[Kr] 4d10 5s2 5p3",15,5],
+      [52,"Te","Tellurium","127.60",16,5,"p","metalloid","solid","2.10","[Kr] 4d10 5s2 5p4",16,5],
+      [53,"I","Iodine","126.90",17,5,"p","halogen","solid","2.66","[Kr] 4d10 5s2 5p5",17,5],
+      [54,"Xe","Xenon","131.29",18,5,"p","noble gas","gas","2.60","[Kr] 4d10 5s2 5p6",18,5],
 
-    {n:87, s:"Fr", name:"Francium",      w:"(223)",      g:1,  p:7,  cat:"alkali"},
-    {n:88, s:"Ra", name:"Radium",        w:"(226)",      g:2,  p:7,  cat:"alkaline"},
-    {n:89, s:"Ac", name:"Actinium",      w:"(227)",      g:3,  p:7,  cat:"actinide"},
-    {n:104,s:"Rf", name:"Rutherfordium", w:"(267)",      g:4,  p:7,  cat:"transition"},
-    {n:105,s:"Db", name:"Dubnium",       w:"(268)",      g:5,  p:7,  cat:"transition"},
-    {n:106,s:"Sg", name:"Seaborgium",    w:"(269)",      g:6,  p:7,  cat:"transition"},
-    {n:107,s:"Bh", name:"Bohrium",       w:"(270)",      g:7,  p:7,  cat:"transition"},
-    {n:108,s:"Hs", name:"Hassium",       w:"(270)",      g:8,  p:7,  cat:"transition"},
-    {n:109,s:"Mt", name:"Meitnerium",    w:"(278)",      g:9,  p:7,  cat:"transition"},
-    {n:110,s:"Ds", name:"Darmstadtium",  w:"(281)",      g:10, p:7,  cat:"transition"},
-    {n:111,s:"Rg", name:"Roentgenium",   w:"(282)",      g:11, p:7,  cat:"transition"},
-    {n:112,s:"Cn", name:"Copernicium",   w:"(285)",      g:12, p:7,  cat:"transition"},
-    {n:113,s:"Nh", name:"Nihonium",      w:"(286)",      g:13, p:7,  cat:"post"},
-    {n:114,s:"Fl", name:"Flerovium",     w:"(289)",      g:14, p:7,  cat:"post"},
-    {n:115,s:"Mc", name:"Moscovium",     w:"(290)",      g:15, p:7,  cat:"post"},
-    {n:116,s:"Lv", name:"Livermorium",   w:"(293)",      g:16, p:7,  cat:"post"},
-    {n:117,s:"Ts", name:"Tennessine",    w:"(294)",      g:17, p:7,  cat:"halogen"},
-    {n:118,s:"Og", name:"Oganesson",     w:"(294)",      g:18, p:7,  cat:"noble"},
-  ];
+      [55,"Cs","Caesium","132.91",1,6,"s","alkali metal","solid","0.79","[Xe] 6s1",1,6],
+      [56,"Ba","Barium","137.33",2,6,"s","alkaline earth metal","solid","0.89","[Xe] 6s2",2,6],
 
-  // Lanthanides and Actinides rows (shown separately):
-  const lanthanides = [
-    {n:57, s:"La", name:"Lanthanum", w:"138.91", cat:"lanthanide"},
-    {n:58, s:"Ce", name:"Cerium", w:"140.12", cat:"lanthanide"},
-    {n:59, s:"Pr", name:"Praseodymium", w:"140.91", cat:"lanthanide"},
-    {n:60, s:"Nd", name:"Neodymium", w:"144.24", cat:"lanthanide"},
-    {n:61, s:"Pm", name:"Promethium", w:"(145)", cat:"lanthanide"},
-    {n:62, s:"Sm", name:"Samarium", w:"150.36", cat:"lanthanide"},
-    {n:63, s:"Eu", name:"Europium", w:"151.96", cat:"lanthanide"},
-    {n:64, s:"Gd", name:"Gadolinium", w:"157.25", cat:"lanthanide"},
-    {n:65, s:"Tb", name:"Terbium", w:"158.93", cat:"lanthanide"},
-    {n:66, s:"Dy", name:"Dysprosium", w:"162.50", cat:"lanthanide"},
-    {n:67, s:"Ho", name:"Holmium", w:"164.93", cat:"lanthanide"},
-    {n:68, s:"Er", name:"Erbium", w:"167.26", cat:"lanthanide"},
-    {n:69, s:"Tm", name:"Thulium", w:"168.93", cat:"lanthanide"},
-    {n:70, s:"Yb", name:"Ytterbium", w:"173.05", cat:"lanthanide"},
-    {n:71, s:"Lu", name:"Lutetium", w:"174.97", cat:"lanthanide"},
-  ];
+      // Lanthanides row (shown in separate f-block row)
+      [57,"La","Lanthanum","138.91",3,6,"f","lanthanide","solid","1.10","[Xe] 5d1 6s2",3,8],
+      [58,"Ce","Cerium","140.12",3,6,"f","lanthanide","solid","1.12","[Xe] 4f1 5d1 6s2",4,8],
+      [59,"Pr","Praseodymium","140.91",3,6,"f","lanthanide","solid","1.13","[Xe] 4f3 6s2",5,8],
+      [60,"Nd","Neodymium","144.24",3,6,"f","lanthanide","solid","1.14","[Xe] 4f4 6s2",6,8],
+      [61,"Pm","Promethium","(145)",3,6,"f","lanthanide","solid","1.13","[Xe] 4f5 6s2",7,8],
+      [62,"Sm","Samarium","150.36",3,6,"f","lanthanide","solid","1.17","[Xe] 4f6 6s2",8,8],
+      [63,"Eu","Europium","151.96",3,6,"f","lanthanide","solid","1.20","[Xe] 4f7 6s2",9,8],
+      [64,"Gd","Gadolinium","157.25",3,6,"f","lanthanide","solid","1.20","[Xe] 4f7 5d1 6s2",10,8],
+      [65,"Tb","Terbium","158.93",3,6,"f","lanthanide","solid","1.20","[Xe] 4f9 6s2",11,8],
+      [66,"Dy","Dysprosium","162.50",3,6,"f","lanthanide","solid","1.22","[Xe] 4f10 6s2",12,8],
+      [67,"Ho","Holmium","164.93",3,6,"f","lanthanide","solid","1.23","[Xe] 4f11 6s2",13,8],
+      [68,"Er","Erbium","167.26",3,6,"f","lanthanide","solid","1.24","[Xe] 4f12 6s2",14,8],
+      [69,"Tm","Thulium","168.93",3,6,"f","lanthanide","solid","1.25","[Xe] 4f13 6s2",15,8],
+      [70,"Yb","Ytterbium","173.05",3,6,"f","lanthanide","solid","1.10","[Xe] 4f14 6s2",16,8],
+      [71,"Lu","Lutetium","174.97",3,6,"d","lanthanide","solid","1.27","[Xe] 4f14 5d1 6s2",17,8],
 
-  const actinides = [
-    {n:89, s:"Ac", name:"Actinium", w:"(227)", cat:"actinide"},
-    {n:90, s:"Th", name:"Thorium", w:"232.04", cat:"actinide"},
-    {n:91, s:"Pa", name:"Protactinium", w:"231.04", cat:"actinide"},
-    {n:92, s:"U",  name:"Uranium", w:"238.03", cat:"actinide"},
-    {n:93, s:"Np", name:"Neptunium", w:"(237)", cat:"actinide"},
-    {n:94, s:"Pu", name:"Plutonium", w:"(244)", cat:"actinide"},
-    {n:95, s:"Am", name:"Americium", w:"(243)", cat:"actinide"},
-    {n:96, s:"Cm", name:"Curium", w:"(247)", cat:"actinide"},
-    {n:97, s:"Bk", name:"Berkelium", w:"(247)", cat:"actinide"},
-    {n:98, s:"Cf", name:"Californium", w:"(251)", cat:"actinide"},
-    {n:99, s:"Es", name:"Einsteinium", w:"(252)", cat:"actinide"},
-    {n:100,s:"Fm", name:"Fermium", w:"(257)", cat:"actinide"},
-    {n:101,s:"Md", name:"Mendelevium", w:"(258)", cat:"actinide"},
-    {n:102,s:"No", name:"Nobelium", w:"(259)", cat:"actinide"},
-    {n:103,s:"Lr", name:"Lawrencium", w:"(266)", cat:"actinide"},
-  ];
+      [72,"Hf","Hafnium","178.49",4,6,"d","transition metal","solid","1.30","[Xe] 4f14 5d2 6s2",4,6],
+      [73,"Ta","Tantalum","180.95",5,6,"d","transition metal","solid","1.50","[Xe] 4f14 5d3 6s2",5,6],
+      [74,"W","Tungsten","183.84",6,6,"d","transition metal","solid","2.36","[Xe] 4f14 5d4 6s2",6,6],
+      [75,"Re","Rhenium","186.21",7,6,"d","transition metal","solid","1.90","[Xe] 4f14 5d5 6s2",7,6],
+      [76,"Os","Osmium","190.23",8,6,"d","transition metal","solid","2.20","[Xe] 4f14 5d6 6s2",8,6],
+      [77,"Ir","Iridium","192.22",9,6,"d","transition metal","solid","2.20","[Xe] 4f14 5d7 6s2",9,6],
+      [78,"Pt","Platinum","195.08",10,6,"d","transition metal","solid","2.28","[Xe] 4f14 5d9 6s1",10,6],
+      [79,"Au","Gold","196.97",11,6,"d","transition metal","solid","2.54","[Xe] 4f14 5d10 6s1",11,6],
+      [80,"Hg","Mercury","200.59",12,6,"d","transition metal","liquid","2.00","[Xe] 4f14 5d10 6s2",12,6],
+      [81,"Tl","Thallium","204.38",13,6,"p","post-transition metal","solid","1.62","[Xe] 4f14 5d10 6s2 6p1",13,6],
+      [82,"Pb","Lead","207.2",14,6,"p","post-transition metal","solid","2.33","[Xe] 4f14 5d10 6s2 6p2",14,6],
+      [83,"Bi","Bismuth","208.98",15,6,"p","post-transition metal","solid","2.02","[Xe] 4f14 5d10 6s2 6p3",15,6],
+      [84,"Po","Polonium","(209)",16,6,"p","metalloid","solid","2.00","[Xe] 4f14 5d10 6s2 6p4",16,6],
+      [85,"At","Astatine","(210)",17,6,"p","halogen","solid","2.20","[Xe] 4f14 5d10 6s2 6p5",17,6],
+      [86,"Rn","Radon","(222)",18,6,"p","noble gas","gas","—","[Xe] 4f14 5d10 6s2 6p6",18,6],
 
-  // Helper to fill missing elements in main table list for 57/89 entries already present in elements array
-  // We'll use a map for quick lookup
-  const elByNumber = new Map();
-  for (const e of elements) elByNumber.set(e.n, e);
+      [87,"Fr","Francium","(223)",1,7,"s","alkali metal","solid","0.70","[Rn] 7s1",1,7],
+      [88,"Ra","Radium","(226)",2,7,"s","alkaline earth metal","solid","0.90","[Rn] 7s2",2,7],
 
-  // Add missing 58-71 into the global map for details
-  for (const e of lanthanides.slice(1)) { // from Ce
-    elByNumber.set(e.n, { ...e, g: null, p: null });
-  }
-  // Add missing 90-103 into the global map
-  for (const e of actinides.slice(1)) {
-    elByNumber.set(e.n, { ...e, g: null, p: null });
-  }
+      // Actinides row
+      [89,"Ac","Actinium","(227)",3,7,"f","actinide","solid","1.10","[Rn] 6d1 7s2",3,9],
+      [90,"Th","Thorium","232.04",3,7,"f","actinide","solid","1.30","[Rn] 6d2 7s2",4,9],
+      [91,"Pa","Protactinium","231.04",3,7,"f","actinide","solid","1.50","[Rn] 5f2 6d1 7s2",5,9],
+      [92,"U","Uranium","238.03",3,7,"f","actinide","solid","1.38","[Rn] 5f3 6d1 7s2",6,9],
+      [93,"Np","Neptunium","(237)",3,7,"f","actinide","solid","1.36","[Rn] 5f4 6d1 7s2",7,9],
+      [94,"Pu","Plutonium","(244)",3,7,"f","actinide","solid","1.28","[Rn] 5f6 7s2",8,9],
+      [95,"Am","Americium","(243)",3,7,"f","actinide","solid","1.13","[Rn] 5f7 7s2",9,9],
+      [96,"Cm","Curium","(247)",3,7,"f","actinide","solid","1.28","[Rn] 5f7 6d1 7s2",10,9],
+      [97,"Bk","Berkelium","(247)",3,7,"f","actinide","solid","1.30","[Rn] 5f9 7s2",11,9],
+      [98,"Cf","Californium","(251)",3,7,"f","actinide","solid","1.30","[Rn] 5f10 7s2",12,9],
+      [99,"Es","Einsteinium","(252)",3,7,"f","actinide","solid","1.30","[Rn] 5f11 7s2",13,9],
+      [100,"Fm","Fermium","(257)",3,7,"f","actinide","solid","1.30","[Rn] 5f12 7s2",14,9],
+      [101,"Md","Mendelevium","(258)",3,7,"f","actinide","solid","1.30","[Rn] 5f13 7s2",15,9],
+      [102,"No","Nobelium","(259)",3,7,"f","actinide","solid","1.30","[Rn] 5f14 7s2",16,9],
+      [103,"Lr","Lawrencium","(266)",3,7,"d","actinide","solid","—","[Rn] 5f14 7s2 7p1",17,9],
 
-  // For accurate placement in main grid, we need the main-table elements ordered by period/group positions.
-  // We'll place them using p (period) and g (group). Lanthanides/actinides appear as La/Ac in main table.
-  const grid = document.getElementById("pt");
+      [104,"Rf","Rutherfordium","(267)",4,7,"d","transition metal","solid","—","[Rn] 5f14 6d2 7s2",4,7],
+      [105,"Db","Dubnium","(268)",5,7,"d","transition metal","solid","—","[Rn] 5f14 6d3 7s2",5,7],
+      [106,"Sg","Seaborgium","(269)",6,7,"d","transition metal","solid","—","[Rn] 5f14 6d4 7s2",6,7],
+      [107,"Bh","Bohrium","(270)",7,7,"d","transition metal","solid","—","[Rn] 5f14 6d5 7s2",7,7],
+      [108,"Hs","Hassium","(277)",8,7,"d","transition metal","solid","—","[Rn] 5f14 6d6 7s2",8,7],
+      [109,"Mt","Meitnerium","(278)",9,7,"d","transition metal","solid","—","[Rn] 5f14 6d7 7s2",9,7],
+      [110,"Ds","Darmstadtium","(281)",10,7,"d","transition metal","solid","—","[Rn] 5f14 6d9 7s1",10,7],
+      [111,"Rg","Roentgenium","(282)",11,7,"d","transition metal","solid","—","[Rn] 5f14 6d10 7s1",11,7],
+      [112,"Cn","Copernicium","(285)",12,7,"d","transition metal","solid","—","[Rn] 5f14 6d10 7s2",12,7],
+      [113,"Nh","Nihonium","(286)",13,7,"p","post-transition metal","solid","—","[Rn] 5f14 6d10 7s2 7p1",13,7],
+      [114,"Fl","Flerovium","(289)",14,7,"p","post-transition metal","solid","—","[Rn] 5f14 6d10 7s2 7p2",14,7],
+      [115,"Mc","Moscovium","(290)",15,7,"p","post-transition metal","solid","—","[Rn] 5f14 6d10 7s2 7p3",15,7],
+      [116,"Lv","Livermorium","(293)",16,7,"p","post-transition metal","solid","—","[Rn] 5f14 6d10 7s2 7p4",16,7],
+      [117,"Ts","Tennessine","(294)",17,7,"p","halogen","solid","—","[Rn] 5f14 6d10 7s2 7p5",17,7],
+      [118,"Og","Oganesson","(294)",18,7,"p","noble gas","gas","—","[Rn] 5f14 6d10 7s2 7p6",18,7],
+    ];
 
-  function catClass(cat){
-    switch(cat){
-      case "alkali": return "cat-alkali";
-      case "alkaline": return "cat-alkaline";
-      case "transition": return "cat-transition";
-      case "post": return "cat-post";
-      case "metalloid": return "cat-metalloid";
-      case "nonmetal": return "cat-nonmetal";
-      case "halogen": return "cat-halogen";
-      case "noble": return "cat-noble";
-      case "lanthanide": return "cat-lanth";
-      case "actinide": return "cat-act";
-      default: return "";
-    }
-  }
+    const categoryClass = (cat) => {
+      const c = cat.toLowerCase();
+      if (c.includes("alkali")) return "cat-alkali";
+      if (c.includes("alkaline")) return "cat-alkaline";
+      if (c.includes("transition")) return "cat-transition";
+      if (c.includes("post-transition")) return "cat-post";
+      if (c.includes("metalloid")) return "cat-metalloid";
+      if (c.includes("nonmetal")) return "cat-nonmetal";
+      if (c.includes("halogen")) return "cat-halogen";
+      if (c.includes("noble")) return "cat-noble";
+      if (c.includes("lanthanide")) return "cat-lanth";
+      if (c.includes("actinide")) return "cat-act";
+      return "";
+    };
 
-  function buildTable(){
-    grid.innerHTML = "";
+    const categoryLabel = (cat) => {
+      // nicer capitalization
+      return cat.split(" ").map(w=>w[0].toUpperCase()+w.slice(1)).join(" ");
+    };
 
-    // Create a placement map by "p,g"
-    const place = new Map();
+    // ---------------------------
+    // Build periodic table grid (18x10) with empty placeholders
+    // ---------------------------
+    const grid = document.getElementById("pt-grid");
+
+    // Create a map by (x,y) position
+    const posMap = new Map();
     for (const e of elements){
-      if (e.p && e.g) place.set(`${e.p},${e.g}`, e);
+      const x = e[11], y = e[12];
+      posMap.set(`${x},${y}`, e);
     }
 
-    // Periods 1..7 each has groups 1..18
-    for (let p=1; p<=7; p++){
-      for (let g=1; g<=18; g++){
-        const key = `${p},${g}`;
-        const e = place.get(key);
-        if (!e){
+    // We will also add placeholders for "lanthanides / actinides" label cells
+    // Place "57–71" at (1,8) and "89–103" at (1,9) as subtle guides (no extra text outside table)
+    const specialCells = new Map([
+      ["1,8", {label:"57–71", sub:"Lanthanides"}],
+      ["1,9", {label:"89–103", sub:"Actinides"}],
+    ]);
+
+    // Fill 18 columns x 10 rows
+    for (let y=1; y<=10; y++){
+      for (let x=1; x<=18; x++){
+        const key = `${x},${y}`;
+        if (posMap.has(key)){
+          const e = posMap.get(key);
+          const [Z,sym,name,mass,group,period,block,cat,state,en,ec] = e;
+          const btn = document.createElement("div");
+          btn.className = `el ${categoryClass(cat)}`;
+          btn.tabIndex = 0;
+          btn.dataset.z = Z;
+          btn.dataset.sym = sym;
+          btn.dataset.name = name;
+          btn.dataset.mass = mass;
+          btn.dataset.group = group;
+          btn.dataset.period = period;
+          btn.dataset.block = block;
+          btn.dataset.cat = cat;
+          btn.dataset.state = state;
+          btn.dataset.en = en;
+          btn.dataset.ec = ec;
+
+          btn.innerHTML = `
+            <div class="num">${Z}</div>
+            <div class="sym">${sym}</div>
+            <div class="name">${name}</div>
+            <div class="mass">${mass}</div>
+          `;
+          btn.addEventListener("click", ()=>selectElement(btn));
+          btn.addEventListener("keydown", (ev)=>{
+            if(ev.key==="Enter" || ev.key===" "){ ev.preventDefault(); selectElement(btn); }
+          });
+          grid.appendChild(btn);
+        } else if (specialCells.has(key)){
+          const s = specialCells.get(key);
           const d = document.createElement("div");
-          d.className = "el empty";
+          d.className = "cell";
+          d.style.display = "flex";
+          d.style.alignItems = "center";
+          d.style.justifyContent = "center";
+          d.style.flexDirection = "column";
+          d.style.gap = "4px";
+          d.style.borderStyle = "dashed";
+          d.style.background = "rgba(255,255,255,.015)";
+          d.innerHTML = `
+            <div style="font-family:var(--mono); color:rgba(255,255,255,.78); font-weight:800;">${s.label}</div>
+            <div style="font-size:11px; color:rgba(255,255,255,.62); letter-spacing:.2px;">${s.sub}</div>
+          `;
           grid.appendChild(d);
-          continue;
+        } else {
+          const empty = document.createElement("div");
+          empty.className = "cell";
+          empty.style.opacity = (y>=8 ? .55 : .85);
+          grid.appendChild(empty);
         }
-
-        const cell = document.createElement("div");
-        cell.className = `el ${catClass(e.cat)}`;
-        cell.dataset.num = e.n;
-        cell.dataset.sym = e.s;
-        cell.dataset.name = e.name;
-        cell.dataset.cat = e.cat;
-
-        cell.innerHTML = `
-          <div class="n">${e.n}</div>
-          <div class="s">${e.s}</div>
-          <div class="name">${e.name}</div>
-          <div class="w">${e.w}</div>
-        `;
-        cell.addEventListener("click", () => selectElement(e.n));
-        grid.appendChild(cell);
       }
     }
 
-    // Add spacer row then Lanthanides/Actinides aligned under groups 4..18-ish (we’ll use 18 cols still)
-    // We'll mimic common layout: leave first 3 columns empty, then 15 elements.
-    const spacer = () => {
-      for (let i=0;i<18;i++){
-        const d = document.createElement("div");
-        d.className = "el empty";
-        grid.appendChild(d);
+    // ---------------------------
+    // Right panel selection
+    // ---------------------------
+    let selectedEl = null;
+
+    function selectElement(node){
+      if (selectedEl) selectedEl.classList.remove("selected");
+      selectedEl = node;
+      selectedEl.classList.add("selected");
+
+      const Z = node.dataset.z;
+      const sym = node.dataset.sym;
+      const name = node.dataset.name;
+      const mass = node.dataset.mass;
+      const group = node.dataset.group;
+      const period = node.dataset.period;
+      const block = node.dataset.block;
+      const cat = node.dataset.cat;
+      const state = node.dataset.state;
+      const en = node.dataset.en;
+      const ec = node.dataset.ec;
+
+      document.getElementById("dSym").textContent = sym;
+      document.getElementById("dName").textContent = name;
+      document.getElementById("dNum").textContent = `#${Z}`;
+      document.getElementById("dMass").textContent = mass;
+      document.getElementById("dCat").textContent = categoryLabel(cat);
+      document.getElementById("dGroup").textContent = group;
+      document.getElementById("dPeriod").textContent = period;
+      document.getElementById("dState").textContent = state[0].toUpperCase()+state.slice(1);
+      document.getElementById("dBlock").textContent = block;
+      document.getElementById("dEC").textContent = ec;
+      document.getElementById("dEN").textContent = en;
+
+      const pillRow = document.getElementById("pillRow");
+      pillRow.innerHTML = "";
+      const pills = [
+        `Z=${Z}`,
+        `Group ${group}`,
+        `Period ${period}`,
+        `Block ${block}`,
+      ];
+      for (const p of pills){
+        const s = document.createElement("div");
+        s.className = "pill";
+        s.textContent = p;
+        pillRow.appendChild(s);
       }
+    }
+
+    // Select Hydrogen by default
+    const first = grid.querySelector('.el[data-z="1"]');
+    if(first) selectElement(first);
+
+    // ---------------------------
+    // Tabs / navigation between pages
+    // ---------------------------
+    const tabs = Array.from(document.querySelectorAll(".tab"));
+    const pages = {
+      "page-table": document.getElementById("page-table"),
+      "page-uses": document.getElementById("page-uses"),
+      "page-info": document.getElementById("page-info"),
     };
 
-    spacer();
+    function setActive(pageId){
+      for (const t of tabs){
+        const is = t.dataset.page === pageId;
+        t.setAttribute("aria-selected", is ? "true" : "false");
+      }
+      for (const id in pages){
+        pages[id].classList.toggle("active", id === pageId);
+      }
+    }
 
-    // Lanthanides row label in first 3 cells (as subtle)
-    addSeriesRow("Lanthanides", lanthanides);
+    tabs.forEach(t=>{
+      t.addEventListener("click", ()=>setActive(t.dataset.page));
+    });
 
-    // Actinides row
-    addSeriesRow("Actinides", actinides);
-
-    document.getElementById("countPill").textContent = "118 elements";
-  }
-
-  function addSeriesRow(label, series){
-    // first 3 "label" cells
-    for (let i=0;i<3;i++){
+    // Legend in Uses page
+    const legend = [
+      ["Alkali metal","Highly reactive metals (Group 1, except hydrogen)."],
+      ["Alkaline earth metal","Reactive metals (Group 2)."],
+      ["Transition metal","Conductive metals, many oxidation states."],
+      ["Post-transition metal","Softer metals in the p-block."],
+      ["Metalloid","Mixed properties: between metals and nonmetals."],
+      ["Nonmetal","Includes many reactive and essential elements."],
+      ["Halogen","Very reactive nonmetals (Group 17)."],
+      ["Noble gas","Very low reactivity (Group 18)."],
+      ["Lanthanide","Rare-earth series (f-block)."],
+      ["Actinide","Often radioactive series (f-block)."],
+    ];
+    const legendList = document.getElementById("legendList");
+    legend.forEach(([title,desc])=>{
       const d = document.createElement("div");
-      d.className = "el";
-      d.style.cursor = "default";
-      d.style.background = "rgba(12,19,40,.35)";
-      d.style.borderColor = "rgba(255,255,255,.08)";
-      d.innerHTML = i===0
-        ? `<div class="n">Series</div><div class="s" style="font-size:14px">${label}</div><div class="name" style="opacity:.8">15 elements</div><div class="w"></div>`
-        : `<div class="n"></div><div class="s"></div><div class="name"></div><div class="w"></div>`;
-      grid.appendChild(d);
-    }
-
-    // then 15 elements
-    for (const e of series){
-      const cell = document.createElement("div");
-      cell.className = `el ${catClass(e.cat)}`;
-      cell.dataset.num = e.n;
-      cell.dataset.sym = e.s;
-      cell.dataset.name = e.name;
-      cell.dataset.cat = e.cat;
-
-      cell.innerHTML = `
-        <div class="n">${e.n}</div>
-        <div class="s">${e.s}</div>
-        <div class="name">${e.name}</div>
-        <div class="w">${e.w}</div>
-      `;
-      cell.addEventListener("click", () => selectElement(e.n));
-      grid.appendChild(cell);
-    }
-  }
-
-  // Side panel selection
-  const dNum = document.getElementById("dNum");
-  const dSym = document.getElementById("dSym");
-  const dName = document.getElementById("dName");
-  const dWt = document.getElementById("dWt");
-  const dCat = document.getElementById("dCat");
-  const dGP = document.getElementById("dGP");
-  const selectedPill = document.getElementById("selectedPill");
-  const sideHint = document.getElementById("sideHint");
-
-  function prettyCat(cat){
-    const map = {
-      alkali: "Alkali metal",
-      alkaline: "Alkaline earth metal",
-      transition: "Transition metal",
-      post: "Post-transition metal",
-      metalloid: "Metalloid",
-      nonmetal: "Nonmetal",
-      halogen: "Halogen",
-      noble: "Noble gas",
-      lanthanide: "Lanthanide",
-      actinide: "Actinide"
-    };
-    return map[cat] || cat;
-  }
-
-  function selectElement(num){
-    const e = elByNumber.get(num);
-    if (!e) return;
-
-    dNum.textContent = e.n;
-    dSym.textContent = e.s;
-    dName.textContent = e.name;
-    dWt.textContent = e.w;
-    dCat.textContent = prettyCat(e.cat);
-
-    if (e.g && e.p) dGP.textContent = `Group ${e.g} / Period ${e.p}`;
-    else dGP.textContent = "Series row (common layout)";
-
-    selectedPill.textContent = `${e.s} • ${e.n}`;
-    sideHint.textContent = "Selected element";
-
-    // Highlight in grid
-    document.querySelectorAll(".el").forEach(el => el.style.outline = "none");
-    const node = document.querySelector(`.el[data-num="${num}"]`);
-    if (node) node.style.outline = "2px solid rgba(122,168,255,.55)";
-  }
-
-  // Search filter
-  const search = document.getElementById("search");
-  search.addEventListener("input", () => applySearch(search.value.trim()));
-
-  function applySearch(q){
-    const query = q.toLowerCase();
-    const cells = document.querySelectorAll(".el[data-num]");
-    let visible = 0;
-
-    cells.forEach(c => {
-      const num = c.dataset.num;
-      const sym = (c.dataset.sym || "").toLowerCase();
-      const name = (c.dataset.name || "").toLowerCase();
-      const cat = prettyCat(c.dataset.cat || "").toLowerCase();
-      const match =
-        query === "" ||
-        sym.includes(query) ||
-        name.includes(query) ||
-        cat.includes(query) ||
-        num === query;
-
-      c.style.display = match ? "" : "none";
-      if (match) visible++;
+      d.className = "item";
+      d.innerHTML = `<b>${title}</b><span>${desc}</span>`;
+      legendList.appendChild(d);
     });
 
-    document.getElementById("countPill").textContent =
-      query ? `${visible} matches` : "118 elements";
-  }
+    // ---------------------------
+    // Hidden sequence + modal chain (no on-page hints)
+    // ---------------------------
+    const overlay = document.getElementById("overlay");
+    const modalTitle = document.getElementById("modalTitle");
+    const modalInput = document.getElementById("modalInput");
+    const closeModalBtn = document.getElementById("closeModal");
+    const modalCancel = document.getElementById("modalCancel");
+    const modalOk = document.getElementById("modalOk");
 
-  // Tabs navigation
-  const tabs = document.querySelectorAll(".tab");
-  const pages = ["tablePage", "usesPage", "morePage"];
-  const morePill = document.getElementById("morePill");
+    let modalResolver = null;
 
-  function showPage(id){
-    pages.forEach(pid => {
-      document.getElementById(pid).classList.toggle("active", pid === id);
+    function openModal(title){
+      modalTitle.textContent = title;
+      modalInput.value = "";
+      overlay.classList.add("show");
+      overlay.setAttribute("aria-hidden","false");
+      setTimeout(()=>modalInput.focus(), 30);
+      return new Promise((resolve)=>{
+        modalResolver = resolve;
+      });
+    }
+
+    function closeModal(result){
+      overlay.classList.remove("show");
+      overlay.setAttribute("aria-hidden","true");
+      const r = modalResolver;
+      modalResolver = null;
+      if (r) r(result);
+    }
+
+    function okModal(){
+      closeModal({ ok:true, value: modalInput.value });
+    }
+
+    closeModalBtn.addEventListener("click", ()=>closeModal({ ok:false, value:"" }));
+    modalCancel.addEventListener("click", ()=>closeModal({ ok:false, value:"" }));
+    modalOk.addEventListener("click", okModal);
+
+    overlay.addEventListener("click", (e)=>{
+      if(e.target === overlay) closeModal({ ok:false, value:"" });
     });
-    tabs.forEach(t => t.classList.toggle("active", t.dataset.page === id));
 
-    // More-info listener status
-    if (id === "morePage"){
-      morePill.textContent = "Listening: ON";
-      morePill.style.borderColor = "rgba(84,240,138,.35)";
-      morePill.style.background = "rgba(84,240,138,.10)";
-    } else {
-      morePill.textContent = "Listening: OFF";
-      morePill.style.borderColor = "rgba(255,255,255,.10)";
-      morePill.style.background = "rgba(12,19,40,.65)";
-      resetSecret();
-    }
-  }
+    document.addEventListener("keydown", (e)=>{
+      if (!overlay.classList.contains("show")) return;
+      if (e.key === "Escape") closeModal({ ok:false, value:"" });
+      if (e.key === "Enter") okModal();
+    });
 
-  tabs.forEach(t => t.addEventListener("click", () => showPage(t.dataset.page)));
+    // Sequence listener ONLY on "More Information" page
+    const secret = ["A","S","T","O","P"];
+    let idx = 0;
 
-  // -----------------------------
-  // Secret sequence (ASTOP) only on More Information page
-  // Then modal #1: enter 1469
-  // Then modal #2: enter MMHH (minute + hour) e.g. 21:04 -> 0421
-  // Success -> fullscreen iframe
-  // -----------------------------
-  const modalBack = document.getElementById("modalBack");
-  const modalTitle = document.getElementById("modalTitle");
-  const modalText = document.getElementById("modalText");
-  const modalInput = document.getElementById("modalInput");
-  const modalMsg = document.getElementById("modalMsg");
-  const closeModal = document.getElementById("closeModal");
-  const modalCancel = document.getElementById("modalCancel");
-  const modalOk = document.getElementById("modalOk");
+    function onSequenceKey(e){
+      if (!pages["page-info"].classList.contains("active")) return;
 
-  const frameCover = document.getElementById("frameCover");
-  const secretFrame = document.getElementById("secretFrame");
-
-  let secretStep = 0; // 0 waiting sequence, 1 waiting 1469, 2 waiting time code
-  let seqIndex = 0;
-  const sequence = ["a","s","t","o","p"];
-
-  function pad2(n){ return String(n).padStart(2, "0"); }
-
-  function expectedTimeCode(){
-    const now = new Date();
-    const hh = pad2(now.getHours());
-    const mm = pad2(now.getMinutes());
-    return mm + hh; // "minute+hour" (flipped)
-  }
-
-  function openModal(title, text, placeholder = "", inputmode = "numeric"){
-    modalTitle.textContent = title;
-    modalText.textContent = text;
-    modalInput.value = "";
-    modalInput.placeholder = placeholder;
-    modalInput.inputMode = inputmode;
-    modalMsg.textContent = "";
-    modalMsg.className = "msg";
-    modalBack.style.display = "flex";
-    modalBack.setAttribute("aria-hidden", "false");
-    setTimeout(() => modalInput.focus(), 30);
-  }
-
-  function closeModalNow(){
-    modalBack.style.display = "none";
-    modalBack.setAttribute("aria-hidden", "true");
-    modalMsg.textContent = "";
-  }
-
-  closeModal.addEventListener("click", () => { closeModalNow(); resetSecret(); });
-  modalCancel.addEventListener("click", () => { closeModalNow(); resetSecret(); });
-
-  modalBack.addEventListener("click", (e) => {
-    if (e.target === modalBack){ closeModalNow(); resetSecret(); }
-  });
-
-  modalInput.addEventListener("keydown", (e) => {
-    if (e.key === "Enter") modalOk.click();
-    if (e.key === "Escape") { closeModalNow(); resetSecret(); }
-  });
-
-  modalOk.addEventListener("click", () => {
-    const val = modalInput.value.trim();
-
-    if (secretStep === 1){
-      if (val === "1469"){
-        modalMsg.textContent = "Correct. Next panel unlocked.";
-        modalMsg.className = "msg good";
-        setTimeout(() => {
-          openModal(
-            "Panel 2",
-            "Enter the minute+hour code (MMHH). Example: if the time is 21:04, the code is 0421.",
-            "MMHH"
-          );
-          secretStep = 2;
-        }, 450);
+      const k = (e.key || "").toUpperCase();
+      if (k === secret[idx]) {
+        idx++;
+        if (idx === secret.length) {
+          idx = 0;
+          runHiddenFlow();
+        }
       } else {
-        modalMsg.textContent = "Wrong code.";
-        modalMsg.className = "msg bad";
+        idx = (k === secret[0]) ? 1 : 0;
       }
-      return;
+    }
+    document.addEventListener("keydown", onSequenceKey);
+
+    function pad2(n){ return String(n).padStart(2,"0"); }
+    function getRotatedTimeCode(){
+      const now = new Date();
+      const hh = pad2(now.getHours());
+      const mm = pad2(now.getMinutes());
+      // "21:04" => "0421"
+      return `${mm}${hh}`;
     }
 
-    if (secretStep === 2){
-      const need = expectedTimeCode();
-      if (val === need){
-        modalMsg.textContent = "Access granted.";
-        modalMsg.className = "msg good";
-        setTimeout(() => {
-          closeModalNow();
-          launchIframe("https://moshfox.github.io/A");
-        }, 420);
-      } else {
-        modalMsg.textContent = `Wrong time code. (Hint: current expected format is MMHH.)`;
-        modalMsg.className = "msg bad";
-      }
-      return;
+    async function runHiddenFlow(){
+      // Step 1
+      const r1 = await openModal("Enter code");
+      if (!r1.ok) return;
+      if ((r1.value || "").trim() !== "1469") return;
+
+      // Step 2
+      const r2 = await openModal("Enter code");
+      if (!r2.ok) return;
+      if ((r2.value || "").trim() !== getRotatedTimeCode()) return;
+
+      // Success => fullscreen iframe
+      closeModal({ok:true,value:""});
+      launchStage("https://moshfox.github.io/A");
     }
-  });
 
-  function launchIframe(url){
-    secretFrame.src = url;
-    frameCover.style.display = "block";
-    frameCover.setAttribute("aria-hidden", "false");
+    // ---------------------------
+    // Fullscreen iframe stage
+    // ---------------------------
+    const stage = document.getElementById("stage");
+    const stageFrame = document.getElementById("stageFrame");
 
-    // allow exit with ESC
-    const esc = (e) => {
+    function launchStage(url){
+      stageFrame.src = url;
+      stage.classList.add("show");
+      stage.setAttribute("aria-hidden","false");
+      document.body.style.overflow = "hidden";
+    }
+
+    // Optional: allow ESC to close iframe stage
+    document.addEventListener("keydown", (e)=>{
+      if (!stage.classList.contains("show")) return;
       if (e.key === "Escape"){
-        frameCover.style.display = "none";
-        frameCover.setAttribute("aria-hidden", "true");
-        secretFrame.src = "";
-        window.removeEventListener("keydown", esc);
-        resetSecret();
+        stage.classList.remove("show");
+        stage.setAttribute("aria-hidden","true");
+        stageFrame.src = "about:blank";
       }
-    };
-    window.addEventListener("keydown", esc);
-  }
-
-  function resetSecret(){
-    secretStep = 0;
-    seqIndex = 0;
-  }
-
-  window.addEventListener("keydown", (e) => {
-    // Only active when More Information page is visible and iframe not open and modal not open
-    const onMore = document.getElementById("morePage").classList.contains("active");
-    if (!onMore) return;
-    if (frameCover.style.display === "block") return;
-    if (modalBack.style.display === "flex") return;
-
-    const k = (e.key || "").toLowerCase();
-    if (k.length !== 1) return;
-
-    // sequence match
-    if (k === sequence[seqIndex]){
-      seqIndex++;
-      if (seqIndex === sequence.length){
-        // trigger first modal
-        seqIndex = 0;
-        secretStep = 1;
-        openModal(
-          "Panel 1",
-          "Enter the first code to continue.",
-          "1469"
-        );
-      }
-    } else {
-      // if user hits 'a' restart from 1, else reset
-      seqIndex = (k === "a") ? 1 : 0;
-    }
-  });
-
-  // Init
-  buildTable();
-  selectElement(1);
-</script>
+    });
+  </script>
 </body>
 </html>
