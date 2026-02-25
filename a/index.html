@@ -1,407 +1,183 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>hodely.net</title>
-  <meta name="description" content="Hodely — laboratorio de proyectos: web, juegos, ideas raras y cosas que salen bien."/>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>A Flow — Hodely</title>
+
+  <!-- Fuentes (Google Fonts) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Bebas+Neue&family=Black+Ops+One&family=Bungee&family=DM+Serif+Display&family=Fjalla+One&family=Inter:wght@400;700;900&family=Montserrat:wght@400;700;900&family=Oswald:wght@400;700&family=Playfair+Display:wght@400;700;900&family=Press+Start+2P&family=Roboto+Slab:wght@400;700;900&family=Rubik+Mono+One&family=Staatliches&display=swap" rel="stylesheet">
+
   <style>
     :root{
-      --bg0:#07070a;
-      --bg1:#0b0b12;
-      --card:#0f1020cc;
-      --line:#ffffff14;
-      --text:#e9e9f3;
-      --muted:#a7a7c2;
-      --accent:#00ffcc;
-      --accent2:#7c5cff;
-      --shadow: 0 30px 90px #00000088;
-      --radius: 22px;
+      --bg:#000;
+      --fg:#fff;
+      --wm: rgba(255,255,255,.06);
+      --a: rgba(255,255,255,.92);
     }
 
-    *{box-sizing:border-box;margin:0;padding:0}
-    html,body{height:100%}
-    body{
-      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Apple Color Emoji","Segoe UI Emoji";
-      color:var(--text);
-      background:
-        radial-gradient(900px 600px at 12% 18%, #1a2b2a55 0%, transparent 60%),
-        radial-gradient(700px 500px at 88% 22%, #2b1a4a55 0%, transparent 58%),
-        radial-gradient(900px 700px at 55% 100%, #0d163655 0%, transparent 60%),
-        linear-gradient(180deg, var(--bg0), var(--bg1));
-      overflow-x:hidden;
+    html, body {
+      height: 100%;
+      margin: 0;
+      background: var(--bg);
+      overflow: hidden;
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
     }
 
-    /* grain */
-    body::before{
-      content:"";
-      position:fixed; inset:0;
-      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='260'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='260' height='260' filter='url(%23n)' opacity='.16'/%3E%3C/svg%3E");
-      mix-blend-mode:overlay;
-      opacity:.28;
-      pointer-events:none;
+    /* “Hodely” de fondo */
+    .watermark{
+      position: fixed;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      pointer-events: none;
+      user-select: none;
+      z-index: 0;
+      transform: translateZ(0);
+    }
+    .watermark span{
+      font-weight: 900;
+      letter-spacing: .08em;
+      color: var(--wm);
+      font-size: clamp(64px, 18vw, 260px);
+      text-transform: uppercase;
     }
 
-    a{color:inherit;text-decoration:none}
-    .wrap{max-width:1100px;margin:0 auto;padding:28px 18px 70px}
-
-    header{
-      display:flex;align-items:center;justify-content:space-between;
-      padding:12px 4px 22px;
-    }
-    .brand{
-      display:flex;align-items:center;gap:12px;
-      letter-spacing:.4px;
-    }
-    .logo{
-      width:38px;height:38px;border-radius:14px;
-      background:linear-gradient(135deg, #0ef0c740, #7c5cff40);
-      border:1px solid var(--line);
-      box-shadow:0 10px 40px #00000066;
-      position:relative;
-    }
-    .logo::after{
-      content:"";
-      position:absolute; inset:9px;
-      border-radius:12px;
-      border:1px solid #ffffff22;
-      background:linear-gradient(135deg, #00ffcc22, #7c5cff22);
-    }
-    .brand strong{font-weight:800}
-    .brand span{color:var(--muted);font-weight:600}
-
-    .nav{
-      display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:flex-end;
-    }
-    .chip{
-      padding:10px 12px;border-radius:999px;
-      border:1px solid var(--line);
-      background:#0b0c16aa;
-      color:var(--muted);
-      font-weight:650;
-      font-size:13px;
-      transition:transform .18s ease, border-color .18s ease, color .18s ease;
-    }
-    .chip:hover{
-      transform:translateY(-1px);
-      border-color:#ffffff26;
-      color:var(--text);
+    /* Capa de las A */
+    .stage{
+      position: fixed;
+      inset: 0;
+      z-index: 1;
     }
 
-    .hero{
-      display:grid;
-      grid-template-columns: 1.25fr .75fr;
-      gap:16px;
-      align-items:stretch;
-      margin-top:10px;
+    .a{
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--a);
+      line-height: 1;
+      user-select: none;
+      will-change: transform, left;
+      text-shadow: 0 0 18px rgba(255,255,255,.08);
+      opacity: .95;
+      /* Tamaño gigante que ocupa casi toda la pantalla */
+      font-size: clamp(140px, 42vw, 720px);
     }
 
-    .panel{
-      border:1px solid var(--line);
-      background:linear-gradient(180deg, #10112a88, #0b0b14aa);
-      border-radius:var(--radius);
-      box-shadow:var(--shadow);
-      overflow:hidden;
-      position:relative;
-    }
-    .panel::before{
-      content:"";
-      position:absolute; inset:-1px;
-      background:radial-gradient(700px 260px at 18% 0%, #00ffcc22, transparent 60%),
-                 radial-gradient(700px 260px at 88% 0%, #7c5cff22, transparent 60%);
-      pointer-events:none;
-    }
-
-    .main{
-      padding:26px 24px 22px;
-    }
-    .kicker{
-      display:inline-flex;align-items:center;gap:10px;
-      font-size:12px;font-weight:750;letter-spacing:.12em;
-      text-transform:uppercase;
-      color:#bfeee4;
-      opacity:.95;
-      margin-bottom:14px;
-    }
-    .dot{
-      width:8px;height:8px;border-radius:50%;
-      background:var(--accent);
-      box-shadow:0 0 22px #00ffcc88;
-    }
-    h1{
-      font-size:44px;
-      line-height:1.05;
-      letter-spacing:-.02em;
-      margin-bottom:12px;
-    }
-    h1 em{
-      font-style:normal;
-      background:linear-gradient(90deg, var(--accent), var(--accent2));
-      -webkit-background-clip:text;
-      background-clip:text;
-      color:transparent;
-    }
-    .lead{
-      color:var(--muted);
-      font-size:16px;
-      line-height:1.55;
-      max-width:58ch;
-      margin-bottom:18px;
-    }
-
-    .ctaRow{
-      display:flex;gap:12px;flex-wrap:wrap;
-      margin-top:10px;
-    }
-
-    .btn{
-      display:inline-flex;align-items:center;gap:10px;
-      padding:12px 14px;border-radius:14px;
-      border:1px solid var(--line);
-      background:#0c0d1bcc;
-      font-weight:750;
-      transition:transform .16s ease, border-color .16s ease, background .16s ease;
-    }
-    .btn:hover{transform:translateY(-1px);border-color:#ffffff28;background:#11122acc;}
-    .btn.primary{
-      border-color:#00ffcc33;
-      background:linear-gradient(135deg, #00ffcc18, #7c5cff18);
-    }
-    .btn small{color:var(--muted);font-weight:700}
-
-    .side{
-      padding:18px 18px 16px;
-      display:flex;flex-direction:column;gap:12px;
-      justify-content:space-between;
-    }
-    .card{
-      border:1px solid var(--line);
-      background:#0b0c16aa;
-      border-radius:18px;
-      padding:14px 14px;
-    }
-    .card h3{
-      font-size:14px;
-      letter-spacing:.01em;
-      margin-bottom:6px;
-    }
-    .card p{
-      color:var(--muted);
-      font-size:13px;
-      line-height:1.5;
-    }
-    .mini{
-      display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;
-    }
-    .tag{
-      font-size:12px;
-      padding:8px 10px;
-      border-radius:999px;
-      border:1px solid var(--line);
-      color:#cfd0e7;
-      background:#0a0b13aa;
-    }
-
-    .grid{
-      display:grid;
-      grid-template-columns: repeat(12, 1fr);
-      gap:12px;
-      margin-top:16px;
-    }
-    .tile{
-      grid-column: span 6;
-      padding:16px;
-      border:1px solid var(--line);
-      background:linear-gradient(180deg, #0b0c16aa, #090a10aa);
-      border-radius:18px;
-      transition:transform .16s ease, border-color .16s ease;
-      position:relative;
-      overflow:hidden;
-    }
-    .tile::after{
-      content:"";
-      position:absolute; inset:-1px;
-      background:radial-gradient(380px 120px at 22% 0%, #00ffcc18, transparent 58%),
-                 radial-gradient(380px 120px at 78% 0%, #7c5cff18, transparent 58%);
-      opacity:.6;
-      pointer-events:none;
-    }
-    .tile:hover{transform:translateY(-2px);border-color:#ffffff26;}
-    .tile h4{font-size:16px;margin-bottom:6px}
-    .tile p{color:var(--muted);font-size:13px;line-height:1.5}
-    .tile .go{
-      margin-top:12px;
-      display:inline-flex;align-items:center;gap:8px;
-      color:#dfe0f7;
-      font-weight:750;
-      font-size:13px;
-    }
-    .arrow{
-      width:18px;height:18px;border-radius:7px;
-      border:1px solid #ffffff1f;
-      display:grid;place-items:center;
-      background:#0c0d1bcc;
-    }
-
-    footer{
-      margin-top:26px;
-      display:flex;justify-content:space-between;align-items:center;gap:12px;
-      color:var(--muted);
-      font-size:13px;
-      padding:14px 6px 0;
-      border-top:1px solid var(--line);
-    }
-
-    /* small easter egg */
-    .secret{
-      cursor:pointer;
-      user-select:none;
-      opacity:.8;
-      transition:opacity .15s ease;
-    }
-    .secret:hover{opacity:1}
-    .toast{
-      position:fixed;left:50%;bottom:18px;transform:translateX(-50%);
-      padding:10px 12px;border-radius:999px;
-      background:#0b0c16ee;border:1px solid #ffffff1f;
-      color:#dfe0f7;font-weight:700;font-size:13px;
-      box-shadow:0 20px 60px #00000088;
-      opacity:0; pointer-events:none;
-      transition:opacity .2s ease, transform .2s ease;
-    }
-    .toast.show{opacity:1; transform:translateX(-50%) translateY(-2px);}
-
-    @media (max-width: 920px){
-      .hero{grid-template-columns:1fr}
-      h1{font-size:38px}
-      .tile{grid-column:span 12}
-    }
+    /* Un poquito de variedad opcional */
+    .a.soft { opacity: .70; }
+    .a.hard { opacity: .98; }
   </style>
 </head>
+
 <body>
-  <div class="wrap">
-    <header>
-      <div class="brand">
-        <div class="logo" aria-hidden="true"></div>
-        <div>
-          <strong>hodely</strong><span>.net</span><br/>
-          <span style="font-size:12px;color:var(--muted)">un sitio para lo que todavía no tiene nombre</span>
-        </div>
-      </div>
-
-      <nav class="nav">
-        <a class="chip" href="/a">/a (prueba)</a>
-        <a class="chip" href="#projects">proyectos</a>
-        <a class="chip" href="#about">sobre</a>
-      </nav>
-    </header>
-
-    <section class="hero">
-      <div class="panel">
-        <div class="main">
-          <div class="kicker"><span class="dot"></span> laboratorio personal</div>
-          <h1>Ideas, web y cosas <em>raras</em> que terminan funcionando.</h1>
-          <p class="lead">
-            Este dominio es mi “hub”. Aquí voy dejando proyectos, pruebas y páginas que se mueven entre
-            lo serio y lo experimental. Si algo te parece demasiado limpio… espera la siguiente versión.
-          </p>
-
-          <div class="ctaRow">
-            <a class="btn primary" href="#projects">
-              Ver proyectos
-              <small>→</small>
-            </a>
-            <a class="btn" href="/a">
-              Ruta de prueba <small>/a</small>
-            </a>
-          </div>
-        </div>
-      </div>
-
-      <aside class="panel">
-        <div class="side">
-          <div class="card">
-            <h3 id="about">Sobre este sitio</h3>
-            <p>
-              No es un portfolio clásico. Es más bien un “sistema” donde cada cosa puede convertirse en otra.
-              Hoy es landing. Mañana, Netflix raro. Pasado, un juego.
-            </p>
-            <div class="mini">
-              <span class="tag">web</span>
-              <span class="tag">juegos</span>
-              <span class="tag">experimentos</span>
-              <span class="tag">IA</span>
-            </div>
-          </div>
-
-          <div class="card">
-            <h3>Estado</h3>
-            <p>
-              <span style="color:#c8ffd7">online</span> ·
-              <span style="color:var(--muted)">actualizable desde GitHub</span>
-            </p>
-            <p style="margin-top:8px">
-              <span class="secret" id="secret">toca aquí si te aburres</span>
-            </p>
-          </div>
-        </div>
-      </aside>
-    </section>
-
-    <section class="grid" id="projects" aria-label="Proyectos">
-      <a class="tile" href="/a">
-        <h4>Ruta /a</h4>
-        <p>La zona de pruebas. Aquí pongo cosas pequeñas y rápidas para verificar que todo está vivo.</p>
-        <span class="go"><span class="arrow">↗</span> Entrar</span>
-      </a>
-
-      <a class="tile" href="#" onclick="return false;">
-        <h4>VoidFlix (próximamente)</h4>
-        <p>La idea: un “Netflix” raro donde el contenido se desbloquea, cambia, y se comporta como un archivo vivo.</p>
-        <span class="go"><span class="arrow">⧗</span> En construcción</span>
-      </a>
-
-      <a class="tile" href="#" onclick="return false;">
-        <h4>Laboratorio</h4>
-        <p>Componentes, UI, animaciones, sonidos y todo lo que me apetezca probar sin pedir permiso.</p>
-        <span class="go"><span class="arrow">⧗</span> En construcción</span>
-      </a>
-
-      <a class="tile" href="#" onclick="return false;">
-        <h4>Archivo</h4>
-        <p>Cosas que no son para “enseñar bonito”, pero que luego terminan siendo lo más útil.</p>
-        <span class="go"><span class="arrow">⧗</span> En construcción</span>
-      </a>
-    </section>
-
-    <footer>
-      <div>© <span id="y"></span> hodely.net</div>
-      <div style="display:flex;gap:10px;align-items:center">
-        <span style="opacity:.9">hecho a mano</span>
-        <span style="color:var(--muted)">·</span>
-        <span style="opacity:.85">Barcelona time</span>
-      </div>
-    </footer>
-  </div>
-
-  <div class="toast" id="toast">Modo raro: activado (por ahora).</div>
+  <div class="watermark"><span>Hodely</span></div>
+  <div class="stage" id="stage"></div>
 
   <script>
-    // año automático
-    document.getElementById("y").textContent = new Date().getFullYear();
+    const stage = document.getElementById("stage");
 
-    // micro-easter-egg (sin ser cringe)
-    const secret = document.getElementById("secret");
-    const toast = document.getElementById("toast");
-    let t;
-    secret.addEventListener("click", () => {
-      toast.classList.add("show");
-      clearTimeout(t);
-      t = setTimeout(() => toast.classList.remove("show"), 1600);
-      // mini "glitch" suave
-      document.body.style.filter = "saturate(1.05) contrast(1.02)";
-      setTimeout(() => document.body.style.filter = "", 220);
-    });
+    const fonts = [
+      "Anton, sans-serif",
+      "Bebas Neue, sans-serif",
+      "Black Ops One, system-ui",
+      "Bungee, system-ui",
+      "DM Serif Display, serif",
+      "Fjalla One, sans-serif",
+      "Inter, system-ui",
+      "Montserrat, sans-serif",
+      "Oswald, sans-serif",
+      "Playfair Display, serif",
+      "Press Start 2P, system-ui",
+      "Roboto Slab, serif",
+      "Rubik Mono One, system-ui",
+      "Staatliches, sans-serif",
+      "system-ui"
+    ];
+
+    // Cantidad de A (ajusta si quieres más/menos)
+    const COUNT = 10;
+
+    // Base speed (px/s) y variación
+    const BASE = 260;        // velocidad media
+    const AMP  = 220;        // cuánto puede subir/bajar
+    const WAVE = 0.55;       // velocidad de cambio (más alto = cambia más rápido)
+
+    const letters = [];
+
+    function rand(min, max){ return Math.random() * (max - min) + min; }
+
+    function createA(i){
+      const el = document.createElement("div");
+      el.className = "a " + (i % 3 === 0 ? "soft" : (i % 3 === 1 ? "hard" : ""));
+      el.textContent = "A";
+      el.style.fontFamily = fonts[i % fonts.length];
+
+      // ligeras diferencias verticales para que no queden todas calcadas
+      const y = 50 + rand(-18, 18);
+      el.style.top = y + "%";
+
+      stage.appendChild(el);
+
+      // empezamos fuera a la derecha con separaciones
+      const startX = window.innerWidth + i * (window.innerWidth * 0.22);
+
+      letters.push({
+        el,
+        x: startX,
+        // cada una cambia a su ritmo
+        phase: rand(0, Math.PI * 2),
+        mult: rand(0.75, 1.35),
+        // pequeña separación extra
+        gap: rand(0.12, 0.30)
+      });
+    }
+
+    function resetIfOffscreen(obj){
+      const rect = obj.el.getBoundingClientRect();
+      if(rect.right < -40){
+        obj.x = window.innerWidth + window.innerWidth * obj.gap;
+        obj.phase = rand(0, Math.PI * 2);
+        obj.mult = rand(0.75, 1.35);
+      }
+    }
+
+    let last = performance.now();
+
+    function tick(now){
+      const dt = (now - last) / 1000;
+      last = now;
+
+      // velocidad global que “late” (cambia suave)
+      const t = now / 1000;
+      const globalSpeed = BASE + AMP * Math.sin(t * WAVE);
+
+      for(const obj of letters){
+        // cada A tiene su mini variación para que no vayan “en fila militar”
+        const local = 1 + 0.35 * Math.sin(t * (WAVE * 1.7) + obj.phase);
+        const speed = globalSpeed * obj.mult * local;
+
+        obj.x -= speed * dt;
+        obj.el.style.left = obj.x + "px";
+
+        resetIfOffscreen(obj);
+      }
+
+      requestAnimationFrame(tick);
+    }
+
+    function rebuild(){
+      stage.innerHTML = "";
+      letters.length = 0;
+      for(let i=0;i<COUNT;i++) createA(i);
+    }
+
+    window.addEventListener("resize", rebuild);
+
+    rebuild();
+    requestAnimationFrame(tick);
   </script>
 </body>
 </html>
