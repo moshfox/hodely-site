@@ -1,25 +1,218 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Hodely</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>hodely.net</title>
+
+  <!-- FAVICON -->
+  <link rel="icon" href="favicon.ico" type="image/x-icon">
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Fuente -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+
   <style>
-    body{margin:0;min-height:100vh;display:grid;place-items:center;background:#0b0b0f;color:#fff;font-family:Arial}
-    .card{max-width:720px;padding:32px;border:1px solid #ffffff1a;border-radius:18px;background:linear-gradient(180deg,#12121a,#0b0b0f)}
-    h1{margin:0 0 10px;font-size:42px;letter-spacing:2px}
-    p{margin:0 0 18px;opacity:.75}
-    a{color:#00ffcc;text-decoration:none;font-weight:700}
-    a:hover{text-decoration:underline}
-    .pill{display:inline-block;margin-top:10px;padding:8px 12px;border-radius:999px;background:#00ffcc1a;border:1px solid #00ffcc33;font-size:13px}
+    body {
+      font-family: Inter, system-ui, sans-serif;
+      background: radial-gradient(circle at 20% 20%, #1e293b, #020617 60%);
+    }
+    .glass {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.1);
+      backdrop-filter: blur(10px);
+    }
   </style>
 </head>
-<body>
-  <div class="card">
-    <h1>Hodely<span style="color:#00ffcc">.</span></h1>
-    <p>Bienvenido. Esto es solo el inicio.</p>
-    <p>Prueba la ruta de prueba: <a href="/a">/a</a></p>
-    <div class="pill">hodely.net — online</div>
+
+<body class="text-white min-h-screen">
+
+<!-- NAVBAR -->
+<header class="sticky top-0 z-40 border-b border-white/10 bg-black/40 backdrop-blur">
+  <div class="max-w-6xl mx-auto px-4 flex items-center justify-between h-16">
+
+    <a href="#" class="flex items-center gap-3">
+      <img src="favicon.ico"
+           class="h-9 w-9 rounded-xl border border-white/10 bg-white/10 p-1"
+           alt="hodely.net logo">
+      <span class="font-extrabold text-lg tracking-tight">
+        hodely<span class="text-slate-400">.net</span>
+      </span>
+    </a>
+
+    <nav class="hidden md:flex gap-6 text-sm text-slate-300">
+      <a href="#proyectos" class="hover:text-white">Proyectos</a>
+      <a href="#faq" class="hover:text-white">FAQ</a>
+      <a href="#contacto" class="hover:text-white">Contacto</a>
+    </nav>
+
+    <div class="flex items-center gap-3">
+      <button id="btnLogin"
+              class="hidden sm:inline-flex px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 border border-white/10 text-sm font-semibold">
+        Login
+      </button>
+
+      <button id="menuBtn"
+              class="md:hidden p-2 rounded-xl bg-white/10 border border-white/10">
+        ☰
+      </button>
+    </div>
   </div>
+
+  <!-- Mobile menu -->
+  <div id="mobileMenu" class="hidden md:hidden px-4 pb-4">
+    <div class="grid gap-2 text-sm">
+      <a href="#proyectos" class="glass px-3 py-2 rounded-xl">Proyectos</a>
+      <a href="#faq" class="glass px-3 py-2 rounded-xl">FAQ</a>
+      <a href="#contacto" class="glass px-3 py-2 rounded-xl">Contacto</a>
+      <button id="btnLoginMobile" class="glass px-3 py-2 rounded-xl text-left">
+        Login
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="max-w-6xl mx-auto px-4 py-16 grid lg:grid-cols-2 gap-10 items-center">
+  <div>
+    <h1 class="text-4xl sm:text-5xl font-extrabold leading-tight">
+      hodely.net
+    </h1>
+    <p class="mt-4 text-slate-300 max-w-lg">
+      Página principal con estructura lista para proyectos, herramientas o aplicaciones.
+    </p>
+
+    <div class="mt-6 flex gap-3">
+      <a href="#proyectos"
+         class="px-6 py-3 rounded-xl bg-indigo-500 hover:bg-indigo-600 font-bold text-sm">
+        Ver proyectos
+      </a>
+      <a href="#contacto"
+         class="px-6 py-3 rounded-xl bg-white/10 hover:bg-white/20 border border-white/10 font-bold text-sm">
+        Contacto
+      </a>
+    </div>
+  </div>
+
+  <div class="glass p-8 rounded-3xl">
+    <h2 class="font-bold text-xl mb-4">Resumen</h2>
+    <ul class="text-sm text-slate-300 space-y-2">
+      <li>• Diseño responsive</li>
+      <li>• Navbar adaptable</li>
+      <li>• Modal login visual</li>
+      <li>• Secciones ancladas</li>
+    </ul>
+  </div>
+</section>
+
+<!-- PROYECTOS -->
+<section id="proyectos" class="max-w-6xl mx-auto px-4 py-16">
+  <h2 class="text-3xl font-extrabold mb-8">Proyectos</h2>
+
+  <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div class="glass p-6 rounded-2xl">
+      <h3 class="font-bold text-lg">Proyecto 01</h3>
+      <p class="mt-2 text-sm text-slate-300">Descripción breve del proyecto.</p>
+      <button class="mt-4 w-full py-2 rounded-xl bg-indigo-500 hover:bg-indigo-600 text-sm font-bold">
+        Abrir
+      </button>
+    </div>
+
+    <div class="glass p-6 rounded-2xl">
+      <h3 class="font-bold text-lg">Proyecto 02</h3>
+      <p class="mt-2 text-sm text-slate-300">Descripción breve del proyecto.</p>
+      <button class="mt-4 w-full py-2 rounded-xl bg-indigo-500 hover:bg-indigo-600 text-sm font-bold">
+        Abrir
+      </button>
+    </div>
+
+    <div class="glass p-6 rounded-2xl">
+      <h3 class="font-bold text-lg">Proyecto 03</h3>
+      <p class="mt-2 text-sm text-slate-300">Descripción breve del proyecto.</p>
+      <button class="mt-4 w-full py-2 rounded-xl bg-indigo-500 hover:bg-indigo-600 text-sm font-bold">
+        Abrir
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section id="faq" class="max-w-6xl mx-auto px-4 py-16">
+  <h2 class="text-3xl font-extrabold mb-8">FAQ</h2>
+
+  <div class="grid lg:grid-cols-2 gap-6">
+    <details class="glass p-6 rounded-2xl">
+      <summary class="font-bold cursor-pointer">¿Se puede conectar backend?</summary>
+      <p class="mt-2 text-sm text-slate-300">Sí, puedes añadir API, Firebase o servidor propio.</p>
+    </details>
+
+    <details class="glass p-6 rounded-2xl">
+      <summary class="font-bold cursor-pointer">¿El login funciona?</summary>
+      <p class="mt-2 text-sm text-slate-300">Es visual. Necesita backend para autenticación real.</p>
+    </details>
+  </div>
+</section>
+
+<!-- CONTACTO -->
+<section id="contacto" class="max-w-6xl mx-auto px-4 py-16">
+  <h2 class="text-3xl font-extrabold mb-8">Contacto</h2>
+
+  <div class="glass p-8 rounded-3xl max-w-xl">
+    <input placeholder="Nombre"
+           class="w-full mb-3 px-4 py-3 rounded-xl bg-white/10 border border-white/10 outline-none">
+    <input placeholder="Email"
+           class="w-full mb-3 px-4 py-3 rounded-xl bg-white/10 border border-white/10 outline-none">
+    <textarea placeholder="Mensaje"
+              class="w-full mb-3 px-4 py-3 rounded-xl bg-white/10 border border-white/10 outline-none"></textarea>
+    <button class="w-full py-3 rounded-xl bg-indigo-500 hover:bg-indigo-600 font-bold">
+      Enviar (demo)
+    </button>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="border-t border-white/10 py-8 text-center text-sm text-slate-400">
+  © <span id="year"></span> hodely.net — Todos los derechos reservados
+</footer>
+
+<!-- LOGIN MODAL -->
+<div id="loginModal" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center">
+  <div class="glass p-8 rounded-3xl w-full max-w-sm">
+    <div class="flex justify-between items-center mb-4">
+      <h3 class="font-bold text-xl">Login</h3>
+      <button id="closeModal">✕</button>
+    </div>
+    <input placeholder="Email"
+           class="w-full mb-3 px-4 py-3 rounded-xl bg-white/10 border border-white/10">
+    <input type="password" placeholder="Contraseña"
+           class="w-full mb-3 px-4 py-3 rounded-xl bg-white/10 border border-white/10">
+    <button class="w-full py-3 rounded-xl bg-indigo-500 hover:bg-indigo-600 font-bold">
+      Entrar
+    </button>
+  </div>
+</div>
+
+<script>
+  const $ = id => document.getElementById(id);
+
+  $("menuBtn").onclick = () => $("mobileMenu").classList.toggle("hidden");
+
+  const openLogin = () => $("loginModal").classList.remove("hidden");
+  const closeLogin = () => $("loginModal").classList.add("hidden");
+
+  $("btnLogin").onclick = openLogin;
+  $("btnLoginMobile").onclick = openLogin;
+  $("closeModal").onclick = closeLogin;
+
+  document.addEventListener("keydown", e => {
+    if (e.key === "Escape") closeLogin();
+  });
+
+  $("year").textContent = new Date().getFullYear();
+</script>
+
 </body>
 </html>
