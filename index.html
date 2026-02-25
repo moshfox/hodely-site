@@ -108,10 +108,198 @@
       .block{ font-size:1.35rem; }
       h2{ font-size:0.95rem; letter-spacing:3px; }
     }
+
+    /* =========================
+       MENU BUTTON + SIDEBAR
+       ========================= */
+
+    .menu-btn{
+      position: fixed;
+      top: 14px;
+      left: 14px;
+      width: 38px;
+      height: 34px;
+      border: 1px solid rgba(0,0,0,0.12);
+      background: rgba(255,255,255,0.55);
+      backdrop-filter: blur(6px);
+      border-radius: 10px;
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+      z-index: 50;
+      transition: opacity .2s ease, transform .2s ease, background .2s ease;
+      opacity: 0.75;
+    }
+    .menu-btn:hover{
+      opacity: 1;
+      transform: translateY(-1px);
+      background: rgba(255,255,255,0.75);
+    }
+    .burger{
+      width: 18px;
+      height: 12px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .burger span{
+      display:block;
+      height: 2px;
+      background:#000;
+      border-radius: 2px;
+      opacity:0.85;
+    }
+
+    .overlay{
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.18);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .22s ease;
+      z-index: 40;
+    }
+    .overlay.show{
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .sidebar{
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 100vh;
+      width: 280px;
+      background: rgba(255,255,255,0.92);
+      backdrop-filter: blur(10px);
+      border-right: 1px solid rgba(0,0,0,0.10);
+      transform: translateX(-105%);
+      transition: transform .24s ease;
+      z-index: 45;
+      padding: 18px 16px;
+      display:flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .sidebar.open{
+      transform: translateX(0);
+    }
+
+    .side-title{
+      display:flex;
+      align-items: baseline;
+      justify-content: space-between;
+      padding: 6px 6px 10px 6px;
+    }
+    .side-title .brand{
+      font-weight: 800;
+      letter-spacing: -0.8px;
+      font-size: 1.05rem;
+    }
+    .side-title .mini{
+      font-size: 0.75rem;
+      letter-spacing: 2px;
+      opacity: 0.55;
+      text-transform: uppercase;
+    }
+
+    .nav{
+      display:flex;
+      flex-direction: column;
+      gap: 10px;
+      padding: 6px;
+    }
+    .nav a{
+      text-decoration: none;
+      color:#000;
+      border: 1px solid rgba(0,0,0,0.10);
+      background: rgba(255,255,255,0.6);
+      border-radius: 12px;
+      padding: 12px 12px;
+      display:flex;
+      align-items:center;
+      justify-content: space-between;
+      transition: transform .15s ease, background .15s ease, border .15s ease;
+    }
+    .nav a:hover{
+      transform: translateX(2px);
+      background: rgba(0,0,0,0.03);
+      border-color: rgba(0,0,0,0.18);
+    }
+    .nav a .left{
+      display:flex;
+      gap:10px;
+      align-items:center;
+    }
+    .pill{
+      font-family: "JetBrains Mono", ui-monospace, monospace;
+      font-size: 0.78rem;
+      padding: 3px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(0,0,0,0.12);
+      opacity: 0.85;
+    }
+    .arrow{
+      opacity:0.45;
+    }
+
+    .hint{
+      margin-top: auto;
+      padding: 10px 8px;
+      font-size: 0.8rem;
+      opacity: 0.55;
+    }
   </style>
 </head>
 
 <body>
+
+  <!-- Menu Button -->
+  <button class="menu-btn" id="menuBtn" aria-label="Open menu">
+    <div class="burger" aria-hidden="true">
+      <span></span><span></span><span></span>
+    </div>
+  </button>
+
+  <!-- Overlay -->
+  <div class="overlay" id="overlay"></div>
+
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar" aria-label="Navigation menu">
+    <div class="side-title">
+      <div class="brand">Hodely</div>
+      <div class="mini">menu</div>
+    </div>
+
+    <nav class="nav">
+      <a href="https://hodely.net" title="Go to hodely.net">
+        <div class="left">
+          <span class="pill">/</span>
+          <span>Home</span>
+        </div>
+        <span class="arrow">↗</span>
+      </a>
+
+      <a href="https://hodely.net/periodictable" title="Go to hodely.net/periodictable">
+        <div class="left">
+          <span class="pill">/periodictable</span>
+          <span>Periodic Table</span>
+        </div>
+        <span class="arrow">↗</span>
+      </a>
+
+      <a href="https://hodely.net/a" title="Go to hodely.net/a">
+        <div class="left">
+          <span class="pill">/a</span>
+          <span>Project A</span>
+        </div>
+        <span class="arrow">↗</span>
+      </a>
+    </nav>
+
+    <div class="hint">Tip: press <b>ESC</b> to close.</div>
+  </aside>
+
   <div class="container">
 
     <!-- TOP MARQUEE (right -> left) -->
@@ -172,5 +360,32 @@
     </div>
 
   </div>
+
+  <script>
+    const menuBtn = document.getElementById('menuBtn');
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('overlay');
+
+    function openMenu(){
+      sidebar.classList.add('open');
+      overlay.classList.add('show');
+    }
+    function closeMenu(){
+      sidebar.classList.remove('open');
+      overlay.classList.remove('show');
+    }
+    function toggleMenu(){
+      if(sidebar.classList.contains('open')) closeMenu();
+      else openMenu();
+    }
+
+    menuBtn.addEventListener('click', toggleMenu);
+    overlay.addEventListener('click', closeMenu);
+
+    document.addEventListener('keydown', (e) => {
+      if(e.key === 'Escape') closeMenu();
+    });
+  </script>
+
 </body>
 </html>
