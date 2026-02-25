@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Screenshot</title>
+  <link rel="icon" type="image/png" href="/favicon.png">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background:#fff;color:#000;min-height:100vh;
+      display:flex;align-items:center;justify-content:center;
+    }
+    .wrap{width:min(1100px, 92vw); padding: 22px;}
+    .top{
+      display:flex; align-items:center; justify-content:space-between;
+      gap:12px; margin-bottom:14px;
+    }
+    .title{
+      font-weight:800; letter-spacing:-0.8px; font-size:1.1rem;
+      opacity:0.9;
+    }
+    .controls{display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end}
+    button{
+      border:1px solid rgba(0,0,0,0.14);
+      background: rgba(255,255,255,0.7);
+      backdrop-filter: blur(6px);
+      padding:10px 12px;
+      border-radius:12px;
+      cursor:pointer;
+      font-weight:600;
+      transition: transform .15s ease, background .15s ease, border .15s ease;
+    }
+    button:hover{ transform: translateY(-1px); background: rgba(0,0,0,0.03); border-color: rgba(0,0,0,0.22); }
+    button:disabled{ opacity:.45; cursor:not-allowed; transform:none; }
+
+    .grid{
+      display:grid;
+      grid-template-columns: 1.4fr 0.6fr;
+      gap:16px;
+      align-items:start;
+    }
+    @media (max-width: 900px){
+      .grid{ grid-template-columns: 1fr; }
+    }
+
+    .card{
+      border:1px solid rgba(0,0,0,0.12);
+      border-radius:18px;
+      overflow:hidden;
+      background:#fff;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.04);
+    }
+    .cardhead{
+      padding:12px 14px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      border-bottom:1px solid rgba(0,0,0,0.08);
+      font-size:0.9rem;
+      opacity:0.85;
+    }
+    .stage{
+      position:relative;
+      width:100%;
+      aspect-ratio: 16 / 10;
+      background: #fafafa;
+      display:grid;
+      place-items:center;
+    }
+
+    /* preview canvas (shows current frame) */
+    #previewCanvas{
+      width:100%;
+      height:100%;
+      display:block;
+      background:#fff;
+    }
+
+    /* overlay for selection */
+    #overlay{
+      position:absolute;
+      inset:0;
+      cursor: crosshair;
+    }
+
+    .hint{
+      padding:12px 14px;
+      font-size:0.9rem;
+      line-height:1.35;
+      opacity:0.75;
+    }
+    .stat{
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size:0.82rem;
+      opacity:0.7;
+    }
+    .pill{
+      display:inline-block;
+      border:1px solid rgba(0,0,0,0.12);
+      border-radius:999px;
+      padding:3px 9px;
+      font-size:0.78rem;
+      opacity:0.8;
+    }
+
+    /* tiny watermark vibe */
+    .wm{
+      position:fixed;
+      bottom:14px;
+      right:16px;
+      font-size:0.78rem;
+      letter-spacing:2px;
+      text-transform:uppercase;
+      opacity:0.35;
+      user-select:none;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="top">
+      <div class="title">Screenshot</div>
+      <div class="controls">
+        <button id="btnStart">Share screen</button>
+        <button id="btnStop" disabled>Stop</button>
+        <button id="btnSnap" disabled>Freeze frame</button>
+        <button id="btnClearSel" disabled>Clear selection</button>
+        <button id="btnDownload" disabled>Download selection</button>
+      </div>
+    </div>
+
+    <div class="grid">
+      <div class="card">
+        <div class="cardhead">
+          <span>Preview (drag to select)</span>
+          <span class="pill" id="modePill">idle</span>
+        </div>
+
+        <div class="stage" id="stage">
+          <canvas id="previewCanvas"></canvas>
+          <canvas id="overlay"></canvas>
+        </div>
+
+        <div class="hint">
+          1) Click <b>Share screen</b> → choose a screen / window / tab.<br/>
+          2) Click <b>Freeze frame</b> to lock a frame (recommended).<br/>
+          3) Drag on the preview to select a rectangle → <b>Download selection</b>.
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="cardhead">
+          <span>Selection info</span>
+          <span class="stat" id="selInfo">none</span>
+        </div>
+        <div class="hint">
+          <div style="margin-bottom:10px;">
+            Tip: If the video looks “scaled”, that’s normal — the download will match the selected pixels of the captured frame.
+          </div>
+          <div class="hint" style="padding:0 0 12px 0; opacity:0.72;">
+            If you don’t freeze, the selection still works, but the frame may change while you drag.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="wm">Hodely</div>
+  </div>
+
+  <!-- Hidden video that receives the stream -->
+  <video id="video" autoplay playsinline style="display:none;"></video>
+
+  <script>
+    const btnStart = document.getElementById('btnStart');
+    const btnStop = document.getElementById('btnStop');
+    const btnSnap = document.getElementById('btnSnap');
+    const btnClearSel = document.getElementById('btnClearSel');
+    const btnDownload = document.getElementById('btnDownload');
+
+    const modePill = document.getElementById('modePill');
+    const selInfo = document.getElementById('selInfo');
+
+    const video = document.getElementById('video');
+    const previewCanvas = document.getElementById('previewCanvas');
+    const overlay = document.getElementById('overlay');
+
+    const pctx = previewCanvas.getContext('2d');
+    const octx = overlay.getContext('2d');
+
+    let stream = null;
+    let animId = null;
+
+    let frozen = false;          // if true: preview shows a frozen frame
+    let frozenImageData = null;  // ImageData of frozen frame (in previewCanvas pixel space)
+
+    // Selection state in overlay canvas coordinates
+    let isDragging = false;
+    let sel = null; // {x,y,w,h} in overlay canvas pixel coords
+
+    function setMode(text){
+      modePill.textContent = text;
+    }
+
+    function resizeCanvasesToStage(){
+      const stage = document.getElementById('stage');
+      const rect = stage.getBoundingClientRect();
+
+      const dpr = Math.max(1, window.devicePixelRatio || 1);
+      previewCanvas.width = Math.round(rect.width * dpr);
+      previewCanvas.height = Math.round(rect.height * dpr);
+      previewCanvas.style.width = rect.width + 'px';
+      previewCanvas.style.height = rect.height + 'px';
+
+      overlay.width = previewCanvas.width;
+      overlay.height = previewCanvas.height;
+      overlay.style.width = previewCanvas.style.width;
+      overlay.style.height = previewCanvas.style.height;
+
+      // redraw overlays
+      drawOverlay();
+      if (frozen && frozenImageData){
+        pctx.putImageData(frozenImageData, 0, 0);
+      }
+    }
+
+    window.addEventListener('resize', () => {
+      // if user resizes, safest is to unfreeze because ImageData sizes change
+      if (frozen){
+        frozen = false;
+        frozenImageData = null;
+        setMode(stream ? 'live' : 'idle');
+      }
+      sel = null;
+      updateSelInfo();
+      resizeCanvasesToStage();
+    });
+
+    function drawLiveFrame(){
+      if (!stream) return;
+
+      // Draw current video frame into previewCanvas
+      const cw = previewCanvas.width;
+      const ch = previewCanvas.height;
+
+      // Cover-fit the video into the canvas
+      const vw = video.videoWidth || 1280;
+      const vh = video.videoHeight || 720;
+
+      // cover (fill canvas, crop excess)
+      const cr = cw / ch;
+      const vr = vw / vh;
+
+      let sx=0, sy=0, sw=vw, sh=vh;
+      if (vr > cr){
+        // video wider -> crop left/right
+        sh = vh;
+        sw = vh * cr;
+        sx = (vw - sw) / 2;
+      } else {
+        // video taller -> crop top/bottom
+        sw = vw;
+        sh = vw / cr;
+        sy = (vh - sh) / 2;
+      }
+
+      pctx.clearRect(0,0,cw,ch);
+      pctx.drawImage(video, sx, sy, sw, sh, 0, 0, cw, ch);
+    }
+
+    function loop(){
+      if (!frozen){
+        drawLiveFrame();
+      }
+      drawOverlay();
+      animId = requestAnimationFrame(loop);
+    }
+
+    function stopLoop(){
+      if (animId) cancelAnimationFrame(animId);
+      animId = null;
+    }
+
+    function drawOverlay(){
+      octx.clearRect(0,0,overlay.width, overlay.height);
+
+      if (!sel) return;
+
+      // dim outside selection
+      octx.save();
+      octx.fillStyle = 'rgba(0,0,0,0.18)';
+      octx.fillRect(0,0,overlay.width, overlay.height);
+
+      // punch hole
+      octx.globalCompositeOperation = 'destination-out';
+      octx.fillRect(sel.x, sel.y, sel.w, sel.h);
+
+      // outline
+      octx.globalCompositeOperation = 'source-over';
+      octx.strokeStyle = 'rgba(0,0,0,0.85)';
+      octx.lineWidth = Math.max(2, Math.round((window.devicePixelRatio||1)));
+      octx.strokeRect(sel.x + 0.5, sel.y + 0.5, sel.w, sel.h);
+
+      // corners (little handles)
+      const s = 8 * (window.devicePixelRatio||1);
+      octx.fillStyle = 'rgba(0,0,0,0.85)';
+      octx.fillRect(sel.x - 1, sel.y - 1, s, s);
+      octx.fillRect(sel.x + sel.w - s + 1, sel.y - 1, s, s);
+      octx.fillRect(sel.x - 1, sel.y + sel.h - s + 1, s, s);
+      octx.fillRect(sel.x + sel.w - s + 1, sel.y + sel.h - s + 1, s, s);
+
+      octx.restore();
+    }
+
+    function clampRect(r){
+      // ensure positive width/height and within canvas
+      let x = Math.min(r.x, r.x + r.w);
+      let y = Math.min(r.y, r.y + r.h);
+      let w = Math.abs(r.w);
+      let h = Math.abs(r.h);
+
+      x = Math.max(0, Math.min(x, overlay.width));
+      y = Math.max(0, Math.min(y, overlay.height));
+      w = Math.max(1, Math.min(w, overlay.width - x));
+      h = Math.max(1, Math.min(h, overlay.height - y));
+      return {x, y, w, h};
+    }
+
+    function updateSelInfo(){
+      if (!sel){
+        selInfo.textContent = 'none';
+        btnClearSel.disabled = true;
+        btnDownload.disabled = true;
+        return;
+      }
+      selInfo.textContent = `${Math.round(sel.w)}×${Math.round(sel.h)} px`;
+      btnClearSel.disabled = false;
+      btnDownload.disabled = false;
+    }
+
+    function getPosInOverlay(e){
+      const rect = overlay.getBoundingClientRect();
+      const dpr = Math.max(1, window.devicePixelRatio || 1);
+      const x = (e.clientX - rect.left) * dpr;
+      const y = (e.clientY - rect.top) * dpr;
+      return {x, y};
+    }
+
+    overlay.addEventListener('mousedown', (e) => {
+      if (!stream) return;
+      isDragging = true;
+      const p = getPosInOverlay(e);
+      sel = {x: p.x, y: p.y, w: 1, h: 1};
+      updateSelInfo();
+    });
+
+    window.addEventListener('mousemove', (e) => {
+      if (!isDragging || !sel) return;
+      const p = getPosInOverlay(e);
+      sel.w = p.x - sel.x;
+      sel.h = p.y - sel.y;
+      sel = clampRect(sel);
+      updateSelInfo();
+    });
+
+    window.addEventListener('mouseup', () => {
+      if (!isDragging) return;
+      isDragging = false;
+      if (sel){
+        sel = clampRect(sel);
+        updateSelInfo();
+      }
+    });
+
+    btnClearSel.addEventListener('click', () => {
+      sel = null;
+      updateSelInfo();
+      drawOverlay();
+    });
+
+    btnStart.addEventListener('click', async () => {
+      try{
+        stream = await navigator.mediaDevices.getDisplayMedia({
+          video: { frameRate: 30 },
+          audio: false
+        });
+
+        video.srcObject = stream;
+
+        // If user stops sharing from browser UI, reflect it
+        const [track] = stream.getVideoTracks();
+        track.addEventListener('ended', () => {
+          cleanupStream();
+        });
+
+        await video.play();
+
+        frozen = false;
+        frozenImageData = null;
+        sel = null;
+
+        resizeCanvasesToStage();
+        setMode('live');
+        btnStop.disabled = false;
+        btnSnap.disabled = false;
+
+        stopLoop();
+        loop();
+      }catch(err){
+        // user cancelled or browser blocked
+        console.log(err);
+      }
+    });
+
+    function cleanupStream(){
+      stopLoop();
+      if (stream){
+        stream.getTracks().forEach(t => t.stop());
+      }
+      stream = null;
+      video.srcObject = null;
+
+      frozen = false;
+      frozenImageData = null;
+      sel = null;
+
+      pctx.clearRect(0,0,previewCanvas.width, previewCanvas.height);
+      octx.clearRect(0,0,overlay.width, overlay.height);
+
+      setMode('idle');
+      btnStop.disabled = true;
+      btnSnap.disabled = true;
+      btnClearSel.disabled = true;
+      btnDownload.disabled = true;
+      selInfo.textContent = 'none';
+    }
+
+    btnStop.addEventListener('click', cleanupStream);
+
+    btnSnap.addEventListener('click', () => {
+      if (!stream) return;
+
+      // Ensure latest frame in canvas
+      drawLiveFrame();
+
+      frozenImageData = pctx.getImageData(0,0,previewCanvas.width, previewCanvas.height);
+      frozen = true;
+
+      setMode('frozen');
+    });
+
+    btnDownload.addEventListener('click', () => {
+      if (!stream || !sel) return;
+
+      // Use frozen frame if available, otherwise snapshot current
+      if (!frozen){
+        drawLiveFrame();
+      }
+
+      const sx = Math.round(sel.x);
+      const sy = Math.round(sel.y);
+      const sw = Math.round(sel.w);
+      const sh = Math.round(sel.h);
+
+      const out = document.createElement('canvas');
+      out.width = sw;
+      out.height = sh;
+      const outCtx = out.getContext('2d');
+
+      // Draw from previewCanvas into output
+      outCtx.drawImage(previewCanvas, sx, sy, sw, sh, 0, 0, sw, sh);
+
+      // Download
+      out.toBlob((blob) => {
+        if (!blob) return;
+        const a = document.createElement('a');
+        const url = URL.createObjectURL(blob);
+        a.href = url;
+        a.download = `screenshot_${Date.now()}.png`;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+      }, 'image/png');
+    });
+
+    // init sizes
+    resizeCanvasesToStage();
+  </script>
+</body>
+</html>
