@@ -1,13 +1,13 @@
 {
-  "name": "Hodely.net",
+  "name": "Hodely",
   "short_name": "Hodely",
-  "start_url": "/?v=2",
+  "start_url": "/",
   "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#ffffff",
+  "background_color": "#000000",
+  "theme_color": "#000000",
   "icons": [
     {
-      "src": "/favicon.png?v=2",
+      "src": "/logo.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
