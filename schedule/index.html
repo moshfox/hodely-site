@@ -1,324 +1,42 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Hodely.net • Horario</title>
+  <title>Schedule</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <!-- Favicon (pestaña) -->
+  <!-- Favicon (browser tab) -->
   <link rel="icon" href="/favicon.png" type="image/png">
 
-  <!-- Manifest (app instalada) -->
+  <!-- Manifest (installed app) -->
   <link rel="manifest" href="/manifest.webmanifest">
 
-  <!-- Color barra superior app -->
+  <!-- App top bar color -->
   <meta name="theme-color" content="#000000">
 
   <!-- Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=JetBrains+Mono:wght@400;700&family=DM+Serif+Display&family=Space+Grotesk:wght@400;700&display=swap" rel="stylesheet">
 
   <style>
     *{margin:0;padding:0;box-sizing:border-box}
+
     :root{
-      --bg:#fff;
-      --fg:#000;
-      --b1: rgba(0,0,0,0.10);
-      --b2: rgba(0,0,0,0.14);
-      --glass: rgba(255,255,255,0.72);
-      --glass2: rgba(255,255,255,0.92);
-      --shadow: 0 12px 30px rgba(0,0,0,0.04);
-      --muted: rgba(0,0,0,0.55);
-      --muted2: rgba(0,0,0,0.75);
-      --soft: rgba(0,0,0,0.06);
+      --bg:#ffffff;
+      --fg:#0a0a0a;
+      --muted:rgba(0,0,0,.55);
+      --line:rgba(0,0,0,.10);
+      --panel:rgba(255,255,255,.86);
+      --panel2:rgba(255,255,255,.70);
+      --shadow: 0 18px 50px rgba(0,0,0,.10);
+      --radius:18px;
     }
 
     body{
+      background:var(--bg);
+      color:var(--fg);
       font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-      background: var(--bg);
-      color: var(--fg);
       min-height:100vh;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      padding: 22px;
-      overflow-x:hidden;
-    }
-
-    .wrap{
-      width:min(1180px, 96vw);
-      display:flex;
-      flex-direction:column;
-      gap:14px;
-    }
-
-    /* Header */
-    .topbar{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:12px;
-      flex-wrap:wrap;
-    }
-
-    .brandRow{
-      display:flex;
-      align-items:center;
-      gap:10px;
-      min-width: 260px;
-    }
-
-    .logoPill{
-      width: 44px;
-      height: 44px;
-      border-radius: 14px;
-      background:#000;
-      display:grid;
-      place-items:center;
-      box-shadow: var(--shadow);
-      border: 1px solid rgba(255,255,255,0.10);
       overflow:hidden;
-      flex: 0 0 auto;
-    }
-    .logoPill img{
-      width: 80%;
-      height: 80%;
-      object-fit: contain;
-      display:block;
-      image-rendering: auto;
-    }
-
-    .titleBlock{ display:flex; flex-direction:column; line-height:1.1; }
-    .title{
-      font-weight:800;
-      letter-spacing:-0.9px;
-      font-size:1.2rem;
-      opacity:0.92;
-    }
-    .subtitle{
-      font-size:0.85rem;
-      letter-spacing:2px;
-      text-transform:uppercase;
-      opacity:0.45;
-      margin-top:2px;
-    }
-
-    .chips{
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-      justify-content:flex-end;
-      align-items:center;
-    }
-
-    .chip{
-      border:1px solid var(--b2);
-      background: var(--glass);
-      backdrop-filter: blur(6px);
-      padding:10px 12px;
-      border-radius: 14px;
-      box-shadow: var(--shadow);
-      display:flex;
-      align-items:center;
-      gap:10px;
-      font-weight:700;
-    }
-
-    .mono{
-      font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-      font-weight:700;
-      font-size:0.88rem;
-    }
-    .muted{ opacity:0.6; font-weight:700; }
-
-    /* Layout */
-    .grid{
-      display:grid;
-      grid-template-columns: 0.95fr 1.05fr;
-      gap:14px;
-      align-items:start;
-    }
-    @media (max-width: 980px){
-      .grid{ grid-template-columns: 1fr; }
-    }
-
-    .card{
-      border:1px solid rgba(0,0,0,0.12);
-      border-radius: 18px;
-      overflow:hidden;
-      background:#fff;
-      box-shadow: var(--shadow);
-    }
-    .cardHead{
-      padding:12px 14px;
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      border-bottom:1px solid rgba(0,0,0,0.08);
-      font-size:0.92rem;
-      opacity:0.85;
-      gap: 10px;
-    }
-    .pill{
-      display:inline-block;
-      border:1px solid rgba(0,0,0,0.12);
-      border-radius:999px;
-      padding:3px 10px;
-      font-size:0.78rem;
-      opacity:0.82;
-      font-family: "JetBrains Mono", ui-monospace, monospace;
-      white-space:nowrap;
-    }
-    .cardBody{
-      padding:14px;
-      display:flex;
-      flex-direction:column;
-      gap:12px;
-    }
-
-    .big{
-      font-size:1.7rem;
-      font-weight:800;
-      letter-spacing:-1px;
-      line-height:1.1;
-    }
-
-    .row{
-      display:flex;
-      gap:10px;
-      align-items:center;
-      flex-wrap:wrap;
-    }
-
-    .stat{
-      display:flex;
-      gap:8px;
-      align-items:baseline;
-      flex-wrap:wrap;
-    }
-    .stat .k{
-      font-size:0.80rem;
-      opacity:0.55;
-      letter-spacing:1px;
-      text-transform:uppercase;
-      font-weight:800;
-    }
-    .stat .v{
-      font-size:0.98rem;
-      font-weight:800;
-      opacity:0.92;
-    }
-
-    .progress{
-      width:100%;
-      height: 10px;
-      border-radius: 999px;
-      background: var(--soft);
-      border: 1px solid rgba(0,0,0,0.08);
-      overflow:hidden;
-    }
-    .bar{
-      height:100%;
-      width:0%;
-      background: rgba(0,0,0,0.82);
-      border-radius:999px;
-      transition: width .25s ease;
-    }
-
-    .note{
-      font-size:0.92rem;
-      line-height:1.35;
-      opacity:0.75;
-    }
-
-    /* Table */
-    .tableWrap{
-      overflow:auto;
-    }
-    table{
-      width:100%;
-      border-collapse:separate;
-      border-spacing:10px;
-      min-width: 760px;
-    }
-    th{
-      text-align:left;
-      font-size:0.85rem;
-      letter-spacing:2px;
-      text-transform:uppercase;
-      opacity:0.55;
-      padding: 0 2px;
-      white-space:nowrap;
-    }
-
-    td.time{
-      width: 110px;
-      vertical-align:top;
-      padding-top: 10px;
-      font-family: "JetBrains Mono", ui-monospace, monospace;
-      font-size:0.82rem;
-      opacity:0.75;
-      white-space:nowrap;
-    }
-
-    .slot{
-      border:1px solid rgba(0,0,0,0.12);
-      background: rgba(255,255,255,0.75);
-      border-radius:16px;
-      padding:10px 10px;
-      box-shadow: 0 8px 18px rgba(0,0,0,0.03);
-      min-height: 68px;
-      display:flex;
-      flex-direction:column;
-      gap:6px;
-    }
-    .slot.break{
-      background: rgba(0,0,0,0.03);
-      border-style:dashed;
-      min-height: 48px;
-      justify-content:center;
-    }
-    .slot.now{
-      border-color: rgba(0,0,0,0.28);
-      box-shadow: 0 14px 30px rgba(0,0,0,0.06);
-      transform: translateY(-1px);
-    }
-
-    .subj{
-      font-weight:800;
-      letter-spacing:-0.2px;
-      font-size:0.95rem;
-      line-height:1.15;
-    }
-    .teacher{
-      font-size:0.82rem;
-      opacity:0.7;
-      font-weight:700;
-    }
-    .tags{
-      display:flex;
-      gap:6px;
-      flex-wrap:wrap;
-    }
-    .tag{
-      border:1px solid rgba(0,0,0,0.12);
-      border-radius:999px;
-      padding:2px 8px;
-      font-size:0.72rem;
-      opacity:0.82;
-      font-family:"JetBrains Mono", ui-monospace, monospace;
-      white-space:nowrap;
-    }
-
-    .wm{
-      position:fixed;
-      bottom:14px;
-      right:16px;
-      font-size:0.78rem;
-      letter-spacing:2px;
-      text-transform:uppercase;
-      opacity:0.35;
-      user-select:none;
-      pointer-events:none;
     }
 
     /* =========================
@@ -339,7 +57,7 @@
       place-items: center;
       z-index: 50;
       transition: opacity .2s ease, transform .2s ease, background .2s ease;
-      opacity: 0.74;
+      opacity: 0.78;
     }
     .menu-btn:hover{
       opacity: 1;
@@ -349,7 +67,7 @@
     .burger{
       width: 18px;
       height: 12px;
-      display: flex;
+      display:flex;
       flex-direction: column;
       justify-content: space-between;
     }
@@ -361,7 +79,7 @@
       opacity:0.85;
     }
 
-    .overlayMenu{
+    .overlay{
       position: fixed;
       inset: 0;
       background: rgba(0,0,0,0.18);
@@ -370,7 +88,7 @@
       transition: opacity .22s ease;
       z-index: 40;
     }
-    .overlayMenu.show{
+    .overlay.show{
       opacity: 1;
       pointer-events: auto;
     }
@@ -435,38 +153,341 @@
       background: rgba(0,0,0,0.03);
       border-color: rgba(0,0,0,0.18);
     }
-    .nav a .left{
-      display:flex;
-      gap:10px;
-      align-items:center;
-      min-width: 0;
-    }
-    .path{
+    .nav a .left{ display:flex; gap:10px; align-items:center; }
+    .pill{
       font-family: "JetBrains Mono", ui-monospace, monospace;
       font-size: 0.78rem;
       padding: 3px 8px;
       border-radius: 999px;
       border: 1px solid rgba(0,0,0,0.12);
       opacity: 0.85;
-      flex: 0 0 auto;
-      white-space:nowrap;
     }
-    .label{
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      font-weight:700;
-    }
-    .arrow{
-      opacity:0.45;
-      flex: 0 0 auto;
-    }
+    .arrow{ opacity:0.45; }
 
-    .hintMenu{
+    .hint{
       margin-top: auto;
       padding: 10px 8px;
       font-size: 0.8rem;
       opacity: 0.55;
+    }
+
+    /* =========================
+       MAIN LAYOUT
+       ========================= */
+    .wrap{
+      width: min(1240px, 96vw);
+      height: min(860px, 90vh);
+      margin: 0 auto;
+      position: relative;
+      top: 50%;
+      transform: translateY(-50%);
+      display:flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .header{
+      display:flex;
+      align-items:center;
+      justify-content: space-between;
+      padding: 8px 6px;
+    }
+    .brandRow{
+      display:flex;
+      align-items:center;
+      gap: 12px;
+      min-width: 0;
+    }
+    .logoChip{
+      width: 44px;
+      height: 44px;
+      border-radius: 14px;
+      overflow:hidden;
+      background:#000;
+      border: 1px solid rgba(0,0,0,.10);
+      display:grid;
+      place-items:center;
+      box-shadow: 0 10px 22px rgba(0,0,0,.12);
+      flex: 0 0 auto;
+    }
+    .logoChip img{
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display:block;
+    }
+    .titleBox{
+      min-width:0;
+      display:flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .title{
+      font-weight: 800;
+      letter-spacing:-1px;
+      font-size: 1.25rem;
+      white-space: nowrap;
+      overflow:hidden;
+      text-overflow: ellipsis;
+    }
+    .subtitle{
+      font-size: .82rem;
+      opacity: .6;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      white-space: nowrap;
+      overflow:hidden;
+      text-overflow: ellipsis;
+    }
+    .clock{
+      font-family: "JetBrains Mono", ui-monospace, monospace;
+      font-size: .95rem;
+      opacity: .78;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.70);
+      padding: 10px 12px;
+      border-radius: 14px;
+      backdrop-filter: blur(10px);
+    }
+
+    .card{
+      flex: 1;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.70);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+      display:grid;
+      grid-template-columns: 85% 15%;
+      min-height: 0;
+    }
+
+    /* schedule area */
+    .schedule{
+      border-right: 1px solid var(--line);
+      background: rgba(255,255,255,.78);
+      padding: 14px;
+      min-width: 0;
+      min-height: 0;
+      display:flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .legend{
+      display:flex;
+      align-items:center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 4px 2px 10px 2px;
+    }
+    .legend .note{
+      font-size: .88rem;
+      opacity: .70;
+    }
+    .legend .chips{
+      display:flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+    .chip{
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.70);
+      border-radius: 999px;
+      padding: 6px 10px;
+      font-size: .78rem;
+      opacity: .9;
+      display:flex;
+      align-items:center;
+      gap: 8px;
+      white-space: nowrap;
+    }
+    .dot{
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: rgba(0,0,0,.22);
+    }
+    .dot.now{ background: rgba(0,0,0,.95); }
+    .dot.next{ background: rgba(0,0,0,.55); }
+
+    .grid{
+      flex: 1;
+      min-height: 0;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      overflow:hidden;
+      display:grid;
+      grid-template-columns: 110px repeat(5, 1fr);
+      grid-auto-rows: minmax(76px, 1fr);
+      background: #fff;
+    }
+
+    .cell{
+      border-right: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+      padding: 10px 10px;
+      display:flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 6px;
+      min-width: 0;
+    }
+    .cell:last-child{ border-right:none; }
+
+    .head{
+      background: rgba(0,0,0,.03);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      font-size: .75rem;
+      opacity: .78;
+      align-items:center;
+      justify-content:center;
+    }
+    .time{
+      background: rgba(0,0,0,.02);
+      font-family: "JetBrains Mono", ui-monospace, monospace;
+      font-size: .78rem;
+      opacity: .78;
+      justify-content:center;
+    }
+
+    .subject{
+      font-weight: 700;
+      letter-spacing: -.2px;
+      font-size: .95rem;
+      white-space: nowrap;
+      overflow:hidden;
+      text-overflow: ellipsis;
+    }
+    .meta{
+      font-size: .78rem;
+      opacity: .62;
+      white-space: nowrap;
+      overflow:hidden;
+      text-overflow: ellipsis;
+    }
+
+    .isBreak .subject{ font-weight: 700; opacity: .55; }
+    .isBreak .meta{ display:none; }
+    .isBreak{ background: rgba(0,0,0,.02); }
+
+    .nowCell{
+      outline: 2px solid rgba(0,0,0,.92);
+      outline-offset: -2px;
+      background: rgba(0,0,0,.03);
+    }
+    .nextCell{
+      outline: 2px dashed rgba(0,0,0,.35);
+      outline-offset: -2px;
+      background: rgba(0,0,0,.02);
+    }
+
+    /* info panel */
+    .info{
+      background: rgba(255,255,255,.72);
+      padding: 14px 12px;
+      min-width: 0;
+      display:flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .panel{
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.70);
+      border-radius: 16px;
+      padding: 12px;
+      backdrop-filter: blur(10px);
+    }
+    .panel h3{
+      font-size: .78rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      opacity: .7;
+      margin-bottom: 8px;
+    }
+    .big{
+      font-weight: 800;
+      letter-spacing: -0.8px;
+      font-size: 1.05rem;
+      line-height: 1.1;
+      margin-bottom: 6px;
+      word-break: break-word;
+    }
+    .small{
+      font-size: .82rem;
+      opacity: .7;
+      line-height: 1.3;
+    }
+
+    .bar{
+      height: 10px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: rgba(0,0,0,.03);
+      overflow:hidden;
+      margin-top: 10px;
+    }
+    .fill{
+      height: 100%;
+      width: 0%;
+      background: rgba(0,0,0,.90);
+      border-radius: 999px;
+      transition: width .35s ease;
+    }
+
+    .row{
+      display:flex;
+      justify-content: space-between;
+      gap: 10px;
+      font-family: "JetBrains Mono", ui-monospace, monospace;
+      font-size: .78rem;
+      opacity: .78;
+      margin-top: 10px;
+    }
+
+    .select{
+      width: 100%;
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.78);
+      padding: 10px 10px;
+      font-family: Inter, system-ui, sans-serif;
+      font-size: .92rem;
+      outline: none;
+    }
+
+    .mutedLine{
+      border-top: 1px solid var(--line);
+      margin: 8px 0 0;
+      padding-top: 10px;
+      font-size: .8rem;
+      opacity: .6;
+      line-height: 1.35;
+    }
+
+    @media (max-width: 980px){
+      body{ overflow:auto; }
+      .wrap{
+        height: auto;
+        top: 0;
+        transform:none;
+        padding: 84px 0 28px;
+      }
+      .card{ grid-template-columns: 1fr; }
+      .schedule{ border-right:none; border-bottom: 1px solid var(--line); }
+      .grid{ grid-template-columns: 96px repeat(5, 1fr); }
+    }
+    @media (max-width: 680px){
+      .grid{
+        grid-template-columns: 88px repeat(5, 1fr);
+        grid-auto-rows: minmax(70px, 1fr);
+      }
+      .subject{ font-size: .88rem; }
+      .meta{ font-size: .76rem; }
+      .clock{ display:none; }
     }
   </style>
 </head>
@@ -474,13 +495,11 @@
 <body>
   <!-- Menu Button -->
   <button class="menu-btn" id="menuBtn" aria-label="Open menu">
-    <div class="burger" aria-hidden="true">
-      <span></span><span></span><span></span>
-    </div>
+    <div class="burger" aria-hidden="true"><span></span><span></span><span></span></div>
   </button>
 
   <!-- Overlay -->
-  <div class="overlayMenu" id="overlayMenu"></div>
+  <div class="overlay" id="overlay"></div>
 
   <!-- Sidebar -->
   <aside class="sidebar" id="sidebar" aria-label="Navigation menu">
@@ -491,605 +510,530 @@
 
     <nav class="nav">
       <a href="https://hodely.net" title="Go to hodely.net">
-        <div class="left">
-          <span class="path">/</span>
-          <span class="label">Home</span>
-        </div>
+        <div class="left"><span class="pill">/</span><span>Home</span></div>
         <span class="arrow">↗</span>
       </a>
 
-      <a href="https://hodely.net/periodictable" title="Go to hodely.net/periodictable">
-        <div class="left">
-          <span class="path">/periodictable</span>
-          <span class="label">Periodic Table</span>
-        </div>
-        <span class="arrow">↗</span>
-      </a>
-
-      <a href="https://hodely.net/screenshot" title="Go to hodely.net/screenshot">
-        <div class="left">
-          <span class="path">/screenshot</span>
-          <span class="label">Screenshot</span>
-        </div>
-        <span class="arrow">↗</span>
-      </a>
-
-      <a href="https://hodely.net/VerdaNet" title="Go to hodely.net/VerdaNet">
-        <div class="left">
-          <span class="path">/VerdaNet</span>
-          <span class="label">VerdaNet</span>
-        </div>
+      <a href="https://hodely.net/schedule" title="Go to hodely.net/schedule">
+        <div class="left"><span class="pill">/schedule</span><span>Schedule</span></div>
         <span class="arrow">↗</span>
       </a>
 
       <a href="https://hodely.net/a" title="Go to hodely.net/a">
-        <div class="left">
-          <span class="path">/a</span>
-          <span class="label">Project A</span>
-        </div>
+        <div class="left"><span class="pill">/a</span><span>A</span></div>
         <span class="arrow">↗</span>
       </a>
 
-      <a href="https://hodely.net/horario" title="You are here">
-        <div class="left">
-          <span class="path">/horario</span>
-          <span class="label">Horario</span>
-        </div>
-        <span class="arrow">•</span>
+      <a href="https://hodely.net/VerdaNet" title="Go to hodely.net/VerdaNet">
+        <div class="left"><span class="pill">/VerdaNet</span><span>VerdaNet</span></div>
+        <span class="arrow">↗</span>
+      </a>
+
+      <a href="https://hodely.net/screenshot" title="Go to hodely.net/screenshot">
+        <div class="left"><span class="pill">/screenshot</span><span>Screenshot</span></div>
+        <span class="arrow">↗</span>
+      </a>
+
+      <a href="https://hodely.net/periodictable" title="Go to hodely.net/periodictable">
+        <div class="left"><span class="pill">/table</span><span>Periodic Table</span></div>
+        <span class="arrow">↗</span>
       </a>
     </nav>
 
-    <div class="hintMenu">Tip: press <b>ESC</b> to close.</div>
+    <div class="hint">Tip: press <b>ESC</b> to close.</div>
   </aside>
 
-  <div class="wrap">
-    <div class="topbar">
+  <main class="wrap" role="main">
+    <div class="header">
       <div class="brandRow">
-        <div class="logoPill" title="logo">
-          <img src="/logo.png" alt="Hodely logo">
+        <div class="logoChip" title="logo">
+          <img src="/logo.png" alt="App logo">
         </div>
-        <div class="titleBlock">
-          <div class="title">Horario • 4t ESO C</div>
-          <div class="subtitle">Live schedule</div>
-        </div>
-      </div>
-
-      <div class="chips">
-        <div class="chip">
-          <span class="muted">Ahora:</span>
-          <span class="mono" id="nowTime">--:--:--</span>
-        </div>
-        <div class="chip">
-          <span class="muted">Día:</span>
-          <span class="mono" id="nowDay">---</span>
+        <div class="titleBox">
+          <div class="title">Schedule</div>
+          <div class="subtitle">4th ESO • live tracker</div>
         </div>
       </div>
+      <div class="clock" id="clock">--:--:--</div>
     </div>
 
-    <div class="grid">
-      <!-- Status card -->
-      <section class="card">
-        <div class="cardHead">
-          <span>Estado</span>
-          <span class="pill" id="modePill">idle</span>
+    <section class="card" aria-label="Schedule and status panel">
+      <div class="schedule">
+        <div class="legend">
+          <div class="note" id="todayLabel">Today: —</div>
+          <div class="chips" aria-hidden="true">
+            <div class="chip"><span class="dot now"></span>Now</div>
+            <div class="chip"><span class="dot next"></span>Next</div>
+          </div>
         </div>
-        <div class="cardBody">
-          <div class="big" id="currentTitle">—</div>
 
+        <div class="grid" id="grid" aria-label="Weekly schedule grid">
+          <!-- Header row -->
+          <div class="cell head"></div>
+          <div class="cell head">Mon</div>
+          <div class="cell head">Tue</div>
+          <div class="cell head">Wed</div>
+          <div class="cell head">Thu</div>
+          <div class="cell head">Fri</div>
+          <!-- Rows injected by JS -->
+        </div>
+      </div>
+
+      <aside class="info">
+        <div class="panel">
+          <h3>Optative</h3>
+          <select class="select" id="optativeSelect">
+            <option value="physchem">Physics &amp; Chemistry</option>
+            <option value="bio">Biology &amp; Geology</option>
+            <option value="tech">Technology</option>
+          </select>
+          <div class="mutedLine">
+            Only these optatives are shown (others are removed).
+          </div>
+        </div>
+
+        <div class="panel">
+          <h3>Now</h3>
+          <div class="big" id="nowTitle">—</div>
+          <div class="small" id="nowMeta">—</div>
+
+          <div class="bar" aria-label="Class progress">
+            <div class="fill" id="progressFill"></div>
+          </div>
           <div class="row">
-            <div class="stat">
-              <span class="k">Acaba en</span>
-              <span class="v mono" id="endsIn">—</span>
-            </div>
-            <div class="stat">
-              <span class="k">Siguiente</span>
-              <span class="v" id="nextUp">—</span>
-            </div>
-          </div>
-
-          <div class="progress" aria-hidden="true">
-            <div class="bar" id="progressBar"></div>
-          </div>
-
-          <div class="note" id="noteText">
-            Detectando horario…
+            <span id="timeLeft">—</span>
+            <span id="endsAt">—</span>
           </div>
         </div>
-      </section>
 
-      <!-- Weekly table card -->
-      <section class="card">
-        <div class="cardHead">
-          <span>Semana</span>
-          <span class="pill mono" id="tzPill">Europe/Madrid</span>
+        <div class="panel">
+          <h3>Next</h3>
+          <div class="big" id="nextTitle">—</div>
+          <div class="small" id="nextMeta">—</div>
+          <div class="mutedLine" id="untilNext">—</div>
         </div>
-        <div class="cardBody">
-          <div class="tableWrap" id="tableWrap">
-            <!-- injected -->
-          </div>
-        </div>
-      </section>
-    </div>
-  </div>
-
-  <div class="wm">Hodely</div>
+      </aside>
+    </section>
+  </main>
 
   <script>
-    // ===== MENU =====
+    /* =========================
+       SIDEBAR
+       ========================= */
     const menuBtn = document.getElementById('menuBtn');
     const sidebar = document.getElementById('sidebar');
-    const overlayMenu = document.getElementById('overlayMenu');
+    const overlay = document.getElementById('overlay');
 
-    function openMenu(){
-      sidebar.classList.add('open');
-      overlayMenu.classList.add('show');
-    }
-    function closeMenu(){
-      sidebar.classList.remove('open');
-      overlayMenu.classList.remove('show');
-    }
-    function toggleMenu(){
-      sidebar.classList.contains('open') ? closeMenu() : openMenu();
-    }
+    function openMenu(){ sidebar.classList.add('open'); overlay.classList.add('show'); }
+    function closeMenu(){ sidebar.classList.remove('open'); overlay.classList.remove('show'); }
+    function toggleMenu(){ sidebar.classList.contains('open') ? closeMenu() : openMenu(); }
 
     menuBtn.addEventListener('click', toggleMenu);
-    overlayMenu.addEventListener('click', closeMenu);
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') closeMenu();
-    });
+    overlay.addEventListener('click', closeMenu);
+    document.addEventListener('keydown', (e) => { if(e.key === 'Escape') closeMenu(); });
 
-    // ===== SCHEDULE DATA (from your image) =====
-    // Periods include breaks, so the "engine" can say "Pati" and also show next subject.
-    const PERIODS = [
-      { id:"p1", start:"08:30", end:"09:30", type:"class" },
-      { id:"p2", start:"09:30", end:"10:30", type:"class" },
-      { id:"b1", start:"10:30", end:"11:00", type:"break", label:"Pati" },
-      { id:"p3", start:"11:00", end:"11:55", type:"class" },
-      { id:"p4", start:"11:55", end:"12:50", type:"class" },
-      { id:"b2", start:"12:50", end:"13:10", type:"break", label:"Pati" },
-      { id:"p5", start:"13:10", end:"14:05", type:"class" },
-      { id:"p6", start:"14:05", end:"15:00", type:"class" },
-    ];
+    /* =========================
+       SCHEDULE DATA
+       (based on the image timetable)
+       ========================= */
 
-    // Monday..Friday = 1..5 (JS getDay(): Sun=0, Mon=1..Sat=6)
-    // Each class slot can contain multiple items (because the timetable shows several lines like VIP/Tech, etc.)
-    const WEEK = {
-      1: { // Dilluns
-        p1: [
-          { subj:"Emprenedoria I", teacher:"Jordi F", tags:["4t"] },
-          { subj:"Física i química", teacher:"Ruth", tags:["4t"] },
-          { subj:"VIP I", teacher:"Helen", tags:["4t","Vip"] },
-        ],
-        p2: [
-          { subj:"Castellà", teacher:"Víctor", tags:["4t"] },
-        ],
-        p3: [
-          { subj:"Matemàtiques", teacher:"Josep Maria", tags:["4t"] },
-        ],
-        p4: [
-          { subj:"Català", teacher:"Eugènia", tags:["4t"] },
-        ],
-        p5: [
-          { subj:"Biologia i Geologia", teacher:"Lluís", tags:["4t"] },
-          { subj:"Informàtica", teacher:"Robert", tags:["4t"] },
-          { subj:"VIP II", teacher:"Helen", tags:["4t","Vip"] },
-        ],
-        p6: [
-          { subj:"Matemàtiques", teacher:"Josep Maria", tags:["4t"] },
-        ],
-      },
-
-      2: { // Dimarts
-        p1: [
-          { subj:"Biologia i Geologia", teacher:"Lluís", tags:["4t"] },
-          { subj:"Informàtica", teacher:"Robert", tags:["4t"] },
-          { subj:"VIP II", teacher:"Helen", tags:["4t","Vip"] },
-        ],
-        p2: [
-          { subj:"Emprenedoria I", teacher:"Jordi F", tags:["4t"] },
-          { subj:"Física i química", teacher:"Ruth", tags:["4t"] },
-          { subj:"VIP I", teacher:"Helen", tags:["4t","Vip"] },
-        ],
-        p3: [
-          { subj:"Anglès", teacher:"Anna C", tags:["4t"] },
-        ],
-        p4: [
-          { subj:"CS", teacher:"Albert", tags:["4t"] },
-        ],
-        p5: [
-          { subj:"Català", teacher:"Eugènia", tags:["4t"] },
-        ],
-        p6: [
-          { subj:"Alemany", teacher:"Jordi M", tags:["4t"] },
-          { subj:"Emprenedoria II", teacher:"Jordi F", tags:["4t"] },
-          { subj:"Música", teacher:"Anna O", tags:["4t"] },
-          { subj:"Tecnologia", teacher:"Raquel", tags:["4t","Tecno"] },
-        ],
-      },
-
-      3: { // Dimecres
-        p1: [
-          { subj:"Castellà", teacher:"Víctor", tags:["4t"] },
-        ],
-        p2: [
-          { subj:"Alemany", teacher:"Jordi M", tags:["4t"] },
-          { subj:"Emprenedoria II", teacher:"Jordi F", tags:["4t"] },
-          { subj:"Música", teacher:"Anna O", tags:["4t"] },
-          { subj:"Tecnologia", teacher:"Raquel", tags:["4t","Tecno"] },
-        ],
-        p3: [
-          { subj:"Anglès", teacher:"Anna C", tags:["4t"] },
-        ],
-        p4: [
-          { subj:"CV", teacher:"Òscar", tags:["4t"] },
-        ],
-        p5: [
-          { subj:"Matemàtiques", teacher:"Josep Maria", tags:["4t"] },
-        ],
-        p6: [
-          { subj:"CS", teacher:"Albert", tags:["4t"] },
-        ],
-      },
-
-      4: { // Dijous
-        p1: [
-          { subj:"Científico-tecnològica", teacher:"Lluís", tags:["4t"] },
-        ],
-        p2: [
-          { subj:"Matemàtiques", teacher:"Josep Maria", tags:["4t"] },
-        ],
-        p3: [
-          { subj:"Castellà", teacher:"Víctor", tags:["4t"] },
-        ],
-        p4: [
-          { subj:"Anglès", teacher:"Anna C", tags:["4t"] },
-        ],
-        p5: [
-          { subj:"EF", teacher:"Robert", tags:["4t","Gimnàs"] },
-        ],
-        p6: [
-          { subj:"—", teacher:"", tags:["Libre"] }, // en tu imagen aparece vacío
-        ],
-      },
-
-      5: { // Divendres
-        p1: [
-          { subj:"Biologia i Geologia", teacher:"Lluís", tags:["4t"] },
-          { subj:"Informàtica", teacher:"Robert", tags:["4t"] },
-          { subj:"VIP II", teacher:"Helen", tags:["4t","Vip"] },
-        ],
-        p2: [
-          { subj:"Emprenedoria I", teacher:"Jordi F", tags:["4t"] },
-          { subj:"Física i química", teacher:"Ruth", tags:["4t"] },
-          { subj:"VIP I", teacher:"Helen", tags:["4t","Vip"] },
-        ],
-        p3: [
-          { subj:"Alemany", teacher:"Jordi M", tags:["4t"] },
-          { subj:"Emprenedoria II", teacher:"Jordi F", tags:["4t"] },
-          { subj:"Música", teacher:"Anna O", tags:["4t"] },
-          { subj:"Tecnologia", teacher:"Raquel", tags:["4t","Tecno"] },
-        ],
-        p4: [
-          { subj:"Català", teacher:"Eugènia", tags:["4t"] },
-        ],
-        p5: [
-          { subj:"CS", teacher:"Albert", tags:["4t"] },
-        ],
-        p6: [
-          { subj:"Tutoria", teacher:"Josep Maria", tags:["4t"] },
-        ],
-      },
+    const DAYS = ["Mon","Tue","Wed","Thu","Fri"];
+    const dayIndexByJs = (jsDay) => {
+      // JS: 0 Sun, 1 Mon ... 6 Sat
+      if (jsDay === 0 || jsDay === 6) return -1;
+      return jsDay - 1; // Mon=0 ... Fri=4
     };
 
-    const DAYS = [
-      { key: 1, label: "Dilluns" },
-      { key: 2, label: "Dimarts" },
-      { key: 3, label: "Dimecres" },
-      { key: 4, label: "Dijous" },
-      { key: 5, label: "Divendres" },
+    // time slots (school day)
+    const SLOTS = [
+      { key:"0830", start:"08:30", end:"09:30" },
+      { key:"0930", start:"09:30", end:"10:30" },
+      { key:"break1", start:"10:30", end:"11:00", break:true, label:"Break" },
+      { key:"1100", start:"11:00", end:"11:55" },
+      { key:"1155", start:"11:55", end:"12:50" },
+      { key:"break2", start:"12:50", end:"13:10", break:true, label:"Break" },
+      { key:"1310", start:"13:10", end:"14:05" },
+      { key:"1405", start:"14:05", end:"15:00" }
     ];
 
-    const TZ = "Europe/Madrid";
+    // Only show these optatives (others removed).
+    const OPTATIVES = {
+      physchem: { name: "Physics & Chemistry", teacher: "Ruth" },
+      bio:      { name: "Biology & Geology",   teacher: "Lluís" },
+      tech:     { name: "Technology",          teacher: "Raquel" }
+    };
 
-    // ===== Helpers =====
-    function pad2(n){ return String(n).padStart(2,'0'); }
+    // Where the original timetable had multiple parallel options, we replace with a single optative.
+    // That matches your instruction: keep only Phys/Chem, Biology, Tech and remove other optatives.
+    const OPTATIVE_PLACEHOLDER = { type:"optative" };
 
-    function hmToMin(hm){
-      const [h,m]=hm.split(':').map(Number);
-      return h*60+m;
-    }
-
-    function formatDuration(ms){
-      const s = Math.max(0, Math.floor(ms/1000));
-      const hh = Math.floor(s/3600);
-      const mm = Math.floor((s%3600)/60);
-      const ss = s%60;
-      return hh>0 ? `${pad2(hh)}:${pad2(mm)}:${pad2(ss)}` : `${pad2(mm)}:${pad2(ss)}`;
-    }
-
-    function nowInTZ(){
-      const dt = new Date();
-      // Extract parts in TZ to avoid local timezone mismatch
-      const parts = new Intl.DateTimeFormat('en-GB', {
-        timeZone: TZ,
-        weekday: 'short',
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit',
-        hour12: false
-      }).formatToParts(dt);
-
-      const map = Object.fromEntries(parts.map(p => [p.type, p.value]));
-      const time = `${map.hour}:${map.minute}:${map.second}`;
-      const hm = `${map.hour}:${map.minute}`;
-
-      // weekday short in en-GB -> Mon/Tue...
-      const wd = new Intl.DateTimeFormat('en-GB', { timeZone: TZ, weekday:'short' }).format(dt);
-      const dayIndexMap = { Sun:0, Mon:1, Tue:2, Wed:3, Thu:4, Fri:5, Sat:6 };
-      const day = dayIndexMap[wd] ?? dt.getDay();
-
-      return { dt, day, time, hm };
-    }
-
-    function itemsToText(items){
-      if (!items || items.length===0) return "—";
-      // If it's the "— Libre" slot
-      if (items.length===1 && items[0].subj==="—") return "Libre";
-      // Show first subject name with +n more if multiple
-      const names = items.map(x => x.subj).filter(Boolean);
-      return names.length>1 ? `${names[0]} +${names.length-1}` : names[0];
-    }
-
-    function buildSlotHTML(items){
-      if (!items || items.length===0) return `<div class="subj">—</div>`;
-      if (items.length===1 && items[0].subj==="—"){
-        return `
-          <div class="subj">Libre</div>
-          <div class="teacher">—</div>
-          <div class="tags"><span class="tag">Libre</span></div>
-        `;
+    // Fixed subjects (English labels)
+    // NOTE: We keep core classes as they appear. Multi-option blocks become OPTATIVE_PLACEHOLDER.
+    const WEEK = {
+      Mon: {
+        "0830": OPTATIVE_PLACEHOLDER,                 // was: Entrepreneurship I / PhysChem / VIP I
+        "0930": { name:"Spanish Language", teacher:"Víctor" },
+        "1100": { name:"Mathematics", teacher:"Josep Maria" },
+        "1155": { name:"Catalan Language", teacher:"Eugènia" },
+        "1310": OPTATIVE_PLACEHOLDER,                 // was: Biology/Computing/VIP II
+        "1405": { name:"Mathematics", teacher:"Josep Maria" }
+      },
+      Tue: {
+        "0830": OPTATIVE_PLACEHOLDER,                 // was: Biology/Computing/VIP II
+        "0930": OPTATIVE_PLACEHOLDER,                 // was: Entrepreneurship I / PhysChem / VIP I
+        "1100": { name:"English", teacher:"Anna C" },
+        "1155": { name:"Social Sciences", teacher:"Albert" }, // "CS"
+        "1310": { name:"Catalan Language", teacher:"Eugènia" },
+        "1405": OPTATIVE_PLACEHOLDER                  // was: German / Entrepreneurship II / Music / Technology
+      },
+      Wed: {
+        "0830": { name:"Spanish Language", teacher:"Víctor" },
+        "0930": OPTATIVE_PLACEHOLDER,                 // was: German / Entrepreneurship II / Music / Technology
+        "1100": { name:"English", teacher:"Anna C" },
+        "1155": { name:"Culture & Values", teacher:"Òscar" }, // "CV"
+        "1310": { name:"Mathematics", teacher:"Josep Maria" },
+        "1405": { name:"Social Sciences", teacher:"Albert" }  // "CS"
+      },
+      Thu: {
+        "0830": { name:"Science & Technology", teacher:"Lluís" }, // "Cientifico-tecnologica"
+        "0930": { name:"Mathematics", teacher:"Josep Maria" },
+        "1100": { name:"Spanish Language", teacher:"Víctor" },
+        "1155": { name:"English", teacher:"Anna C" },
+        "1310": { name:"Physical Education", teacher:"Robert", room:"Gym" },
+        "1405": { name:"—", teacher:"", empty:true } // blank in the timetable
+      },
+      Fri: {
+        "0830": OPTATIVE_PLACEHOLDER,                 // was: Biology/Computing/VIP II
+        "0930": OPTATIVE_PLACEHOLDER,                 // was: Entrepreneurship I / PhysChem / VIP I
+        "1100": OPTATIVE_PLACEHOLDER,                 // was: German / Entrepreneurship II / Music / Technology
+        "1155": { name:"Catalan Language", teacher:"Eugènia" },
+        "1310": { name:"Social Sciences", teacher:"Albert" },
+        "1405": { name:"Tutoring", teacher:"Josep Maria" }
       }
-      return items.map(it => {
-        const tags = (it.tags||[]).map(t => `<span class="tag">${t}</span>`).join('');
-        return `
-          <div>
-            <div class="subj">${escapeHtml(it.subj || "—")}</div>
-            <div class="teacher">${escapeHtml(it.teacher || "")}</div>
-            ${tags ? `<div class="tags">${tags}</div>` : ``}
-          </div>
-        `;
-      }).join('<div style="height:8px"></div>');
-    }
+    };
 
-    function escapeHtml(str){
-      return String(str).replace(/[&<>"']/g, m => ({
-        "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
-      }[m]));
-    }
+    /* =========================
+       RENDER GRID
+       ========================= */
+    const grid = document.getElementById('grid');
+    const optativeSelect = document.getElementById('optativeSelect');
 
-    function getPeriodByTime(min){
-      // returns {period, idx} where min is minute-of-day
-      for (let i=0;i<PERIODS.length;i++){
-        const p = PERIODS[i];
-        const s = hmToMin(p.start);
-        const e = hmToMin(p.end);
-        if (min >= s && min < e) return { period:p, idx:i };
+    const cellMap = new Map(); // key: `${day}-${slotKey}` -> element
+
+    function minutesFromHHMM(hhmm){
+      const [h,m] = hhmm.split(":").map(Number);
+      return h*60 + m;
+    }
+    function pad2(n){ return String(n).padStart(2,"0"); }
+
+    function resolveEntry(entry, optKey){
+      if (!entry) return { name:"—", teacher:"", empty:true };
+      if (entry.type === "optative"){
+        const o = OPTATIVES[optKey] || OPTATIVES.physchem;
+        return { name: o.name, teacher: o.teacher, optative:true };
       }
-      return null;
+      return entry;
     }
 
-    function findNextRelevant(dayKey, fromIdx){
-      // finds next period in the same day after fromIdx that is class or break (anything)
-      for (let j=fromIdx+1;j<PERIODS.length;j++){
-        const p = PERIODS[j];
-        if (p.type==="break"){
-          return { period:p, items:null };
-        }
-        const items = (WEEK[dayKey] && WEEK[dayKey][p.id]) ? WEEK[dayKey][p.id] : [];
-        return { period:p, items };
-      }
-      return null;
-    }
+    function buildGrid(){
+      // remove old rows (keep first 6 header cells)
+      while(grid.children.length > 6) grid.removeChild(grid.lastChild);
+      cellMap.clear();
 
-    // ===== Render table =====
-    function renderTable(highlight){
-      // highlight: {dayKey, periodId} or null
-      const t = document.createElement('table');
+      const optKey = optativeSelect.value;
 
-      const thead = document.createElement('thead');
-      const hr = document.createElement('tr');
-      hr.innerHTML = `<th></th>` + DAYS.map(d => `<th>${d.label}</th>`).join('');
-      thead.appendChild(hr);
+      for (const slot of SLOTS){
+        // time column
+        const t = document.createElement('div');
+        t.className = "cell time";
+        t.textContent = `${slot.start}–${slot.end}`;
+        grid.appendChild(t);
 
-      const tbody = document.createElement('tbody');
+        for (const day of DAYS){
+          const c = document.createElement('div');
+          const id = `${day}-${slot.key}`;
+          c.dataset.day = day;
+          c.dataset.slot = slot.key;
 
-      for (const p of PERIODS){
-        const tr = document.createElement('tr');
-
-        const tdTime = document.createElement('td');
-        tdTime.className = 'time';
-        tdTime.textContent = `${p.start}–${p.end}`;
-        tr.appendChild(tdTime);
-
-        for (const d of DAYS){
-          const td = document.createElement('td');
-
-          const isNow = highlight && highlight.dayKey === d.key && highlight.periodId === p.id;
-
-          if (p.type==="break"){
-            td.innerHTML = `
-              <div class="slot break ${isNow ? 'now' : ''}">
-                <div class="subj">${p.label || 'Pati'}</div>
-                <div class="teacher">descanso</div>
-              </div>
-            `;
+          if (slot.break){
+            c.className = "cell isBreak";
+            c.innerHTML = `<div class="subject">${slot.label}</div>`;
           } else {
-            const items = (WEEK[d.key] && WEEK[d.key][p.id]) ? WEEK[d.key][p.id] : [];
-            td.innerHTML = `
-              <div class="slot ${isNow ? 'now' : ''}">
-                ${buildSlotHTML(items)}
-              </div>
+            const entry = resolveEntry(WEEK[day]?.[slot.key], optKey);
+            const name = entry.name ?? "—";
+            const teacher = entry.teacher ?? "";
+            const extra = entry.room ? ` • ${entry.room}` : "";
+            const meta = teacher ? `${teacher}${extra}` : (entry.empty ? "" : "");
+            c.className = "cell";
+            c.innerHTML = `
+              <div class="subject" title="${name}">${name}</div>
+              <div class="meta" title="${meta}">${meta}</div>
             `;
+            if (entry.empty) c.style.opacity = "0.5";
           }
 
-          tr.appendChild(td);
+          cellMap.set(id, c);
+          grid.appendChild(c);
         }
-
-        tbody.appendChild(tr);
       }
-
-      t.appendChild(thead);
-      t.appendChild(tbody);
-
-      const wrap = document.getElementById('tableWrap');
-      wrap.innerHTML = '';
-      wrap.appendChild(t);
     }
 
-    // ===== Live engine =====
-    const nowTimeEl = document.getElementById('nowTime');
-    const nowDayEl = document.getElementById('nowDay');
-    const modePill = document.getElementById('modePill');
-    const currentTitle = document.getElementById('currentTitle');
-    const endsInEl = document.getElementById('endsIn');
-    const nextUpEl = document.getElementById('nextUp');
-    const noteText = document.getElementById('noteText');
-    const progressBar = document.getElementById('progressBar');
+    optativeSelect.addEventListener('change', () => {
+      buildGrid();
+      tick(); // refresh highlights + info instantly
+    });
 
-    function dayLabel(day){
-      const map = {0:"Diumenge",1:"Dilluns",2:"Dimarts",3:"Dimecres",4:"Dijous",5:"Divendres",6:"Dissabte"};
-      return map[day] || "---";
+    /* =========================
+       LIVE TRACKER
+       ========================= */
+    const clockEl = document.getElementById('clock');
+    const todayLabel = document.getElementById('todayLabel');
+
+    const nowTitle = document.getElementById('nowTitle');
+    const nowMeta  = document.getElementById('nowMeta');
+    const nextTitle = document.getElementById('nextTitle');
+    const nextMeta  = document.getElementById('nextMeta');
+    const untilNext = document.getElementById('untilNext');
+    const timeLeft  = document.getElementById('timeLeft');
+    const endsAt    = document.getElementById('endsAt');
+    const progressFill = document.getElementById('progressFill');
+
+    function fmtCountdown(totalSeconds){
+      const s = Math.max(0, Math.floor(totalSeconds));
+      const mm = Math.floor(s/60);
+      const ss = s%60;
+      if (mm >= 60){
+        const hh = Math.floor(mm/60);
+        const r = mm%60;
+        return `${hh}h ${r}m`;
+      }
+      return `${mm}m ${ss}s`;
     }
 
-    function update(){
-      const { day, time, hm } = nowInTZ();
-
-      nowTimeEl.textContent = time;
-      nowDayEl.textContent = dayLabel(day);
-
-      // weekend
-      if (day === 0 || day === 6){
-        modePill.textContent = 'weekend';
-        currentTitle.textContent = 'Fin de semana';
-        endsInEl.textContent = '—';
-        nextUpEl.textContent = '—';
-        noteText.textContent = 'No hay clases hoy. (Tu horario funciona de lunes a viernes)';
-        progressBar.style.width = '0%';
-        renderTable(null);
-        return;
+    function setHighlights(current, next){
+      // clear all
+      for (const el of cellMap.values()){
+        el.classList.remove('nowCell','nextCell');
       }
-
-      const dayKey = day; // 1..5
-      const minNow = hmToMin(hm);
-
-      // Before first period
-      const firstStart = hmToMin(PERIODS[0].start);
-      const lastEnd = hmToMin(PERIODS[PERIODS.length-1].end);
-
-      if (minNow < firstStart){
-        modePill.textContent = 'before';
-        currentTitle.textContent = 'Antes de empezar';
-        const msLeft = (firstStart - minNow) * 60 * 1000;
-        endsInEl.textContent = formatDuration(msLeft);
-        const next = PERIODS[0];
-        const items = WEEK[dayKey]?.[next.id] ?? [];
-        nextUpEl.textContent = itemsToText(items);
-        noteText.textContent = `Empiezas a las ${next.start}.`;
-        progressBar.style.width = '0%';
-        renderTable(null);
-        return;
+      if (current){
+        const el = cellMap.get(`${current.day}-${current.slotKey}`);
+        if (el) el.classList.add('nowCell');
       }
-
-      // After last period
-      if (minNow >= lastEnd){
-        modePill.textContent = 'after';
-        currentTitle.textContent = 'Ya has acabado';
-        endsInEl.textContent = '—';
-        nextUpEl.textContent = '—';
-        noteText.textContent = `Última hora terminó a las ${PERIODS[PERIODS.length-1].end}.`;
-        progressBar.style.width = '100%';
-        renderTable(null);
-        return;
-      }
-
-      // In schedule window
-      const hit = getPeriodByTime(minNow);
-      if (!hit){
-        modePill.textContent = 'idle';
-        currentTitle.textContent = '—';
-        endsInEl.textContent = '—';
-        nextUpEl.textContent = '—';
-        noteText.textContent = 'No se pudo detectar la franja actual.';
-        progressBar.style.width = '0%';
-        renderTable(null);
-        return;
-      }
-
-      const p = hit.period;
-      const idx = hit.idx;
-      const s = hmToMin(p.start);
-      const e = hmToMin(p.end);
-
-      const msLeft = (e - minNow) * 60 * 1000;
-      endsInEl.textContent = formatDuration(msLeft);
-
-      const pct = Math.max(0, Math.min(100, ((minNow - s) / (e - s)) * 100));
-      progressBar.style.width = pct.toFixed(2) + '%';
-
-      let highlight = { dayKey, periodId: p.id };
-
-      if (p.type === 'break'){
-        modePill.textContent = 'break';
-        currentTitle.textContent = p.label || 'Pati';
-        const next = findNextRelevant(dayKey, idx);
-        if (next && next.period.type === 'class'){
-          nextUpEl.textContent = itemsToText(next.items);
-          noteText.textContent = `Descanso. Luego: ${itemsToText(next.items)} (${next.period.start}–${next.period.end}).`;
-        } else if (next && next.period.type === 'break'){
-          nextUpEl.textContent = next.period.label || 'Pati';
-          noteText.textContent = `Descanso.`;
-        } else {
-          nextUpEl.textContent = '—';
-          noteText.textContent = 'Último descanso del día.';
-        }
-        renderTable(highlight);
-        return;
-      }
-
-      // class period
-      const items = WEEK[dayKey]?.[p.id] ?? [];
-      const title = itemsToText(items);
-      modePill.textContent = 'class';
-      currentTitle.textContent = title;
-
-      const next = findNextRelevant(dayKey, idx);
       if (next){
-        if (next.period.type === 'break'){
-          nextUpEl.textContent = next.period.label || 'Pati';
-        } else {
-          nextUpEl.textContent = itemsToText(next.items);
-        }
-      } else {
-        nextUpEl.textContent = '—';
+        const el = cellMap.get(`${next.day}-${next.slotKey}`);
+        if (el) el.classList.add('nextCell');
       }
-
-      // More explicit note
-      if (!items || items.length === 0){
-        noteText.textContent = `Franja ${p.start}–${p.end}.`;
-      } else if (items.length === 1){
-        noteText.textContent = `${items[0].subj} • ${items[0].teacher || ''} (${p.start}–${p.end}).`;
-      } else {
-        // show list
-        const list = items.map(x => `${x.subj}${x.teacher ? ` (${x.teacher})` : ''}`).join(' · ');
-        noteText.textContent = `${p.start}–${p.end} • ${list}.`;
-      }
-
-      renderTable(highlight);
     }
 
-    // first paint
-    update();
-    setInterval(update, 1000);
+    function getSlotByTime(mins){
+      // returns slot index for class slots only (not breaks), or -1
+      for (let i=0;i<SLOTS.length;i++){
+        const slot = SLOTS[i];
+        const a = minutesFromHHMM(slot.start);
+        const b = minutesFromHHMM(slot.end);
+        if (mins >= a && mins < b) return i;
+      }
+      return -1;
+    }
+
+    function isBreakSlot(slot){ return !!slot.break; }
+
+    function getNextSchoolMoment(now){
+      // Find next class/break within the same day, else next weekday at 08:30.
+      const jsDay = now.getDay();
+      const di = dayIndexByJs(jsDay);
+
+      const mins = now.getHours()*60 + now.getMinutes() + now.getSeconds()/60;
+
+      const nextWeekdayStart = (startFromJsDay) => {
+        for (let add=1; add<=7; add++){
+          const d = (startFromJsDay + add) % 7;
+          const idx = dayIndexByJs(d);
+          if (idx !== -1){
+            return { jsDay:d, day: DAYS[idx], slotKey:"0830", at:"08:30" };
+          }
+        }
+        return null;
+      };
+
+      // weekend -> next Monday 08:30
+      if (di === -1){
+        const nxt = nextWeekdayStart(jsDay);
+        return { kind:"future", ...nxt };
+      }
+
+      const day = DAYS[di];
+
+      // scan slots: find first slot whose end is after now
+      for (const slot of SLOTS){
+        const a = minutesFromHHMM(slot.start);
+        const b = minutesFromHHMM(slot.end);
+        if (mins < b){
+          return { kind:"today", day, slotKey: slot.key, start: slot.start, end: slot.end, break: !!slot.break };
+        }
+      }
+
+      // after last slot -> next weekday 08:30
+      const nxt = nextWeekdayStart(jsDay);
+      return { kind:"future", ...nxt };
+    }
+
+    function findCurrentAndNext(now){
+      const jsDay = now.getDay();
+      const di = dayIndexByJs(jsDay);
+      const mins = now.getHours()*60 + now.getMinutes() + now.getSeconds()/60;
+
+      if (di === -1){
+        // weekend
+        return { current:null, next: getNextSchoolMoment(now), mode:"weekend" };
+      }
+
+      const day = DAYS[di];
+
+      // current slot?
+      let currentSlot = null;
+      for (const slot of SLOTS){
+        const a = minutesFromHHMM(slot.start);
+        const b = minutesFromHHMM(slot.end);
+        if (mins >= a && mins < b){
+          currentSlot = slot;
+          break;
+        }
+      }
+
+      // next slot (strictly after now)
+      let nextSlot = null;
+      for (const slot of SLOTS){
+        const a = minutesFromHHMM(slot.start);
+        if (mins < a){
+          nextSlot = slot;
+          break;
+        }
+      }
+
+      if (currentSlot){
+        // if current is break, "now" becomes Break, "next" becomes next class
+        const next = nextSlot ? { day, slotKey: nextSlot.key, start: nextSlot.start, end: nextSlot.end, break: !!nextSlot.break } : getNextSchoolMoment(now);
+        return {
+          current: { day, slotKey: currentSlot.key, start: currentSlot.start, end: currentSlot.end, break: !!currentSlot.break },
+          next,
+          mode:"today"
+        };
+      }
+
+      // not in any slot (before 08:30 or between slots -> next is nextSlot or next day)
+      const next = nextSlot
+        ? { day, slotKey: nextSlot.key, start: nextSlot.start, end: nextSlot.end, break: !!nextSlot.break }
+        : getNextSchoolMoment(now);
+
+      return { current:null, next, mode:"gap" };
+    }
+
+    function describeEntry(day, slotKey){
+      const optKey = optativeSelect.value;
+      const slot = SLOTS.find(s => s.key === slotKey);
+      if (!slot) return { title:"—", meta:"—" };
+
+      if (slot.break){
+        return { title:"Break", meta:`${day} • ${slot.start}–${slot.end}` };
+      }
+
+      const entry = resolveEntry(WEEK[day]?.[slotKey], optKey);
+      const title = entry?.name || "—";
+      const teacher = entry?.teacher || "";
+      const room = entry?.room ? ` • ${entry.room}` : "";
+      const metaBits = [];
+      metaBits.push(`${day} • ${slot.start}–${slot.end}`);
+      if (teacher) metaBits.push(`${teacher}${room}`);
+      return { title, meta: metaBits.join("  —  ") };
+    }
+
+    function tick(){
+      const now = new Date();
+      const h = pad2(now.getHours());
+      const m = pad2(now.getMinutes());
+      const s = pad2(now.getSeconds());
+      clockEl.textContent = `${h}:${m}:${s}`;
+
+      const jsDay = now.getDay();
+      const di = dayIndexByJs(jsDay);
+      const dayName = (di === -1) ? (jsDay === 0 ? "Sunday" : "Saturday") : ["Monday","Tuesday","Wednesday","Thursday","Friday"][di];
+      todayLabel.textContent = `Today: ${dayName}`;
+
+      const { current, next, mode } = findCurrentAndNext(now);
+
+      // highlights
+      setHighlights(
+        current && !current.break ? { day: current.day, slotKey: current.slotKey } : null,
+        next && next.kind !== "future" && next.slotKey && !next.break ? { day: next.day, slotKey: next.slotKey } : null
+      );
+
+      // NOW panel
+      if (current){
+        const slot = SLOTS.find(s => s.key === current.slotKey);
+        const startM = minutesFromHHMM(current.start);
+        const endM = minutesFromHHMM(current.end);
+        const nowM = now.getHours()*60 + now.getMinutes() + now.getSeconds()/60;
+
+        const total = (endM - startM) * 60;
+        const left = (endM - nowM) * 60;
+        const done = Math.min(1, Math.max(0, (total - left) / total));
+
+        const d = describeEntry(current.day, current.slotKey);
+        nowTitle.textContent = d.title;
+        nowMeta.textContent  = d.meta;
+
+        timeLeft.textContent = `Left: ${fmtCountdown(left)}`;
+        endsAt.textContent   = `Ends: ${current.end}`;
+        progressFill.style.width = `${Math.round(done*100)}%`;
+      } else {
+        nowTitle.textContent = (mode === "weekend") ? "No class" : "Between classes";
+        nowMeta.textContent  = (mode === "weekend") ? "Enjoy the weekend." : "Waiting for the next slot…";
+        timeLeft.textContent = "Left: —";
+        endsAt.textContent   = "Ends: —";
+        progressFill.style.width = "0%";
+      }
+
+      // NEXT panel
+      if (next){
+        if (next.kind === "future"){
+          // next school day 08:30
+          const jsNow = now.getDay();
+          const target = new Date(now);
+
+          // compute delta days to the next.jsDay
+          let add = 1;
+          while(((jsNow + add) % 7) !== next.jsDay) add++;
+          target.setDate(now.getDate() + add);
+          target.setHours(8,30,0,0);
+
+          const sec = (target - now) / 1000;
+
+          const d = describeEntry(next.day, next.slotKey);
+          nextTitle.textContent = d.title;
+          nextMeta.textContent  = `${next.day} • 08:30–09:30`;
+          untilNext.textContent = `Starts in ${fmtCountdown(sec)}.`;
+        } else {
+          const d = describeEntry(next.day, next.slotKey);
+          nextTitle.textContent = d.title;
+          nextMeta.textContent  = d.meta;
+
+          const startM = minutesFromHHMM(next.start);
+          const nowM = now.getHours()*60 + now.getMinutes() + now.getSeconds()/60;
+          const sec = (startM - nowM) * 60;
+          untilNext.textContent = `Starts in ${fmtCountdown(sec)}.`;
+        }
+      } else {
+        nextTitle.textContent = "—";
+        nextMeta.textContent  = "—";
+        untilNext.textContent = "—";
+      }
+    }
+
+    // init
+    buildGrid();
+    tick();
+    setInterval(tick, 500);
   </script>
 </body>
 </html>
