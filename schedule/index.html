@@ -1,0 +1,1095 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Hodely.net • Horario</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Favicon (pestaña) -->
+  <link rel="icon" href="/favicon.png" type="image/png">
+
+  <!-- Manifest (app instalada) -->
+  <link rel="manifest" href="/manifest.webmanifest">
+
+  <!-- Color barra superior app -->
+  <meta name="theme-color" content="#000000">
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    :root{
+      --bg:#fff;
+      --fg:#000;
+      --b1: rgba(0,0,0,0.10);
+      --b2: rgba(0,0,0,0.14);
+      --glass: rgba(255,255,255,0.72);
+      --glass2: rgba(255,255,255,0.92);
+      --shadow: 0 12px 30px rgba(0,0,0,0.04);
+      --muted: rgba(0,0,0,0.55);
+      --muted2: rgba(0,0,0,0.75);
+      --soft: rgba(0,0,0,0.06);
+    }
+
+    body{
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--fg);
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding: 22px;
+      overflow-x:hidden;
+    }
+
+    .wrap{
+      width:min(1180px, 96vw);
+      display:flex;
+      flex-direction:column;
+      gap:14px;
+    }
+
+    /* Header */
+    .topbar{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      flex-wrap:wrap;
+    }
+
+    .brandRow{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      min-width: 260px;
+    }
+
+    .logoPill{
+      width: 44px;
+      height: 44px;
+      border-radius: 14px;
+      background:#000;
+      display:grid;
+      place-items:center;
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(255,255,255,0.10);
+      overflow:hidden;
+      flex: 0 0 auto;
+    }
+    .logoPill img{
+      width: 80%;
+      height: 80%;
+      object-fit: contain;
+      display:block;
+      image-rendering: auto;
+    }
+
+    .titleBlock{ display:flex; flex-direction:column; line-height:1.1; }
+    .title{
+      font-weight:800;
+      letter-spacing:-0.9px;
+      font-size:1.2rem;
+      opacity:0.92;
+    }
+    .subtitle{
+      font-size:0.85rem;
+      letter-spacing:2px;
+      text-transform:uppercase;
+      opacity:0.45;
+      margin-top:2px;
+    }
+
+    .chips{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+      align-items:center;
+    }
+
+    .chip{
+      border:1px solid var(--b2);
+      background: var(--glass);
+      backdrop-filter: blur(6px);
+      padding:10px 12px;
+      border-radius: 14px;
+      box-shadow: var(--shadow);
+      display:flex;
+      align-items:center;
+      gap:10px;
+      font-weight:700;
+    }
+
+    .mono{
+      font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-weight:700;
+      font-size:0.88rem;
+    }
+    .muted{ opacity:0.6; font-weight:700; }
+
+    /* Layout */
+    .grid{
+      display:grid;
+      grid-template-columns: 0.95fr 1.05fr;
+      gap:14px;
+      align-items:start;
+    }
+    @media (max-width: 980px){
+      .grid{ grid-template-columns: 1fr; }
+    }
+
+    .card{
+      border:1px solid rgba(0,0,0,0.12);
+      border-radius: 18px;
+      overflow:hidden;
+      background:#fff;
+      box-shadow: var(--shadow);
+    }
+    .cardHead{
+      padding:12px 14px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      border-bottom:1px solid rgba(0,0,0,0.08);
+      font-size:0.92rem;
+      opacity:0.85;
+      gap: 10px;
+    }
+    .pill{
+      display:inline-block;
+      border:1px solid rgba(0,0,0,0.12);
+      border-radius:999px;
+      padding:3px 10px;
+      font-size:0.78rem;
+      opacity:0.82;
+      font-family: "JetBrains Mono", ui-monospace, monospace;
+      white-space:nowrap;
+    }
+    .cardBody{
+      padding:14px;
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+    }
+
+    .big{
+      font-size:1.7rem;
+      font-weight:800;
+      letter-spacing:-1px;
+      line-height:1.1;
+    }
+
+    .row{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      flex-wrap:wrap;
+    }
+
+    .stat{
+      display:flex;
+      gap:8px;
+      align-items:baseline;
+      flex-wrap:wrap;
+    }
+    .stat .k{
+      font-size:0.80rem;
+      opacity:0.55;
+      letter-spacing:1px;
+      text-transform:uppercase;
+      font-weight:800;
+    }
+    .stat .v{
+      font-size:0.98rem;
+      font-weight:800;
+      opacity:0.92;
+    }
+
+    .progress{
+      width:100%;
+      height: 10px;
+      border-radius: 999px;
+      background: var(--soft);
+      border: 1px solid rgba(0,0,0,0.08);
+      overflow:hidden;
+    }
+    .bar{
+      height:100%;
+      width:0%;
+      background: rgba(0,0,0,0.82);
+      border-radius:999px;
+      transition: width .25s ease;
+    }
+
+    .note{
+      font-size:0.92rem;
+      line-height:1.35;
+      opacity:0.75;
+    }
+
+    /* Table */
+    .tableWrap{
+      overflow:auto;
+    }
+    table{
+      width:100%;
+      border-collapse:separate;
+      border-spacing:10px;
+      min-width: 760px;
+    }
+    th{
+      text-align:left;
+      font-size:0.85rem;
+      letter-spacing:2px;
+      text-transform:uppercase;
+      opacity:0.55;
+      padding: 0 2px;
+      white-space:nowrap;
+    }
+
+    td.time{
+      width: 110px;
+      vertical-align:top;
+      padding-top: 10px;
+      font-family: "JetBrains Mono", ui-monospace, monospace;
+      font-size:0.82rem;
+      opacity:0.75;
+      white-space:nowrap;
+    }
+
+    .slot{
+      border:1px solid rgba(0,0,0,0.12);
+      background: rgba(255,255,255,0.75);
+      border-radius:16px;
+      padding:10px 10px;
+      box-shadow: 0 8px 18px rgba(0,0,0,0.03);
+      min-height: 68px;
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+    }
+    .slot.break{
+      background: rgba(0,0,0,0.03);
+      border-style:dashed;
+      min-height: 48px;
+      justify-content:center;
+    }
+    .slot.now{
+      border-color: rgba(0,0,0,0.28);
+      box-shadow: 0 14px 30px rgba(0,0,0,0.06);
+      transform: translateY(-1px);
+    }
+
+    .subj{
+      font-weight:800;
+      letter-spacing:-0.2px;
+      font-size:0.95rem;
+      line-height:1.15;
+    }
+    .teacher{
+      font-size:0.82rem;
+      opacity:0.7;
+      font-weight:700;
+    }
+    .tags{
+      display:flex;
+      gap:6px;
+      flex-wrap:wrap;
+    }
+    .tag{
+      border:1px solid rgba(0,0,0,0.12);
+      border-radius:999px;
+      padding:2px 8px;
+      font-size:0.72rem;
+      opacity:0.82;
+      font-family:"JetBrains Mono", ui-monospace, monospace;
+      white-space:nowrap;
+    }
+
+    .wm{
+      position:fixed;
+      bottom:14px;
+      right:16px;
+      font-size:0.78rem;
+      letter-spacing:2px;
+      text-transform:uppercase;
+      opacity:0.35;
+      user-select:none;
+      pointer-events:none;
+    }
+
+    /* =========================
+       MENU BUTTON + SIDEBAR
+       ========================= */
+    .menu-btn{
+      position: fixed;
+      top: 14px;
+      left: 14px;
+      width: 38px;
+      height: 34px;
+      border: 1px solid rgba(0,0,0,0.12);
+      background: rgba(255,255,255,0.55);
+      backdrop-filter: blur(6px);
+      border-radius: 10px;
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+      z-index: 50;
+      transition: opacity .2s ease, transform .2s ease, background .2s ease;
+      opacity: 0.74;
+    }
+    .menu-btn:hover{
+      opacity: 1;
+      transform: translateY(-1px);
+      background: rgba(255,255,255,0.75);
+    }
+    .burger{
+      width: 18px;
+      height: 12px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .burger span{
+      display:block;
+      height: 2px;
+      background:#000;
+      border-radius: 2px;
+      opacity:0.85;
+    }
+
+    .overlayMenu{
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.18);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .22s ease;
+      z-index: 40;
+    }
+    .overlayMenu.show{
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .sidebar{
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 100vh;
+      width: 280px;
+      background: rgba(255,255,255,0.92);
+      backdrop-filter: blur(10px);
+      border-right: 1px solid rgba(0,0,0,0.10);
+      transform: translateX(-105%);
+      transition: transform .24s ease;
+      z-index: 45;
+      padding: 18px 16px;
+      display:flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .sidebar.open{ transform: translateX(0); }
+
+    .side-title{
+      display:flex;
+      align-items: baseline;
+      justify-content: space-between;
+      padding: 6px 6px 10px 6px;
+    }
+    .side-title .brand{
+      font-weight: 800;
+      letter-spacing: -0.8px;
+      font-size: 1.05rem;
+    }
+    .side-title .mini{
+      font-size: 0.75rem;
+      letter-spacing: 2px;
+      opacity: 0.55;
+      text-transform: uppercase;
+    }
+
+    .nav{
+      display:flex;
+      flex-direction: column;
+      gap: 10px;
+      padding: 6px;
+    }
+    .nav a{
+      text-decoration: none;
+      color:#000;
+      border: 1px solid rgba(0,0,0,0.10);
+      background: rgba(255,255,255,0.6);
+      border-radius: 12px;
+      padding: 12px 12px;
+      display:flex;
+      align-items:center;
+      justify-content: space-between;
+      transition: transform .15s ease, background .15s ease, border .15s ease;
+    }
+    .nav a:hover{
+      transform: translateX(2px);
+      background: rgba(0,0,0,0.03);
+      border-color: rgba(0,0,0,0.18);
+    }
+    .nav a .left{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      min-width: 0;
+    }
+    .path{
+      font-family: "JetBrains Mono", ui-monospace, monospace;
+      font-size: 0.78rem;
+      padding: 3px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(0,0,0,0.12);
+      opacity: 0.85;
+      flex: 0 0 auto;
+      white-space:nowrap;
+    }
+    .label{
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      font-weight:700;
+    }
+    .arrow{
+      opacity:0.45;
+      flex: 0 0 auto;
+    }
+
+    .hintMenu{
+      margin-top: auto;
+      padding: 10px 8px;
+      font-size: 0.8rem;
+      opacity: 0.55;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Menu Button -->
+  <button class="menu-btn" id="menuBtn" aria-label="Open menu">
+    <div class="burger" aria-hidden="true">
+      <span></span><span></span><span></span>
+    </div>
+  </button>
+
+  <!-- Overlay -->
+  <div class="overlayMenu" id="overlayMenu"></div>
+
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar" aria-label="Navigation menu">
+    <div class="side-title">
+      <div class="brand">Hodely</div>
+      <div class="mini">menu</div>
+    </div>
+
+    <nav class="nav">
+      <a href="https://hodely.net" title="Go to hodely.net">
+        <div class="left">
+          <span class="path">/</span>
+          <span class="label">Home</span>
+        </div>
+        <span class="arrow">↗</span>
+      </a>
+
+      <a href="https://hodely.net/periodictable" title="Go to hodely.net/periodictable">
+        <div class="left">
+          <span class="path">/periodictable</span>
+          <span class="label">Periodic Table</span>
+        </div>
+        <span class="arrow">↗</span>
+      </a>
+
+      <a href="https://hodely.net/screenshot" title="Go to hodely.net/screenshot">
+        <div class="left">
+          <span class="path">/screenshot</span>
+          <span class="label">Screenshot</span>
+        </div>
+        <span class="arrow">↗</span>
+      </a>
+
+      <a href="https://hodely.net/VerdaNet" title="Go to hodely.net/VerdaNet">
+        <div class="left">
+          <span class="path">/VerdaNet</span>
+          <span class="label">VerdaNet</span>
+        </div>
+        <span class="arrow">↗</span>
+      </a>
+
+      <a href="https://hodely.net/a" title="Go to hodely.net/a">
+        <div class="left">
+          <span class="path">/a</span>
+          <span class="label">Project A</span>
+        </div>
+        <span class="arrow">↗</span>
+      </a>
+
+      <a href="https://hodely.net/horario" title="You are here">
+        <div class="left">
+          <span class="path">/horario</span>
+          <span class="label">Horario</span>
+        </div>
+        <span class="arrow">•</span>
+      </a>
+    </nav>
+
+    <div class="hintMenu">Tip: press <b>ESC</b> to close.</div>
+  </aside>
+
+  <div class="wrap">
+    <div class="topbar">
+      <div class="brandRow">
+        <div class="logoPill" title="logo">
+          <img src="/logo.png" alt="Hodely logo">
+        </div>
+        <div class="titleBlock">
+          <div class="title">Horario • 4t ESO C</div>
+          <div class="subtitle">Live schedule</div>
+        </div>
+      </div>
+
+      <div class="chips">
+        <div class="chip">
+          <span class="muted">Ahora:</span>
+          <span class="mono" id="nowTime">--:--:--</span>
+        </div>
+        <div class="chip">
+          <span class="muted">Día:</span>
+          <span class="mono" id="nowDay">---</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid">
+      <!-- Status card -->
+      <section class="card">
+        <div class="cardHead">
+          <span>Estado</span>
+          <span class="pill" id="modePill">idle</span>
+        </div>
+        <div class="cardBody">
+          <div class="big" id="currentTitle">—</div>
+
+          <div class="row">
+            <div class="stat">
+              <span class="k">Acaba en</span>
+              <span class="v mono" id="endsIn">—</span>
+            </div>
+            <div class="stat">
+              <span class="k">Siguiente</span>
+              <span class="v" id="nextUp">—</span>
+            </div>
+          </div>
+
+          <div class="progress" aria-hidden="true">
+            <div class="bar" id="progressBar"></div>
+          </div>
+
+          <div class="note" id="noteText">
+            Detectando horario…
+          </div>
+        </div>
+      </section>
+
+      <!-- Weekly table card -->
+      <section class="card">
+        <div class="cardHead">
+          <span>Semana</span>
+          <span class="pill mono" id="tzPill">Europe/Madrid</span>
+        </div>
+        <div class="cardBody">
+          <div class="tableWrap" id="tableWrap">
+            <!-- injected -->
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <div class="wm">Hodely</div>
+
+  <script>
+    // ===== MENU =====
+    const menuBtn = document.getElementById('menuBtn');
+    const sidebar = document.getElementById('sidebar');
+    const overlayMenu = document.getElementById('overlayMenu');
+
+    function openMenu(){
+      sidebar.classList.add('open');
+      overlayMenu.classList.add('show');
+    }
+    function closeMenu(){
+      sidebar.classList.remove('open');
+      overlayMenu.classList.remove('show');
+    }
+    function toggleMenu(){
+      sidebar.classList.contains('open') ? closeMenu() : openMenu();
+    }
+
+    menuBtn.addEventListener('click', toggleMenu);
+    overlayMenu.addEventListener('click', closeMenu);
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeMenu();
+    });
+
+    // ===== SCHEDULE DATA (from your image) =====
+    // Periods include breaks, so the "engine" can say "Pati" and also show next subject.
+    const PERIODS = [
+      { id:"p1", start:"08:30", end:"09:30", type:"class" },
+      { id:"p2", start:"09:30", end:"10:30", type:"class" },
+      { id:"b1", start:"10:30", end:"11:00", type:"break", label:"Pati" },
+      { id:"p3", start:"11:00", end:"11:55", type:"class" },
+      { id:"p4", start:"11:55", end:"12:50", type:"class" },
+      { id:"b2", start:"12:50", end:"13:10", type:"break", label:"Pati" },
+      { id:"p5", start:"13:10", end:"14:05", type:"class" },
+      { id:"p6", start:"14:05", end:"15:00", type:"class" },
+    ];
+
+    // Monday..Friday = 1..5 (JS getDay(): Sun=0, Mon=1..Sat=6)
+    // Each class slot can contain multiple items (because the timetable shows several lines like VIP/Tech, etc.)
+    const WEEK = {
+      1: { // Dilluns
+        p1: [
+          { subj:"Emprenedoria I", teacher:"Jordi F", tags:["4t"] },
+          { subj:"Física i química", teacher:"Ruth", tags:["4t"] },
+          { subj:"VIP I", teacher:"Helen", tags:["4t","Vip"] },
+        ],
+        p2: [
+          { subj:"Castellà", teacher:"Víctor", tags:["4t"] },
+        ],
+        p3: [
+          { subj:"Matemàtiques", teacher:"Josep Maria", tags:["4t"] },
+        ],
+        p4: [
+          { subj:"Català", teacher:"Eugènia", tags:["4t"] },
+        ],
+        p5: [
+          { subj:"Biologia i Geologia", teacher:"Lluís", tags:["4t"] },
+          { subj:"Informàtica", teacher:"Robert", tags:["4t"] },
+          { subj:"VIP II", teacher:"Helen", tags:["4t","Vip"] },
+        ],
+        p6: [
+          { subj:"Matemàtiques", teacher:"Josep Maria", tags:["4t"] },
+        ],
+      },
+
+      2: { // Dimarts
+        p1: [
+          { subj:"Biologia i Geologia", teacher:"Lluís", tags:["4t"] },
+          { subj:"Informàtica", teacher:"Robert", tags:["4t"] },
+          { subj:"VIP II", teacher:"Helen", tags:["4t","Vip"] },
+        ],
+        p2: [
+          { subj:"Emprenedoria I", teacher:"Jordi F", tags:["4t"] },
+          { subj:"Física i química", teacher:"Ruth", tags:["4t"] },
+          { subj:"VIP I", teacher:"Helen", tags:["4t","Vip"] },
+        ],
+        p3: [
+          { subj:"Anglès", teacher:"Anna C", tags:["4t"] },
+        ],
+        p4: [
+          { subj:"CS", teacher:"Albert", tags:["4t"] },
+        ],
+        p5: [
+          { subj:"Català", teacher:"Eugènia", tags:["4t"] },
+        ],
+        p6: [
+          { subj:"Alemany", teacher:"Jordi M", tags:["4t"] },
+          { subj:"Emprenedoria II", teacher:"Jordi F", tags:["4t"] },
+          { subj:"Música", teacher:"Anna O", tags:["4t"] },
+          { subj:"Tecnologia", teacher:"Raquel", tags:["4t","Tecno"] },
+        ],
+      },
+
+      3: { // Dimecres
+        p1: [
+          { subj:"Castellà", teacher:"Víctor", tags:["4t"] },
+        ],
+        p2: [
+          { subj:"Alemany", teacher:"Jordi M", tags:["4t"] },
+          { subj:"Emprenedoria II", teacher:"Jordi F", tags:["4t"] },
+          { subj:"Música", teacher:"Anna O", tags:["4t"] },
+          { subj:"Tecnologia", teacher:"Raquel", tags:["4t","Tecno"] },
+        ],
+        p3: [
+          { subj:"Anglès", teacher:"Anna C", tags:["4t"] },
+        ],
+        p4: [
+          { subj:"CV", teacher:"Òscar", tags:["4t"] },
+        ],
+        p5: [
+          { subj:"Matemàtiques", teacher:"Josep Maria", tags:["4t"] },
+        ],
+        p6: [
+          { subj:"CS", teacher:"Albert", tags:["4t"] },
+        ],
+      },
+
+      4: { // Dijous
+        p1: [
+          { subj:"Científico-tecnològica", teacher:"Lluís", tags:["4t"] },
+        ],
+        p2: [
+          { subj:"Matemàtiques", teacher:"Josep Maria", tags:["4t"] },
+        ],
+        p3: [
+          { subj:"Castellà", teacher:"Víctor", tags:["4t"] },
+        ],
+        p4: [
+          { subj:"Anglès", teacher:"Anna C", tags:["4t"] },
+        ],
+        p5: [
+          { subj:"EF", teacher:"Robert", tags:["4t","Gimnàs"] },
+        ],
+        p6: [
+          { subj:"—", teacher:"", tags:["Libre"] }, // en tu imagen aparece vacío
+        ],
+      },
+
+      5: { // Divendres
+        p1: [
+          { subj:"Biologia i Geologia", teacher:"Lluís", tags:["4t"] },
+          { subj:"Informàtica", teacher:"Robert", tags:["4t"] },
+          { subj:"VIP II", teacher:"Helen", tags:["4t","Vip"] },
+        ],
+        p2: [
+          { subj:"Emprenedoria I", teacher:"Jordi F", tags:["4t"] },
+          { subj:"Física i química", teacher:"Ruth", tags:["4t"] },
+          { subj:"VIP I", teacher:"Helen", tags:["4t","Vip"] },
+        ],
+        p3: [
+          { subj:"Alemany", teacher:"Jordi M", tags:["4t"] },
+          { subj:"Emprenedoria II", teacher:"Jordi F", tags:["4t"] },
+          { subj:"Música", teacher:"Anna O", tags:["4t"] },
+          { subj:"Tecnologia", teacher:"Raquel", tags:["4t","Tecno"] },
+        ],
+        p4: [
+          { subj:"Català", teacher:"Eugènia", tags:["4t"] },
+        ],
+        p5: [
+          { subj:"CS", teacher:"Albert", tags:["4t"] },
+        ],
+        p6: [
+          { subj:"Tutoria", teacher:"Josep Maria", tags:["4t"] },
+        ],
+      },
+    };
+
+    const DAYS = [
+      { key: 1, label: "Dilluns" },
+      { key: 2, label: "Dimarts" },
+      { key: 3, label: "Dimecres" },
+      { key: 4, label: "Dijous" },
+      { key: 5, label: "Divendres" },
+    ];
+
+    const TZ = "Europe/Madrid";
+
+    // ===== Helpers =====
+    function pad2(n){ return String(n).padStart(2,'0'); }
+
+    function hmToMin(hm){
+      const [h,m]=hm.split(':').map(Number);
+      return h*60+m;
+    }
+
+    function formatDuration(ms){
+      const s = Math.max(0, Math.floor(ms/1000));
+      const hh = Math.floor(s/3600);
+      const mm = Math.floor((s%3600)/60);
+      const ss = s%60;
+      return hh>0 ? `${pad2(hh)}:${pad2(mm)}:${pad2(ss)}` : `${pad2(mm)}:${pad2(ss)}`;
+    }
+
+    function nowInTZ(){
+      const dt = new Date();
+      // Extract parts in TZ to avoid local timezone mismatch
+      const parts = new Intl.DateTimeFormat('en-GB', {
+        timeZone: TZ,
+        weekday: 'short',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: false
+      }).formatToParts(dt);
+
+      const map = Object.fromEntries(parts.map(p => [p.type, p.value]));
+      const time = `${map.hour}:${map.minute}:${map.second}`;
+      const hm = `${map.hour}:${map.minute}`;
+
+      // weekday short in en-GB -> Mon/Tue...
+      const wd = new Intl.DateTimeFormat('en-GB', { timeZone: TZ, weekday:'short' }).format(dt);
+      const dayIndexMap = { Sun:0, Mon:1, Tue:2, Wed:3, Thu:4, Fri:5, Sat:6 };
+      const day = dayIndexMap[wd] ?? dt.getDay();
+
+      return { dt, day, time, hm };
+    }
+
+    function itemsToText(items){
+      if (!items || items.length===0) return "—";
+      // If it's the "— Libre" slot
+      if (items.length===1 && items[0].subj==="—") return "Libre";
+      // Show first subject name with +n more if multiple
+      const names = items.map(x => x.subj).filter(Boolean);
+      return names.length>1 ? `${names[0]} +${names.length-1}` : names[0];
+    }
+
+    function buildSlotHTML(items){
+      if (!items || items.length===0) return `<div class="subj">—</div>`;
+      if (items.length===1 && items[0].subj==="—"){
+        return `
+          <div class="subj">Libre</div>
+          <div class="teacher">—</div>
+          <div class="tags"><span class="tag">Libre</span></div>
+        `;
+      }
+      return items.map(it => {
+        const tags = (it.tags||[]).map(t => `<span class="tag">${t}</span>`).join('');
+        return `
+          <div>
+            <div class="subj">${escapeHtml(it.subj || "—")}</div>
+            <div class="teacher">${escapeHtml(it.teacher || "")}</div>
+            ${tags ? `<div class="tags">${tags}</div>` : ``}
+          </div>
+        `;
+      }).join('<div style="height:8px"></div>');
+    }
+
+    function escapeHtml(str){
+      return String(str).replace(/[&<>"']/g, m => ({
+        "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+      }[m]));
+    }
+
+    function getPeriodByTime(min){
+      // returns {period, idx} where min is minute-of-day
+      for (let i=0;i<PERIODS.length;i++){
+        const p = PERIODS[i];
+        const s = hmToMin(p.start);
+        const e = hmToMin(p.end);
+        if (min >= s && min < e) return { period:p, idx:i };
+      }
+      return null;
+    }
+
+    function findNextRelevant(dayKey, fromIdx){
+      // finds next period in the same day after fromIdx that is class or break (anything)
+      for (let j=fromIdx+1;j<PERIODS.length;j++){
+        const p = PERIODS[j];
+        if (p.type==="break"){
+          return { period:p, items:null };
+        }
+        const items = (WEEK[dayKey] && WEEK[dayKey][p.id]) ? WEEK[dayKey][p.id] : [];
+        return { period:p, items };
+      }
+      return null;
+    }
+
+    // ===== Render table =====
+    function renderTable(highlight){
+      // highlight: {dayKey, periodId} or null
+      const t = document.createElement('table');
+
+      const thead = document.createElement('thead');
+      const hr = document.createElement('tr');
+      hr.innerHTML = `<th></th>` + DAYS.map(d => `<th>${d.label}</th>`).join('');
+      thead.appendChild(hr);
+
+      const tbody = document.createElement('tbody');
+
+      for (const p of PERIODS){
+        const tr = document.createElement('tr');
+
+        const tdTime = document.createElement('td');
+        tdTime.className = 'time';
+        tdTime.textContent = `${p.start}–${p.end}`;
+        tr.appendChild(tdTime);
+
+        for (const d of DAYS){
+          const td = document.createElement('td');
+
+          const isNow = highlight && highlight.dayKey === d.key && highlight.periodId === p.id;
+
+          if (p.type==="break"){
+            td.innerHTML = `
+              <div class="slot break ${isNow ? 'now' : ''}">
+                <div class="subj">${p.label || 'Pati'}</div>
+                <div class="teacher">descanso</div>
+              </div>
+            `;
+          } else {
+            const items = (WEEK[d.key] && WEEK[d.key][p.id]) ? WEEK[d.key][p.id] : [];
+            td.innerHTML = `
+              <div class="slot ${isNow ? 'now' : ''}">
+                ${buildSlotHTML(items)}
+              </div>
+            `;
+          }
+
+          tr.appendChild(td);
+        }
+
+        tbody.appendChild(tr);
+      }
+
+      t.appendChild(thead);
+      t.appendChild(tbody);
+
+      const wrap = document.getElementById('tableWrap');
+      wrap.innerHTML = '';
+      wrap.appendChild(t);
+    }
+
+    // ===== Live engine =====
+    const nowTimeEl = document.getElementById('nowTime');
+    const nowDayEl = document.getElementById('nowDay');
+    const modePill = document.getElementById('modePill');
+    const currentTitle = document.getElementById('currentTitle');
+    const endsInEl = document.getElementById('endsIn');
+    const nextUpEl = document.getElementById('nextUp');
+    const noteText = document.getElementById('noteText');
+    const progressBar = document.getElementById('progressBar');
+
+    function dayLabel(day){
+      const map = {0:"Diumenge",1:"Dilluns",2:"Dimarts",3:"Dimecres",4:"Dijous",5:"Divendres",6:"Dissabte"};
+      return map[day] || "---";
+    }
+
+    function update(){
+      const { day, time, hm } = nowInTZ();
+
+      nowTimeEl.textContent = time;
+      nowDayEl.textContent = dayLabel(day);
+
+      // weekend
+      if (day === 0 || day === 6){
+        modePill.textContent = 'weekend';
+        currentTitle.textContent = 'Fin de semana';
+        endsInEl.textContent = '—';
+        nextUpEl.textContent = '—';
+        noteText.textContent = 'No hay clases hoy. (Tu horario funciona de lunes a viernes)';
+        progressBar.style.width = '0%';
+        renderTable(null);
+        return;
+      }
+
+      const dayKey = day; // 1..5
+      const minNow = hmToMin(hm);
+
+      // Before first period
+      const firstStart = hmToMin(PERIODS[0].start);
+      const lastEnd = hmToMin(PERIODS[PERIODS.length-1].end);
+
+      if (minNow < firstStart){
+        modePill.textContent = 'before';
+        currentTitle.textContent = 'Antes de empezar';
+        const msLeft = (firstStart - minNow) * 60 * 1000;
+        endsInEl.textContent = formatDuration(msLeft);
+        const next = PERIODS[0];
+        const items = WEEK[dayKey]?.[next.id] ?? [];
+        nextUpEl.textContent = itemsToText(items);
+        noteText.textContent = `Empiezas a las ${next.start}.`;
+        progressBar.style.width = '0%';
+        renderTable(null);
+        return;
+      }
+
+      // After last period
+      if (minNow >= lastEnd){
+        modePill.textContent = 'after';
+        currentTitle.textContent = 'Ya has acabado';
+        endsInEl.textContent = '—';
+        nextUpEl.textContent = '—';
+        noteText.textContent = `Última hora terminó a las ${PERIODS[PERIODS.length-1].end}.`;
+        progressBar.style.width = '100%';
+        renderTable(null);
+        return;
+      }
+
+      // In schedule window
+      const hit = getPeriodByTime(minNow);
+      if (!hit){
+        modePill.textContent = 'idle';
+        currentTitle.textContent = '—';
+        endsInEl.textContent = '—';
+        nextUpEl.textContent = '—';
+        noteText.textContent = 'No se pudo detectar la franja actual.';
+        progressBar.style.width = '0%';
+        renderTable(null);
+        return;
+      }
+
+      const p = hit.period;
+      const idx = hit.idx;
+      const s = hmToMin(p.start);
+      const e = hmToMin(p.end);
+
+      const msLeft = (e - minNow) * 60 * 1000;
+      endsInEl.textContent = formatDuration(msLeft);
+
+      const pct = Math.max(0, Math.min(100, ((minNow - s) / (e - s)) * 100));
+      progressBar.style.width = pct.toFixed(2) + '%';
+
+      let highlight = { dayKey, periodId: p.id };
+
+      if (p.type === 'break'){
+        modePill.textContent = 'break';
+        currentTitle.textContent = p.label || 'Pati';
+        const next = findNextRelevant(dayKey, idx);
+        if (next && next.period.type === 'class'){
+          nextUpEl.textContent = itemsToText(next.items);
+          noteText.textContent = `Descanso. Luego: ${itemsToText(next.items)} (${next.period.start}–${next.period.end}).`;
+        } else if (next && next.period.type === 'break'){
+          nextUpEl.textContent = next.period.label || 'Pati';
+          noteText.textContent = `Descanso.`;
+        } else {
+          nextUpEl.textContent = '—';
+          noteText.textContent = 'Último descanso del día.';
+        }
+        renderTable(highlight);
+        return;
+      }
+
+      // class period
+      const items = WEEK[dayKey]?.[p.id] ?? [];
+      const title = itemsToText(items);
+      modePill.textContent = 'class';
+      currentTitle.textContent = title;
+
+      const next = findNextRelevant(dayKey, idx);
+      if (next){
+        if (next.period.type === 'break'){
+          nextUpEl.textContent = next.period.label || 'Pati';
+        } else {
+          nextUpEl.textContent = itemsToText(next.items);
+        }
+      } else {
+        nextUpEl.textContent = '—';
+      }
+
+      // More explicit note
+      if (!items || items.length === 0){
+        noteText.textContent = `Franja ${p.start}–${p.end}.`;
+      } else if (items.length === 1){
+        noteText.textContent = `${items[0].subj} • ${items[0].teacher || ''} (${p.start}–${p.end}).`;
+      } else {
+        // show list
+        const list = items.map(x => `${x.subj}${x.teacher ? ` (${x.teacher})` : ''}`).join(' · ');
+        noteText.textContent = `${p.start}–${p.end} • ${list}.`;
+      }
+
+      renderTable(highlight);
+    }
+
+    // first paint
+    update();
+    setInterval(update, 1000);
+  </script>
+</body>
+</html>
