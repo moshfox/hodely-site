@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>HodelyDrive</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <link rel="icon" href="/favicon.png" type="image/png">
+  <meta name="theme-color" content="#000000">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=JetBrains+Mono:wght@400;700&family=DM+Serif+Display&family=Space+Grotesk:wght@400;700&display=swap" rel="stylesheet">
+
+  <!-- Google Identity Services -->
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{
+      background:#fff;color:#000;
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      min-height:100vh;display:flex;align-items:center;justify-content:center;
+      overflow:hidden;
+    }
+
+    .container{width:100%;max-width:1100px;padding:28px 18px;text-align:center}
+    h1{font-size:3.4rem;font-weight:800;letter-spacing:-2px;line-height:1}
+    .line{width:90px;height:2px;background:#000;margin:18px auto;opacity:.95}
+    h2{font-size:1rem;font-weight:400;letter-spacing:4px;text-transform:uppercase;opacity:.75}
+
+    .marquee{width:100%;overflow:hidden;user-select:none;margin:22px 0}
+    .track{display:flex;width:max-content;animation:scroll-left 18s linear infinite}
+    .marquee.bottom .track{animation:scroll-right 18s linear infinite}
+    .block{display:flex;align-items:center;white-space:nowrap;padding-right:60px;font-size:1.6rem;line-height:1}
+    .f1{font-family:"JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace}
+    .f2{font-family:"DM Serif Display", Georgia, "Times New Roman", serif}
+    .f3{font-family:"Space Grotesk", Inter, system-ui, sans-serif}
+    .f4{font-family:Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif}
+    .seg{opacity:.92}.dot{opacity:.35;padding:0 18px}
+
+    @keyframes scroll-left{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+    @keyframes scroll-right{0%{transform:translateX(-50%)}100%{transform:translateX(0)}}
+
+    @media (max-width:650px){
+      h1{font-size:2.4rem}
+      .block{font-size:1.25rem}
+      h2{font-size:.95rem;letter-spacing:3px}
+    }
+
+    /* Card */
+    .card{
+      margin: 18px auto 0;
+      width: min(520px, 92vw);
+      border: 1px solid rgba(0,0,0,.10);
+      border-radius: 18px;
+      padding: 16px;
+      background: rgba(255,255,255,.70);
+      backdrop-filter: blur(10px);
+      text-align: center;
+    }
+    .muted{opacity:.65;font-size:.92rem;line-height:1.35}
+    .badge{
+      display:inline-flex;align-items:center;gap:8px;
+      font-family:"JetBrains Mono", ui-monospace, monospace;
+      font-size:.85rem;
+      padding:6px 10px;border-radius:999px;
+      border:1px solid rgba(0,0,0,.12);
+      opacity:.9;
+      margin-bottom:10px;
+    }
+
+    /* Inputs */
+    select,input[type="file"],input[type="text"],input[type="password"]{
+      border:1px solid rgba(0,0,0,.12);
+      border-radius:12px;
+      padding:10px 12px;
+      background: rgba(255,255,255,.65);
+      font: inherit;
+      width: min(340px, 86vw);
+    }
+
+    /* Error */
+    .error{
+      margin-top:10px;
+      padding:10px 12px;
+      border:1px solid rgba(0,0,0,.12);
+      border-radius: 12px;
+      background: rgba(0,0,0,.03);
+      font-size:.95rem;
+      display:none;
+      text-align:left;
+    }
+
+    /* App UI (hidden) */
+    #app{display:none;text-align:left}
+    .topbar{
+      display:flex;align-items:center;justify-content:space-between;
+      gap:12px;margin: 14px 0 10px;
+    }
+    .btn{
+      cursor:pointer;
+      border:1px solid rgba(0,0,0,.12);
+      background: rgba(255,255,255,.65);
+      border-radius: 12px;
+      padding: 10px 12px;
+      transition: transform .15s ease, background .15s ease, border .15s ease, opacity .15s ease;
+      font-weight:600;
+    }
+    .btn:hover{transform:translateY(-1px);background: rgba(0,0,0,.03);border-color: rgba(0,0,0,.18)}
+    .row{display:flex;gap:10px;flex-wrap:wrap}
+    .grid{
+      margin-top: 12px;
+      display:grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 10px;
+    }
+    .file{
+      border:1px solid rgba(0,0,0,.10);
+      border-radius: 16px;
+      padding: 12px;
+      background: rgba(255,255,255,.70);
+      backdrop-filter: blur(10px);
+    }
+    .file .name{font-weight:800;letter-spacing:-.2px}
+    .file .meta{opacity:.65;font-size:.9rem;margin-top:6px}
+    .file .actions{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+    .pill{
+      font-family:"JetBrains Mono", ui-monospace, monospace;
+      font-size:.78rem;padding:3px 8px;border-radius:999px;
+      border:1px solid rgba(0,0,0,.12);opacity:.85;
+    }
+    .ok{display:none;margin-top:10px;opacity:.75;font-size:.95rem}
+
+    /* Two-step login */
+    #loginChoose{display:block}
+    #loginEmail{display:none}
+
+    /* Google-like button */
+    .gLikeWrap{
+      display:flex;
+      justify-content:center;
+      margin-top:10px;
+    }
+    .gLikeBtn{
+      width: 222px;              /* matches typical Google button width */
+      max-width: min(340px, 86vw);
+      height: 40px;
+      border-radius: 4px;         /* Google-ish */
+      border: 1px solid #dadce0;  /* Google border */
+      background: #fff;
+      color: #3c4043;
+      font-family: Roboto, Inter, system-ui, -apple-system, Segoe UI, Arial, sans-serif;
+      font-weight: 500;
+      font-size: 14px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:10px;
+      cursor:pointer;
+      transition: background .15s ease, box-shadow .15s ease, transform .1s ease;
+      user-select:none;
+    }
+    .gLikeBtn:hover{
+      background:#f8f9fa;
+      box-shadow: 0 1px 2px rgba(0,0,0,.08);
+      transform: translateY(-1px);
+    }
+    .gLikeBtn:active{
+      transform: translateY(0px);
+      box-shadow:none;
+    }
+    .gIcon{
+      width:18px;height:18px;display:inline-block;
+      border-radius: 4px;
+      border: 1px solid rgba(0,0,0,.08);
+      display:grid;place-items:center;
+      font-family: "JetBrains Mono", ui-monospace, monospace;
+      font-size: 12px;
+      opacity:.9;
+    }
+
+    .backRow{display:flex;justify-content:center;margin-top:10px}
+    .backBtn{
+      width: 222px;
+      max-width: min(340px, 86vw);
+      height: 40px;
+      border-radius: 4px;
+      border: 1px solid #dadce0;
+      background: #fff;
+      color: #3c4043;
+      font-family: Roboto, Inter, system-ui, -apple-system, Segoe UI, Arial, sans-serif;
+      font-weight: 500;
+      font-size: 14px;
+      cursor:pointer;
+      transition: background .15s ease, box-shadow .15s ease, transform .1s ease;
+    }
+    .backBtn:hover{
+      background:#f8f9fa;
+      box-shadow: 0 1px 2px rgba(0,0,0,.08);
+      transform: translateY(-1px);
+    }
+    .tiny{font-size:.85rem;opacity:.65;margin-top:10px}
+  </style>
+</head>
+
+<body>
+
+  <!-- LOGIN SCREEN -->
+  <div class="container" id="loginScreen">
+    <!-- TOP MARQUEE -->
+    <div class="marquee top" aria-hidden="true">
+      <div class="track">
+        <div class="block">
+          <span class="seg f1">⌘ ⟁ ∆ Ø Ξ Λ ⌬</span><span class="dot">•</span>
+          <span class="seg f2">✦ ✧ † ꙮ ⊕</span><span class="dot">•</span>
+          <span class="seg f3">ᚠ ⌁ ⚑ ⟡</span><span class="dot">•</span>
+          <span class="seg f4">H O D E L Y</span><span class="dot">•</span>
+          <span class="seg f1">⧉ ⌂ ⊗ ⊘</span>
+        </div>
+        <div class="block">
+          <span class="seg f1">⌘ ⟁ ∆ Ø Ξ Λ ⌬</span><span class="dot">•</span>
+          <span class="seg f2">✦ ✧ † ꙮ ⊕</span><span class="dot">•</span>
+          <span class="seg f3">ᚠ ⌁ ⚑ ⟡</span><span class="dot">•</span>
+          <span class="seg f4">H O D E L Y</span><span class="dot">•</span>
+          <span class="seg f1">⧉ ⌂ ⊗ ⊘</span>
+        </div>
+      </div>
+    </div>
+
+    <h1>HodelyDrive</h1>
+    <div class="line"></div>
+    <h2>Private storage</h2>
+
+    <div class="card">
+      <!-- STEP 1: choose method -->
+      <div id="loginChoose">
+        <div class="badge">/drive <span style="opacity:.45">•</span> login required</div>
+        <div class="muted">Choose a sign-in method. If your email is not allowed, access is denied.</div>
+
+        <div style="margin-top:14px;display:flex;justify-content:center">
+          <div id="gbtn"></div>
+        </div>
+
+        <div class="gLikeWrap">
+          <button class="gLikeBtn" id="showEmailBtn" type="button" aria-label="Login with email">
+            <span class="gIcon">@</span>
+            <span>Sign in with Email</span>
+          </button>
+        </div>
+
+        <div class="tiny">No sign-up. Admin grants access.</div>
+      </div>
+
+      <!-- STEP 2: email form -->
+      <div id="loginEmail">
+        <div class="badge">email <span style="opacity:.45">•</span> password</div>
+        <div class="muted">Enter your credentials.</div>
+
+        <div style="margin-top:14px;display:flex;flex-direction:column;align-items:center;gap:10px">
+          <input id="emailLogin" type="text" placeholder="Email" autocomplete="username">
+          <input id="passLogin" type="password" placeholder="Password" autocomplete="current-password">
+          <button class="gLikeBtn" id="emailLoginBtn" type="button">
+            <span class="gIcon">→</span>
+            <span>Sign in</span>
+          </button>
+        </div>
+
+        <div class="backRow">
+          <button class="backBtn" id="backToChooseBtn" type="button">← Back</button>
+        </div>
+
+        <div class="tiny">No sign-up. Admin grants access.</div>
+      </div>
+
+      <div class="error" id="loginError"></div>
+    </div>
+
+    <!-- BOTTOM MARQUEE -->
+    <div class="marquee bottom" aria-hidden="true">
+      <div class="track">
+        <div class="block">
+          <span class="seg f3">⟑ ⟐ ⟠ ⟟</span><span class="dot">•</span>
+          <span class="seg f2">✹ ✸ ✷ ✶</span><span class="dot">•</span>
+          <span class="seg f1">⊘ ⊗ ⌂ ⧉</span><span class="dot">•</span>
+          <span class="seg f4">H O D E L Y . N E T</span>
+        </div>
+        <div class="block">
+          <span class="seg f3">⟑ ⟐ ⟠ ⟟</span><span class="dot">•</span>
+          <span class="seg f2">✹ ✸ ✷ ✶</span><span class="dot">•</span>
+          <span class="seg f1">⊘ ⊗ ⌂ ⧉</span><span class="dot">•</span>
+          <span class="seg f4">H O D E L Y . N E T</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- APP UI (hidden until login) -->
+  <div class="container" id="app">
+    <div class="topbar">
+      <div>
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+          <div class="pill" id="mePill">user</div>
+          <div class="pill" id="rolePill">role</div>
+        </div>
+        <div style="margin-top:8px;opacity:.7">Upload, view, and manage files by section.</div>
+      </div>
+      <button class="btn" id="logoutBtn">Logout</button>
+    </div>
+
+    <div class="row" style="margin-top:10px;align-items:center">
+      <select id="sectionSelect"></select>
+      <input type="file" id="fileInput" />
+      <button class="btn" id="uploadBtn">Upload</button>
+      <button class="btn" id="refreshBtn">Refresh</button>
+    </div>
+
+    <!-- Admin panel -->
+    <div id="adminPanel" class="card" style="display:none;margin-top:12px;text-align:left">
+      <div style="font-weight:800;letter-spacing:-.4px;margin-bottom:8px">Admin</div>
+      <div class="row">
+        <input type="text" id="newUserEmail" placeholder="email to allow" />
+        <input type="text" id="newUserSections" placeholder="sections (comma) e.g. public,school" />
+        <input type="password" id="newUserPass" placeholder="password (optional)" />
+        <button class="btn" id="addUserBtn">Add / Update user</button>
+      </div>
+      <div class="ok" id="adminOk">Saved.</div>
+    </div>
+
+    <div class="error" id="appError"></div>
+    <div class="grid" id="filesGrid"></div>
+  </div>
+
+  <script>
+    // Put your Apps Script Web App URL here:
+    const API = "YOUR_SCRIPT_WEBAPP_URL";
+
+    // Google OAuth Client ID:
+    const GOOGLE_CLIENT_ID = "464476506382-nfabhdti6m2505futn4d02c9cuhqs2e6.apps.googleusercontent.com";
+
+    let idToken = null;        // Google session
+    let sessionToken = null;   // Email/password session
+    let me = null;
+
+    const loginError = document.getElementById("loginError");
+    const appError = document.getElementById("appError");
+
+    const loginChoose = document.getElementById("loginChoose");
+    const loginEmail = document.getElementById("loginEmail");
+
+    function showError(el, msg){
+      el.style.display = "block";
+      el.textContent = msg;
+    }
+    function clearError(el){
+      el.style.display = "none";
+      el.textContent = "";
+    }
+
+    function showEmailScreen(){
+      clearError(loginError);
+      loginChoose.style.display = "none";
+      loginEmail.style.display = "block";
+      setTimeout(() => document.getElementById("emailLogin").focus(), 50);
+    }
+    function showChooseScreen(){
+      clearError(loginError);
+      loginEmail.style.display = "none";
+      loginChoose.style.display = "block";
+      document.getElementById("passLogin").value = "";
+    }
+
+    document.getElementById("showEmailBtn").addEventListener("click", showEmailScreen);
+    document.getElementById("backToChooseBtn").addEventListener("click", showChooseScreen);
+
+    document.addEventListener("keydown", (e) => {
+      if(e.key === "Escape" && loginEmail.style.display === "block"){
+        showChooseScreen();
+      }
+    });
+
+    function b64FromFile(file){
+      return new Promise((resolve, reject) => {
+        const r = new FileReader();
+        r.onload = () => {
+          const dataUrl = r.result;
+          const base64 = String(dataUrl).split(",")[1] || "";
+          resolve(base64);
+        };
+        r.onerror = reject;
+        r.readAsDataURL(file);
+      });
+    }
+
+    async function apiCall(action, payload = {}){
+      const res = await fetch(API, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action, idToken, sessionToken, ...payload })
+      });
+      const data = await res.json();
+      if(!data.ok) throw new Error(data.error || "Request failed");
+      return data;
+    }
+
+    async function enterApp(){
+      document.getElementById("loginScreen").style.display = "none";
+      document.getElementById("app").style.display = "block";
+      await loadSectionsAndFiles();
+    }
+
+    async function loadSectionsAndFiles(){
+      clearError(appError);
+      const data = await apiCall("me");
+      me = data.me;
+
+      document.getElementById("mePill").textContent = me.email;
+      document.getElementById("rolePill").textContent = me.isAdmin ? "admin" : "user";
+
+      const sel = document.getElementById("sectionSelect");
+      sel.innerHTML = "";
+      (me.sections || []).forEach(s => {
+        const o = document.createElement("option");
+        o.value = s; o.textContent = s;
+        sel.appendChild(o);
+      });
+
+      document.getElementById("adminPanel").style.display = me.isAdmin ? "block" : "none";
+
+      await refreshFiles();
+    }
+
+    async function refreshFiles(){
+      clearError(appError);
+      const section = document.getElementById("sectionSelect").value;
+      const data = await apiCall("list", { section });
+      const grid = document.getElementById("filesGrid");
+      grid.innerHTML = "";
+
+      data.files.forEach(f => {
+        const card = document.createElement("div");
+        card.className = "file";
+        card.innerHTML = `
+          <div class="name">${escapeHtml(f.name)}</div>
+          <div class="meta">${escapeHtml(f.mime)} • ${Math.round(f.size/1024)} KB</div>
+          <div class="actions">
+            <a class="btn" style="text-decoration:none;display:inline-block" target="_blank" href="${f.viewUrl}">View</a>
+            <a class="btn" style="text-decoration:none;display:inline-block" target="_blank" href="${f.downloadUrl}">Download</a>
+            ${me.isAdmin ? `<button class="btn" data-del="${f.id}">Delete</button>` : ``}
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+
+      if(me.isAdmin){
+        grid.querySelectorAll("button[data-del]").forEach(btn => {
+          btn.addEventListener("click", async () => {
+            try{
+              clearError(appError);
+              await apiCall("delete", { fileId: btn.dataset.del });
+              await refreshFiles();
+            }catch(e){ showError(appError, e.message); }
+          });
+        });
+      }
+    }
+
+    function escapeHtml(s){
+      return String(s).replace(/[&<>"']/g, m => ({
+        "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
+      }[m]));
+    }
+
+    // Upload
+    document.getElementById("uploadBtn").addEventListener("click", async () => {
+      try{
+        clearError(appError);
+        const section = document.getElementById("sectionSelect").value;
+        const file = document.getElementById("fileInput").files[0];
+        if(!file) throw new Error("Choose a file.");
+        const base64 = await b64FromFile(file);
+        await apiCall("upload", {
+          section,
+          filename: file.name,
+          mime: file.type || "application/octet-stream",
+          base64
+        });
+        document.getElementById("fileInput").value = "";
+        await refreshFiles();
+      }catch(e){ showError(appError, e.message); }
+    });
+
+    document.getElementById("refreshBtn").addEventListener("click", () => {
+      refreshFiles().catch(e => showError(appError, e.message));
+    });
+
+    // Admin: add/update user (password optional)
+    document.getElementById("addUserBtn").addEventListener("click", async () => {
+      try{
+        clearError(appError);
+        const email = document.getElementById("newUserEmail").value.trim().toLowerCase();
+        const sections = document.getElementById("newUserSections").value
+          .split(",").map(s=>s.trim()).filter(Boolean);
+        const password = document.getElementById("newUserPass").value || "";
+
+        if(!email) throw new Error("Email required.");
+        if(sections.length === 0) throw new Error("At least 1 section required.");
+
+        await apiCall("admin_upsert_user", { email, sections, password });
+
+        document.getElementById("adminOk").style.display = "block";
+        setTimeout(()=>document.getElementById("adminOk").style.display="none", 1200);
+      }catch(e){ showError(appError, e.message); }
+    });
+
+    // Logout
+    document.getElementById("logoutBtn").addEventListener("click", () => {
+      idToken = null;
+      sessionToken = null;
+      me = null;
+      document.getElementById("app").style.display = "none";
+      document.getElementById("loginScreen").style.display = "block";
+      showChooseScreen();
+    });
+
+    // Email/password login
+    async function loginWithEmail(){
+      try{
+        clearError(loginError);
+        const email = document.getElementById("emailLogin").value.trim().toLowerCase();
+        const password = document.getElementById("passLogin").value;
+
+        if(!email || !password) throw new Error("Email and password required.");
+
+        const data = await apiCall("login_email", { email, password });
+        sessionToken = data.sessionToken;
+        idToken = null;
+
+        await apiCall("me");
+        await enterApp();
+      }catch(e){
+        sessionToken = null;
+        showError(loginError, e.message);
+      }
+    }
+
+    document.getElementById("emailLoginBtn").addEventListener("click", loginWithEmail);
+    document.getElementById("passLogin").addEventListener("keydown", (e) => {
+      if(e.key === "Enter") loginWithEmail();
+    });
+    document.getElementById("emailLogin").addEventListener("keydown", (e) => {
+      if(e.key === "Enter") loginWithEmail();
+    });
+
+    // Google Sign-in init
+    window.onload = () => {
+      google.accounts.id.initialize({
+        client_id: GOOGLE_CLIENT_ID,
+        ux_mode: "popup",
+        callback: async (resp) => {
+          try{
+            clearError(loginError);
+            idToken = resp.credential;
+            sessionToken = null;
+
+            await apiCall("me");
+            await enterApp();
+          }catch(e){
+            idToken = null;
+            showError(loginError, e.message);
+          }
+        }
+      });
+
+      google.accounts.id.renderButton(
+        document.getElementById("gbtn"),
+        { theme: "outline", size: "large", text: "signin_with" }
+      );
+    };
+  </script>
+
+</body>
+</html>
