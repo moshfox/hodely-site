@@ -1,5 +1,5 @@
 export async function onRequestPost(context) {
-  const GAS_URL = "https://script.google.com/macros/s/AKfycbws_NdbB68vUI42rt_GPLeSGZLSl7Dg25KTntZbHh-YBJdFfSZO3DnOsykmbZ9ObQWK/exec";
+  const GAS_URL = "https://script.google.com/macros/s/AKfycbwZ_gXsIoZsDOomzVU68c46LJItqL8aJuAnMZ9qrp8kNJUhrUf-DvUjBDZn-YVqr_LQ/exec";
 
   const bodyText = await context.request.text();
 
