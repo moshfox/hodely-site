@@ -140,11 +140,11 @@
       margin-top:10px;
     }
     .gLikeBtn{
-      width: 222px;              /* matches typical Google button width */
+      width: 222px;
       max-width: min(340px, 86vw);
       height: 40px;
-      border-radius: 4px;         /* Google-ish */
-      border: 1px solid #dadce0;  /* Google border */
+      border-radius: 4px;
+      border: 1px solid #dadce0;
       background: #fff;
       color: #3c4043;
       font-family: Roboto, Inter, system-ui, -apple-system, Segoe UI, Arial, sans-serif;
@@ -252,7 +252,7 @@
       <!-- STEP 2: email form -->
       <div id="loginEmail">
         <div class="badge">email <span style="opacity:.45">•</span> password</div>
-        <div class="muted">Enter your credentials.</div>
+        <div class="muted" id="emailHint">Enter your credentials.</div>
 
         <div style="margin-top:14px;display:flex;flex-direction:column;align-items:center;gap:10px">
           <input id="emailLogin" type="text" placeholder="Email" autocomplete="username">
@@ -267,7 +267,7 @@
           <button class="backBtn" id="backToChooseBtn" type="button">← Back</button>
         </div>
 
-        <div class="tiny">No sign-up. Admin grants access.</div>
+        <div class="tiny" id="emailTiny">No sign-up. Admin grants access.</div>
       </div>
 
       <div class="error" id="loginError"></div>
@@ -318,10 +318,10 @@
       <div class="row">
         <input type="text" id="newUserEmail" placeholder="email to allow" />
         <input type="text" id="newUserSections" placeholder="sections (comma) e.g. public,school" />
-        <input type="password" id="newUserPass" placeholder="password (optional)" />
         <button class="btn" id="addUserBtn">Add / Update user</button>
       </div>
       <div class="ok" id="adminOk">Saved.</div>
+      <!-- Requests box is injected by JS -->
     </div>
 
     <div class="error" id="appError"></div>
@@ -329,14 +329,20 @@
   </div>
 
   <script>
-    // Put your Apps Script Web App URL here:
+    // =========================
+    // CONFIG (CHANGE THIS ONE)
+    // =========================
+    // Use one of these:
+    // 1) If same domain and you have a proxy endpoint: const API = "/api/drive";
+    // 2) If direct Worker URL: const API = "https://YOUR-WORKER.workers.dev/api/drive";
+    // 3) If direct Apps Script (not recommended for CORS): const API = "https://script.google.com/macros/s/.../exec";
     const API = "/api/drive";
 
-    // Google OAuth Client ID:
+    const ADMIN_EMAIL = "hodelyproductions@gmail.com";
     const GOOGLE_CLIENT_ID = "464476506382-nfabhdti6m2505futn4d02c9cuhqs2e6.apps.googleusercontent.com";
 
-    let idToken = null;        // Google session
-    let sessionToken = null;   // Email/password session
+    let idToken = null;
+    let sessionToken = null;
     let me = null;
 
     const loginError = document.getElementById("loginError");
@@ -345,20 +351,15 @@
     const loginChoose = document.getElementById("loginChoose");
     const loginEmail = document.getElementById("loginEmail");
 
-    function showError(el, msg){
-      el.style.display = "block";
-      el.textContent = msg;
-    }
-    function clearError(el){
-      el.style.display = "none";
-      el.textContent = "";
-    }
+    function showError(el, msg){ el.style.display="block"; el.textContent=msg; }
+    function clearError(el){ el.style.display="none"; el.textContent=""; }
 
     function showEmailScreen(){
       clearError(loginError);
       loginChoose.style.display = "none";
       loginEmail.style.display = "block";
       setTimeout(() => document.getElementById("emailLogin").focus(), 50);
+      syncEmailMode();
     }
     function showChooseScreen(){
       clearError(loginError);
@@ -371,33 +372,59 @@
     document.getElementById("backToChooseBtn").addEventListener("click", showChooseScreen);
 
     document.addEventListener("keydown", (e) => {
-      if(e.key === "Escape" && loginEmail.style.display === "block"){
-        showChooseScreen();
-      }
+      if(e.key === "Escape" && loginEmail.style.display === "block") showChooseScreen();
     });
 
     function b64FromFile(file){
       return new Promise((resolve, reject) => {
         const r = new FileReader();
-        r.onload = () => {
-          const dataUrl = r.result;
-          const base64 = String(dataUrl).split(",")[1] || "";
-          resolve(base64);
-        };
+        r.onload = () => resolve(String(r.result).split(",")[1] || "");
         r.onerror = reject;
         r.readAsDataURL(file);
       });
     }
 
-    async function apiCall(action, payload = {}){
+    async function apiRaw(payload){
       const res = await fetch(API, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action, idToken, sessionToken, ...payload })
+        method:"POST",
+        headers:{ "Content-Type":"application/json" },
+        body: JSON.stringify(payload)
       });
-      const data = await res.json();
+      const text = await res.text();
+      try{ return JSON.parse(text); }
+      catch{ throw new Error("Server returned non-JSON: " + text.slice(0,160)); }
+    }
+
+    async function apiCall(action, payload = {}){
+      const data = await apiRaw({ action, idToken, sessionToken, ...payload });
       if(!data.ok) throw new Error(data.error || "Request failed");
       return data;
+    }
+
+    function escapeHtml(s){
+      return String(s).replace(/[&<>"']/g, m => ({
+        "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
+      }[m]));
+    }
+
+    // ====== Pending UI ======
+    function showPending(email){
+      document.getElementById("loginScreen").style.display = "none";
+      document.getElementById("app").style.display = "block";
+
+      document.getElementById("mePill").textContent = email || "user";
+      document.getElementById("rolePill").textContent = "pending";
+
+      document.getElementById("adminPanel").style.display = "none";
+      document.getElementById("filesGrid").innerHTML = "";
+      document.getElementById("sectionSelect").innerHTML = "";
+
+      document.getElementById("fileInput").disabled = true;
+      document.getElementById("uploadBtn").disabled = true;
+      document.getElementById("refreshBtn").disabled = true;
+      document.getElementById("sectionSelect").disabled = true;
+
+      showError(appError, "Waiting for admin approval. You can’t access files yet.");
     }
 
     async function enterApp(){
@@ -408,11 +435,22 @@
 
     async function loadSectionsAndFiles(){
       clearError(appError);
+
       const data = await apiCall("me");
       me = data.me;
 
       document.getElementById("mePill").textContent = me.email;
-      document.getElementById("rolePill").textContent = me.isAdmin ? "admin" : "user";
+      document.getElementById("rolePill").textContent = me.isAdmin ? "admin" : (me.status || "user");
+
+      if(me.status !== "approved"){
+        showPending(me.email);
+        return;
+      }
+
+      document.getElementById("fileInput").disabled = false;
+      document.getElementById("uploadBtn").disabled = false;
+      document.getElementById("refreshBtn").disabled = false;
+      document.getElementById("sectionSelect").disabled = false;
 
       const sel = document.getElementById("sectionSelect");
       sel.innerHTML = "";
@@ -423,14 +461,18 @@
       });
 
       document.getElementById("adminPanel").style.display = me.isAdmin ? "block" : "none";
+      if(me.isAdmin) await renderAdminRequests();
 
       await refreshFiles();
     }
 
     async function refreshFiles(){
       clearError(appError);
+      if(!me || me.status !== "approved") return;
+
       const section = document.getElementById("sectionSelect").value;
       const data = await apiCall("list", { section });
+
       const grid = document.getElementById("filesGrid");
       grid.innerHTML = "";
 
@@ -462,19 +504,16 @@
       }
     }
 
-    function escapeHtml(s){
-      return String(s).replace(/[&<>"']/g, m => ({
-        "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
-      }[m]));
-    }
-
     // Upload
     document.getElementById("uploadBtn").addEventListener("click", async () => {
       try{
         clearError(appError);
+        if(!me || me.status !== "approved") throw new Error("Pending approval.");
+
         const section = document.getElementById("sectionSelect").value;
         const file = document.getElementById("fileInput").files[0];
         if(!file) throw new Error("Choose a file.");
+
         const base64 = await b64FromFile(file);
         await apiCall("upload", {
           section,
@@ -482,6 +521,7 @@
           mime: file.type || "application/octet-stream",
           base64
         });
+
         document.getElementById("fileInput").value = "";
         await refreshFiles();
       }catch(e){ showError(appError, e.message); }
@@ -491,65 +531,180 @@
       refreshFiles().catch(e => showError(appError, e.message));
     });
 
-    // Admin: add/update user (password optional)
+    // Admin: add/update user
     document.getElementById("addUserBtn").addEventListener("click", async () => {
       try{
         clearError(appError);
         const email = document.getElementById("newUserEmail").value.trim().toLowerCase();
         const sections = document.getElementById("newUserSections").value
           .split(",").map(s=>s.trim()).filter(Boolean);
-        const password = document.getElementById("newUserPass").value || "";
 
         if(!email) throw new Error("Email required.");
         if(sections.length === 0) throw new Error("At least 1 section required.");
 
-        await apiCall("admin_upsert_user", { email, sections, password });
+        await apiCall("admin_upsert_user", { email, sections });
 
         document.getElementById("adminOk").style.display = "block";
         setTimeout(()=>document.getElementById("adminOk").style.display="none", 1200);
+
+        await renderAdminRequests();
       }catch(e){ showError(appError, e.message); }
     });
+
+    // ====== Admin Requests UI ======
+    function ensureRequestsBox(){
+      let box = document.getElementById("requestsBox");
+      if(box) return box;
+
+      box = document.createElement("div");
+      box.id = "requestsBox";
+      box.style.marginTop = "12px";
+      box.style.paddingTop = "10px";
+      box.style.borderTop = "1px solid rgba(0,0,0,.12)";
+      box.innerHTML = `
+        <div style="font-weight:800;margin-bottom:8px">Requests</div>
+        <div class="row" style="align-items:center">
+          <button class="btn" id="reloadReqBtn">Reload</button>
+        </div>
+        <div id="reqList" style="margin-top:10px;display:grid;gap:10px"></div>
+      `;
+      document.getElementById("adminPanel").appendChild(box);
+
+      box.querySelector("#reloadReqBtn").addEventListener("click", () => {
+        renderAdminRequests().catch(e=>showError(appError, e.message));
+      });
+
+      return box;
+    }
+
+    async function renderAdminRequests(){
+      if(!me || !me.isAdmin) return;
+      const box = ensureRequestsBox();
+      const list = box.querySelector("#reqList");
+      list.innerHTML = "Loading...";
+
+      const data = await apiCall("admin_list_requests");
+      const reqs = data.requests || [];
+
+      if(reqs.length === 0){
+        list.innerHTML = `<div class="muted">No requests.</div>`;
+        return;
+      }
+
+      list.innerHTML = "";
+      reqs.forEach(r => {
+        const card = document.createElement("div");
+        card.className = "file";
+        const isPending = r.status === "pending";
+
+        card.innerHTML = `
+          <div class="name">${escapeHtml(r.email)}</div>
+          <div class="meta">${escapeHtml(r.status)}${r.note ? " • " + escapeHtml(r.note) : ""}</div>
+          <div class="actions" style="margin-top:10px">
+            ${isPending ? `
+              <input type="text" class="btn" style="padding:10px 12px" data-sections placeholder="sections (comma) e.g. public,school">
+              <button class="btn" data-approve>Approve</button>
+              <button class="btn" data-reject>Reject</button>
+            ` : `<span class="pill">decidedBy: ${escapeHtml(r.decidedBy || "-")}</span>`}
+          </div>
+        `;
+
+        if(isPending){
+          const secInput = card.querySelector("[data-sections]");
+          card.querySelector("[data-approve]").addEventListener("click", async () => {
+            try{
+              clearError(appError);
+              const sections = (secInput.value || "").split(",").map(s=>s.trim()).filter(Boolean);
+              await apiCall("admin_decide_request", { email:r.email, decision:"approve", sections });
+              await renderAdminRequests();
+            }catch(e){ showError(appError, e.message); }
+          });
+          card.querySelector("[data-reject]").addEventListener("click", async () => {
+            try{
+              clearError(appError);
+              await apiCall("admin_decide_request", { email:r.email, decision:"reject", sections:[] });
+              await renderAdminRequests();
+            }catch(e){ showError(appError, e.message); }
+          });
+        }
+
+        list.appendChild(card);
+      });
+    }
 
     // Logout
     document.getElementById("logoutBtn").addEventListener("click", () => {
       idToken = null;
       sessionToken = null;
       me = null;
+
       document.getElementById("app").style.display = "none";
       document.getElementById("loginScreen").style.display = "block";
+
+      document.getElementById("fileInput").disabled = false;
+      document.getElementById("uploadBtn").disabled = false;
+      document.getElementById("refreshBtn").disabled = false;
+      document.getElementById("sectionSelect").disabled = false;
+      clearError(appError);
+
       showChooseScreen();
     });
 
-    // Email/password login
-    async function loginWithEmail(){
+    // ====== Email mode: admin login OR request access ======
+    function syncEmailMode(){
+      const email = document.getElementById("emailLogin").value.trim().toLowerCase();
+      const pass = document.getElementById("passLogin");
+      const btn = document.getElementById("emailLoginBtn");
+      const hint = document.getElementById("emailHint");
+      const tiny = document.getElementById("emailTiny");
+
+      if(email === ADMIN_EMAIL){
+        pass.style.display = "block";
+        hint.textContent = "Admin login (email + password).";
+        tiny.textContent = "Only admin can sign in with email.";
+        btn.querySelector("span:last-child").textContent = "Sign in (Admin)";
+      }else{
+        pass.style.display = "none";
+        hint.textContent = "Request access. Then use Google to verify and wait for approval.";
+        tiny.textContent = "Non-admin email sends a request (no access until approved).";
+        btn.querySelector("span:last-child").textContent = "Request access";
+      }
+    }
+    document.getElementById("emailLogin").addEventListener("input", syncEmailMode);
+
+    async function emailAction(){
       try{
         clearError(loginError);
         const email = document.getElementById("emailLogin").value.trim().toLowerCase();
         const password = document.getElementById("passLogin").value;
 
-        if(!email || !password) throw new Error("Email and password required.");
+        if(!email) throw new Error("Email required.");
 
-        const data = await apiCall("login_email", { email, password });
-        sessionToken = data.sessionToken;
-        idToken = null;
+        if(email === ADMIN_EMAIL){
+          if(!password) throw new Error("Password required.");
+          const data = await apiCall("login_email", { email, password });
+          sessionToken = data.sessionToken;
+          idToken = null;
+          await enterApp();
+          return;
+        }
 
-        await apiCall("me");
-        await enterApp();
+        // Request access (unverified email). Admin approves anyway.
+        const data = await apiRaw({ action:"request_access", email, note:"Requested via Email form" });
+        if(!data.ok) throw new Error(data.error || "Request failed");
+
+        showError(loginError, "Request sent. Now sign in with Google (same email) to verify ownership, then wait for approval.");
       }catch(e){
         sessionToken = null;
         showError(loginError, e.message);
       }
     }
 
-    document.getElementById("emailLoginBtn").addEventListener("click", loginWithEmail);
-    document.getElementById("passLogin").addEventListener("keydown", (e) => {
-      if(e.key === "Enter") loginWithEmail();
-    });
-    document.getElementById("emailLogin").addEventListener("keydown", (e) => {
-      if(e.key === "Enter") loginWithEmail();
-    });
+    document.getElementById("emailLoginBtn").addEventListener("click", emailAction);
+    document.getElementById("passLogin").addEventListener("keydown", (e) => { if(e.key==="Enter") emailAction(); });
+    document.getElementById("emailLogin").addEventListener("keydown", (e) => { if(e.key==="Enter") emailAction(); });
 
-    // Google Sign-in init
+    // ====== Google Sign-in init ======
     window.onload = () => {
       google.accounts.id.initialize({
         client_id: GOOGLE_CLIENT_ID,
@@ -560,8 +715,16 @@
             idToken = resp.credential;
             sessionToken = null;
 
-            await apiCall("me");
-            await enterApp();
+            const data = await apiCall("me");
+            me = data.me;
+
+            if(me.status !== "approved"){
+              // create request using verified email
+              await apiCall("request_access", { note:"Requested via Google" });
+              showPending(me.email);
+            }else{
+              await enterApp();
+            }
           }catch(e){
             idToken = null;
             showError(loginError, e.message);
@@ -571,7 +734,7 @@
 
       google.accounts.id.renderButton(
         document.getElementById("gbtn"),
-        { theme: "outline", size: "large", text: "signin_with" }
+        { theme:"outline", size:"large", text:"signin_with" }
       );
     };
   </script>
