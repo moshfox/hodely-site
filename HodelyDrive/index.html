@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <title>HodelyDrive</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
   <link rel="icon" href="/favicon.png" type="image/png">
   <meta name="theme-color" content="#000000">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=JetBrains+Mono:wght@400;700&family=DM+Serif+Display&family=Space+Grotesk:wght@400;700&display=swap" rel="stylesheet">
@@ -16,6 +17,7 @@
       min-height:100vh;display:flex;align-items:center;justify-content:center;
       overflow:hidden;
     }
+
     .container{width:100%;max-width:1100px;padding:28px 18px;text-align:center}
     h1{font-size:3.4rem;font-weight:800;letter-spacing:-2px;line-height:1}
     .line{width:90px;height:2px;background:#000;margin:18px auto;opacity:.95}
@@ -30,17 +32,20 @@
     .f3{font-family:"Space Grotesk", Inter, system-ui, sans-serif}
     .f4{font-family:Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif}
     .seg{opacity:.92}.dot{opacity:.35;padding:0 18px}
+
     @keyframes scroll-left{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
     @keyframes scroll-right{0%{transform:translateX(-50%)}100%{transform:translateX(0)}}
+
     @media (max-width:650px){
       h1{font-size:2.4rem}
       .block{font-size:1.25rem}
       h2{font-size:.95rem;letter-spacing:3px}
     }
 
+    /* Card */
     .card{
       margin: 18px auto 0;
-      width: min(520px, 92vw);
+      width: min(540px, 92vw);
       border: 1px solid rgba(0,0,0,.10);
       border-radius: 18px;
       padding: 16px;
@@ -59,6 +64,7 @@
       margin-bottom:10px;
     }
 
+    /* Inputs */
     select,input[type="file"],input[type="text"],input[type="password"]{
       border:1px solid rgba(0,0,0,.12);
       border-radius:12px;
@@ -67,6 +73,8 @@
       font: inherit;
       width: min(340px, 86vw);
     }
+
+    /* Error */
     .error{
       margin-top:10px;
       padding:10px 12px;
@@ -76,8 +84,10 @@
       font-size:.95rem;
       display:none;
       text-align:left;
+      white-space:pre-wrap;
     }
 
+    /* App UI (hidden) */
     #app{display:none;text-align:left}
     .topbar{
       display:flex;align-items:center;justify-content:space-between;
@@ -93,11 +103,12 @@
       font-weight:600;
     }
     .btn:hover{transform:translateY(-1px);background: rgba(0,0,0,.03);border-color: rgba(0,0,0,.18)}
+    .btn:disabled{opacity:.5;cursor:not-allowed}
     .row{display:flex;gap:10px;flex-wrap:wrap}
     .grid{
       margin-top: 12px;
       display:grid;
-      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
       gap: 10px;
     }
     .file{
@@ -117,24 +128,26 @@
     }
     .ok{display:none;margin-top:10px;opacity:.75;font-size:.95rem}
 
+    /* Two-step login */
     #loginChoose{display:block}
     #loginEmail{display:none}
 
+    /* Google-like button (with real logo) */
     .gLikeWrap{
       display:flex;
       justify-content:center;
       margin-top:10px;
     }
     .gLikeBtn{
-      width: 222px;
-      max-width: min(340px, 86vw);
-      height: 40px;
-      border-radius: 4px;
+      width: 252px;
+      max-width: min(360px, 92vw);
+      height: 42px;
+      border-radius: 10px;
       border: 1px solid #dadce0;
       background: #fff;
       color: #3c4043;
       font-family: Roboto, Inter, system-ui, -apple-system, Segoe UI, Arial, sans-serif;
-      font-weight: 500;
+      font-weight: 600;
       font-size: 14px;
       display:flex;
       align-items:center;
@@ -143,6 +156,7 @@
       cursor:pointer;
       transition: background .15s ease, box-shadow .15s ease, transform .1s ease;
       user-select:none;
+      padding: 0 14px;
     }
     .gLikeBtn:hover{
       background:#f8f9fa;
@@ -153,27 +167,20 @@
       transform: translateY(0px);
       box-shadow:none;
     }
-    .gIcon{
-      width:18px;height:18px;display:inline-block;
-      border-radius: 4px;
-      border: 1px solid rgba(0,0,0,.08);
-      display:grid;place-items:center;
-      font-family: "JetBrains Mono", ui-monospace, monospace;
-      font-size: 12px;
-      opacity:.9;
+    .gLogo{
+      width:18px;height:18px;display:inline-block;flex:0 0 auto;
     }
-
     .backRow{display:flex;justify-content:center;margin-top:10px}
     .backBtn{
-      width: 222px;
-      max-width: min(340px, 86vw);
-      height: 40px;
-      border-radius: 4px;
+      width: 252px;
+      max-width: min(360px, 92vw);
+      height: 42px;
+      border-radius: 10px;
       border: 1px solid #dadce0;
       background: #fff;
       color: #3c4043;
       font-family: Roboto, Inter, system-ui, -apple-system, Segoe UI, Arial, sans-serif;
-      font-weight: 500;
+      font-weight: 600;
       font-size: 14px;
       cursor:pointer;
       transition: background .15s ease, box-shadow .15s ease, transform .1s ease;
@@ -188,8 +195,10 @@
 </head>
 
 <body>
+
   <!-- LOGIN SCREEN -->
   <div class="container" id="loginScreen">
+    <!-- TOP MARQUEE -->
     <div class="marquee top" aria-hidden="true">
       <div class="track">
         <div class="block">
@@ -214,20 +223,27 @@
     <h2>Private storage</h2>
 
     <div class="card">
+      <!-- STEP 1 -->
       <div id="loginChoose">
         <div class="badge">/drive <span style="opacity:.45">•</span> login required</div>
         <div class="muted">Sign in. If your email is not approved, access is denied.</div>
 
-        <div style="margin-top:14px;display:flex;flex-direction:column;align-items:center;gap:10px">
-          <button class="gLikeBtn" id="googleBtn" type="button">
-            <span class="gIcon">G</span>
+        <div class="gLikeWrap" style="margin-top:14px">
+          <button class="gLikeBtn" id="googleBtn" type="button" aria-label="Sign in with Google">
+            <!-- Google G (SVG) -->
+            <svg class="gLogo" viewBox="0 0 48 48" aria-hidden="true">
+              <path fill="#FFC107" d="M43.611 20.083H42V20H24v8h11.303C33.83 32.659 29.316 36 24 36c-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 12.954 4 4 12.954 4 24s8.954 20 20 20 20-8.954 20-20c0-1.341-.138-2.65-.389-3.917z"/>
+              <path fill="#FF3D00" d="M6.306 14.691l6.571 4.819C14.655 16.108 18.961 12 24 12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4c-7.682 0-14.354 4.327-17.694 10.691z"/>
+              <path fill="#4CAF50" d="M24 44c5.166 0 9.86-1.977 13.409-5.197l-6.19-5.238C29.211 35.091 26.715 36 24 36c-5.294 0-9.791-3.318-11.313-7.946l-6.52 5.02C9.475 39.556 16.227 44 24 44z"/>
+              <path fill="#1976D2" d="M43.611 20.083H42V20H24v8h11.303c-0.723 2.041-2.125 3.767-3.984 4.994l.003-.002 6.19 5.238C36.971 39.21 44 34 44 24c0-1.341-.138-2.65-.389-3.917z"/>
+            </svg>
             <span>Sign in with Google</span>
           </button>
         </div>
 
         <div class="gLikeWrap">
-          <button class="gLikeBtn" id="showEmailBtn" type="button" aria-label="Login with email">
-            <span class="gIcon">@</span>
+          <button class="gLikeBtn" id="showEmailBtn" type="button" aria-label="Admin Email Login">
+            <span style="font-family:'JetBrains Mono';opacity:.85">@</span>
             <span>Admin Email Login</span>
           </button>
         </div>
@@ -235,6 +251,7 @@
         <div class="tiny">No sign-up. Admin grants access.</div>
       </div>
 
+      <!-- STEP 2 -->
       <div id="loginEmail">
         <div class="badge">admin <span style="opacity:.45">•</span> email/password</div>
         <div class="muted" id="emailHint">Admin login only.</div>
@@ -243,7 +260,7 @@
           <input id="emailLogin" type="text" placeholder="Admin Email" autocomplete="username">
           <input id="passLogin" type="password" placeholder="Password" autocomplete="current-password">
           <button class="gLikeBtn" id="emailLoginBtn" type="button">
-            <span class="gIcon">→</span>
+            <span style="font-family:'JetBrains Mono';opacity:.85">→</span>
             <span>Sign in</span>
           </button>
         </div>
@@ -251,12 +268,14 @@
         <div class="backRow">
           <button class="backBtn" id="backToChooseBtn" type="button">← Back</button>
         </div>
+
         <div class="tiny">Only admin can use this method.</div>
       </div>
 
       <div class="error" id="loginError"></div>
     </div>
 
+    <!-- BOTTOM MARQUEE -->
     <div class="marquee bottom" aria-hidden="true">
       <div class="track">
         <div class="block">
@@ -299,6 +318,7 @@
     <div id="adminPanel" class="card" style="display:none;margin-top:12px;text-align:left">
       <div style="font-weight:800;letter-spacing:-.4px;margin-bottom:8px">Admin</div>
       <div class="muted">Approve/reject requests and set sections.</div>
+
       <div class="ok" id="adminOk">Saved.</div>
 
       <div id="requestsBox" style="margin-top:12px;padding-top:10px;border-top:1px solid rgba(0,0,0,.12)">
@@ -330,7 +350,7 @@
       getFirestore,
       doc, getDoc, setDoc,
       collection, query, where, orderBy, getDocs,
-      addDoc, serverTimestamp, updateDoc
+      addDoc, serverTimestamp, updateDoc, deleteDoc
     } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
     import {
@@ -344,6 +364,7 @@
     // ========= CONFIG =========
     const ADMIN_EMAIL = "hodelyproductions@gmail.com";
 
+    // ✅ your firebase config
     const firebaseConfig = {
       apiKey: "AIzaSyDaAXaboJVS_j28ZAHLHw7-MLPFeZuImfs",
       authDomain: "klexs-546bd.firebaseapp.com",
@@ -361,7 +382,7 @@
     const db = getFirestore(app);
     const storage = getStorage(app);
 
-    // ========= UI refs =========
+    // ========= UI =========
     const loginScreen = document.getElementById("loginScreen");
     const appScreen = document.getElementById("app");
 
@@ -386,11 +407,14 @@
     const reloadReqBtn = document.getElementById("reloadReqBtn");
     const reqList = document.getElementById("reqList");
 
-    let me = null; // user doc data
+    // ========= state =========
+    let me = null;
     let meUid = null;
 
-    function showError(el, msg){ el.style.display="block"; el.textContent=msg; }
+    // ========= helpers =========
+    function showError(el, msg){ el.style.display="block"; el.textContent=String(msg || "Error"); }
     function clearError(el){ el.style.display="none"; el.textContent=""; }
+
     function escapeHtml(s){
       return String(s).replace(/[&<>"']/g, m => ({
         "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
@@ -404,9 +428,24 @@
       sectionSelect.disabled = !enabled;
     }
 
+    function showChooseScreen(){
+      clearError(loginError);
+      loginEmail.style.display = "none";
+      loginChoose.style.display = "block";
+      document.getElementById("passLogin").value = "";
+    }
+
+    function showEmailScreen(){
+      clearError(loginError);
+      loginChoose.style.display = "none";
+      loginEmail.style.display = "block";
+      setTimeout(()=>document.getElementById("emailLogin").focus(), 40);
+    }
+
     function showPendingUI(email){
       loginScreen.style.display = "none";
       appScreen.style.display = "block";
+
       mePill.textContent = email || "user";
       rolePill.textContent = "pending";
       subtitle.textContent = "Waiting for admin approval. No file access yet.";
@@ -416,35 +455,52 @@
       sectionSelect.innerHTML = "";
       setAppEnabled(false);
 
-      showError(appError, "Pending approval. Ask admin to approve and assign sections.");
+      showError(appError, "Pending approval.\nAsk admin to approve and assign sections.");
     }
 
-    function showApprovedUI(){
+    function showApprovedShell(){
       loginScreen.style.display = "none";
       appScreen.style.display = "block";
       clearError(appError);
       setAppEnabled(true);
     }
 
+    // ========= core: user doc (FIXED) =========
     async function ensureUserDoc(user){
       const uref = doc(db, "users", user.uid);
       const snap = await getDoc(uref);
 
+      const isAdminEmail = (user.email || "").toLowerCase() === ADMIN_EMAIL.toLowerCase();
+
       if(!snap.exists()){
-        // create as pending (user cannot approve themselves due to rules)
         await setDoc(uref, {
           email: user.email || "",
-          status: "pending",
-          sections: [],
-          isAdmin: (user.email === ADMIN_EMAIL),
+          status: isAdminEmail ? "approved" : "pending",
+          sections: isAdminEmail ? ["public","school"] : [],
+          isAdmin: isAdminEmail,
           createdAt: serverTimestamp()
         });
+      } else {
+        // If admin got stuck pending from older data, fix it.
+        const d = snap.data() || {};
+        if(isAdminEmail && d.status !== "approved"){
+          await setDoc(uref, {
+            status: "approved",
+            sections: (Array.isArray(d.sections) && d.sections.length) ? d.sections : ["public","school"],
+            isAdmin: true
+          }, { merge: true });
+        }
       }
+
       const snap2 = await getDoc(uref);
       return { ref: uref, data: snap2.data() };
     }
 
     async function ensureRequestIfPending(user, note){
+      // Only create request if not admin
+      const isAdminEmail = (user.email || "").toLowerCase() === ADMIN_EMAIL.toLowerCase();
+      if(isAdminEmail) return;
+
       const qy = query(collection(db, "requests"), where("uid", "==", user.uid));
       const existing = await getDocs(qy);
       if(!existing.empty) return;
@@ -453,39 +509,10 @@
         uid: user.uid,
         email: user.email || "",
         status: "pending",
-        note: note || "Requested via Google",
+        note: note || "Requested via sign-in",
         sections: [],
         createdAt: serverTimestamp()
       });
-    }
-
-    async function loadMeAndEnter(user){
-      clearError(loginError);
-      clearError(appError);
-
-      meUid = user.uid;
-      mePill.textContent = user.email || "user";
-
-      const { data } = await ensureUserDoc(user);
-      me = data;
-
-      const isAdmin = (user.email === ADMIN_EMAIL) || !!me.isAdmin;
-      rolePill.textContent = isAdmin ? "admin" : (me.status || "user");
-
-      if(me.status !== "approved"){
-        await ensureRequestIfPending(user, "Requested via sign-in");
-        showPendingUI(user.email);
-        return;
-      }
-
-      showApprovedUI();
-      subtitle.textContent = "Upload, view, and manage files by section.";
-      adminPanel.style.display = isAdmin ? "block" : "none";
-
-      await loadSections();
-      await refreshFiles();
-
-      if(isAdmin) await renderAdminRequests();
     }
 
     async function loadSections(){
@@ -501,16 +528,15 @@
       clearError(appError);
       filesGrid.innerHTML = "";
 
-      if(!me || me.status !== "approved"){
-        return;
-      }
+      if(!me || me.status !== "approved") return;
+
       const section = sectionSelect.value;
       if(!section){
         showError(appError, "No sections assigned. Admin must add sections.");
         return;
       }
 
-      // query metadata
+      // Query metadata
       const qy = query(
         collection(db, "files"),
         where("uid", "==", meUid),
@@ -519,12 +545,15 @@
       );
 
       const snap = await getDocs(qy);
+
       if(snap.empty){
         filesGrid.innerHTML = `<div class="muted" style="padding:10px">No files in this section.</div>`;
         return;
       }
 
-      snap.forEach(docSnap => {
+      const isAdmin = ((auth.currentUser?.email || "").toLowerCase() === ADMIN_EMAIL.toLowerCase()) || !!me.isAdmin;
+
+      for (const docSnap of snap.docs){
         const f = docSnap.data();
         const card = document.createElement("div");
         card.className = "file";
@@ -533,36 +562,32 @@
           <div class="name">${escapeHtml(f.name)}</div>
           <div class="meta">${escapeHtml(f.mime || "file")} • ${Math.round((f.size||0)/1024)} KB</div>
           <div class="actions">
-            <a class="btn" style="text-decoration:none;display:inline-block" target="_blank" data-view>View</a>
-            <a class="btn" style="text-decoration:none;display:inline-block" target="_blank" data-dl>Download</a>
-            ${(me.email === ADMIN_EMAIL || me.isAdmin) ? `<button class="btn" data-del>Delete</button>` : ``}
+            <a class="btn" style="text-decoration:none;display:inline-block" target="_blank" rel="noopener" data-view>View</a>
+            <a class="btn" style="text-decoration:none;display:inline-block" target="_blank" rel="noopener" data-dl>Download</a>
+            ${isAdmin ? `<button class="btn" data-del>Delete</button>` : ``}
           </div>
         `;
 
         const viewA = card.querySelector("[data-view]");
         const dlA = card.querySelector("[data-dl]");
 
-        (async () => {
-          // get signed download url from storage
+        // Get signed download URL
+        try{
           const url = await getDownloadURL(sRef(storage, f.path));
           viewA.href = url;
           dlA.href = url;
-        })().catch(() => {
+        }catch{
           viewA.href = "#";
           dlA.href = "#";
-        });
+        }
 
         const delBtn = card.querySelector("[data-del]");
         if(delBtn){
           delBtn.addEventListener("click", async () => {
             try{
               clearError(appError);
-              // delete in storage
               await deleteObject(sRef(storage, f.path));
-              // delete metadata
-              // Firestore doc id is docSnap.id (we captured it via closure)
-              await import("https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js")
-                .then(({ deleteDoc, doc }) => deleteDoc(doc(db, "files", docSnap.id)));
+              await deleteDoc(doc(db, "files", docSnap.id));
               await refreshFiles();
             }catch(e){
               showError(appError, e.message || "Delete failed.");
@@ -571,7 +596,7 @@
         }
 
         filesGrid.appendChild(card);
-      });
+      }
     }
 
     async function uploadCurrent(){
@@ -584,14 +609,16 @@
         if(!section) throw new Error("No section selected.");
         if(!file) throw new Error("Choose a file.");
 
-        // enforce section allowed client-side too
         if(!(me.sections || []).includes(section)) throw new Error("Section not allowed.");
 
         const safeName = file.name.replace(/[^\w.\- ()[\]]+/g, "_");
         const path = `drive/${meUid}/${section}/${Date.now()}__${safeName}`;
-        const storageRef = sRef(storage, path);
 
-        await uploadBytes(storageRef, file, { contentType: file.type || "application/octet-stream" });
+        await uploadBytes(
+          sRef(storage, path),
+          file,
+          { contentType: file.type || "application/octet-stream" }
+        );
 
         await addDoc(collection(db, "files"), {
           uid: meUid,
@@ -611,7 +638,7 @@
       }
     }
 
-    // ===== Admin requests =====
+    // ===== Admin: requests =====
     async function renderAdminRequests(){
       reqList.innerHTML = "Loading...";
       const qy = query(collection(db, "requests"), orderBy("createdAt", "desc"));
@@ -623,7 +650,7 @@
       }
 
       reqList.innerHTML = "";
-      snap.forEach(docSnap => {
+      for (const docSnap of snap.docs){
         const r = docSnap.data();
         const isPending = r.status === "pending";
 
@@ -646,10 +673,10 @@
 
           card.querySelector("[data-approve]").addEventListener("click", async () => {
             try{
-              const sections = (secInput.value || "").split(",").map(s=>s.trim()).filter(Boolean);
+              const sections = (secInput.value || "")
+                .split(",").map(s=>s.trim()).filter(Boolean);
               if(sections.length === 0) throw new Error("Add at least 1 section.");
 
-              // update request
               await updateDoc(doc(db, "requests", docSnap.id), {
                 status: "approved",
                 sections,
@@ -657,14 +684,12 @@
                 decidedBy: (auth.currentUser?.email || ADMIN_EMAIL)
               });
 
-              // ensure user doc exists and approve
               const userRef = doc(db, "users", r.uid);
               await setDoc(userRef, {
                 email: r.email || "",
                 status: "approved",
                 sections,
-                isAdmin: (r.email === ADMIN_EMAIL),
-                createdAt: serverTimestamp()
+                isAdmin: (String(r.email || "").toLowerCase() === ADMIN_EMAIL.toLowerCase())
               }, { merge: true });
 
               adminOk.style.display = "block";
@@ -672,7 +697,6 @@
 
               await renderAdminRequests();
 
-              // if admin is approving themselves or current session, reload me
               if(auth.currentUser && auth.currentUser.uid === r.uid){
                 await loadMeAndEnter(auth.currentUser);
               }
@@ -705,32 +729,49 @@
         }
 
         reqList.appendChild(card);
-      });
+      }
     }
 
-    // ========= Login UI =========
-    function showEmailScreen(){
+    // ========= enter app =========
+    async function loadMeAndEnter(user){
       clearError(loginError);
-      loginChoose.style.display = "none";
-      loginEmail.style.display = "block";
-      setTimeout(()=>document.getElementById("emailLogin").focus(), 50);
-    }
-    function showChooseScreen(){
-      clearError(loginError);
-      loginEmail.style.display = "none";
-      loginChoose.style.display = "block";
-      document.getElementById("passLogin").value = "";
+      clearError(appError);
+
+      meUid = user.uid;
+      mePill.textContent = user.email || "user";
+
+      const { data } = await ensureUserDoc(user);
+      me = data || {};
+
+      const isAdmin = (String(user.email || "").toLowerCase() === ADMIN_EMAIL.toLowerCase()) || !!me.isAdmin;
+
+      rolePill.textContent = isAdmin ? "admin" : (me.status || "user");
+
+      if(me.status !== "approved"){
+        await ensureRequestIfPending(user, "Requested via sign-in");
+        showPendingUI(user.email);
+        return;
+      }
+
+      showApprovedShell();
+      subtitle.textContent = "Upload, view, and manage files by section.";
+
+      adminPanel.style.display = isAdmin ? "block" : "none";
+
+      await loadSections();
+      await refreshFiles();
+
+      if(isAdmin) await renderAdminRequests();
     }
 
+    // ========= Events =========
     document.getElementById("showEmailBtn").addEventListener("click", showEmailScreen);
     document.getElementById("backToChooseBtn").addEventListener("click", showChooseScreen);
 
     document.getElementById("googleBtn").addEventListener("click", async () => {
       try{
         clearError(loginError);
-        const provider = new GoogleAuthProvider();
-        await signInWithPopup(auth, provider);
-        // onAuthStateChanged will handle enter
+        await signInWithPopup(auth, new GoogleAuthProvider());
       }catch(e){
         showError(loginError, e.message || "Google sign-in failed.");
       }
@@ -742,7 +783,7 @@
         const email = document.getElementById("emailLogin").value.trim().toLowerCase();
         const pass = document.getElementById("passLogin").value;
 
-        if(email !== ADMIN_EMAIL) throw new Error("Email login is admin-only.");
+        if(email !== ADMIN_EMAIL.toLowerCase()) throw new Error("Email login is admin-only.");
         if(!pass) throw new Error("Password required.");
 
         await signInWithEmailAndPassword(auth, email, pass);
@@ -765,7 +806,6 @@
       me = null; meUid = null;
 
       if(!user){
-        // back to login
         appScreen.style.display = "none";
         loginScreen.style.display = "block";
         showChooseScreen();
@@ -783,5 +823,6 @@
       }
     });
   </script>
+
 </body>
 </html>
