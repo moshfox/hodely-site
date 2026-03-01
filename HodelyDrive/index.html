@@ -4,13 +4,9 @@
   <meta charset="UTF-8" />
   <title>HodelyDrive</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
   <link rel="icon" href="/favicon.png" type="image/png">
   <meta name="theme-color" content="#000000">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=JetBrains+Mono:wght@400;700&family=DM+Serif+Display&family=Space+Grotesk:wght@400;700&display=swap" rel="stylesheet">
-
-  <!-- Google Identity Services -->
-  <script src="https://accounts.google.com/gsi/client" async defer></script>
 
   <style>
     *{margin:0;padding:0;box-sizing:border-box}
@@ -20,7 +16,6 @@
       min-height:100vh;display:flex;align-items:center;justify-content:center;
       overflow:hidden;
     }
-
     .container{width:100%;max-width:1100px;padding:28px 18px;text-align:center}
     h1{font-size:3.4rem;font-weight:800;letter-spacing:-2px;line-height:1}
     .line{width:90px;height:2px;background:#000;margin:18px auto;opacity:.95}
@@ -35,17 +30,14 @@
     .f3{font-family:"Space Grotesk", Inter, system-ui, sans-serif}
     .f4{font-family:Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif}
     .seg{opacity:.92}.dot{opacity:.35;padding:0 18px}
-
     @keyframes scroll-left{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
     @keyframes scroll-right{0%{transform:translateX(-50%)}100%{transform:translateX(0)}}
-
     @media (max-width:650px){
       h1{font-size:2.4rem}
       .block{font-size:1.25rem}
       h2{font-size:.95rem;letter-spacing:3px}
     }
 
-    /* Card */
     .card{
       margin: 18px auto 0;
       width: min(520px, 92vw);
@@ -67,7 +59,6 @@
       margin-bottom:10px;
     }
 
-    /* Inputs */
     select,input[type="file"],input[type="text"],input[type="password"]{
       border:1px solid rgba(0,0,0,.12);
       border-radius:12px;
@@ -76,8 +67,6 @@
       font: inherit;
       width: min(340px, 86vw);
     }
-
-    /* Error */
     .error{
       margin-top:10px;
       padding:10px 12px;
@@ -89,7 +78,6 @@
       text-align:left;
     }
 
-    /* App UI (hidden) */
     #app{display:none;text-align:left}
     .topbar{
       display:flex;align-items:center;justify-content:space-between;
@@ -129,11 +117,9 @@
     }
     .ok{display:none;margin-top:10px;opacity:.75;font-size:.95rem}
 
-    /* Two-step login */
     #loginChoose{display:block}
     #loginEmail{display:none}
 
-    /* Google-like button */
     .gLikeWrap{
       display:flex;
       justify-content:center;
@@ -202,10 +188,8 @@
 </head>
 
 <body>
-
   <!-- LOGIN SCREEN -->
   <div class="container" id="loginScreen">
-    <!-- TOP MARQUEE -->
     <div class="marquee top" aria-hidden="true">
       <div class="track">
         <div class="block">
@@ -230,32 +214,33 @@
     <h2>Private storage</h2>
 
     <div class="card">
-      <!-- STEP 1: choose method -->
       <div id="loginChoose">
         <div class="badge">/drive <span style="opacity:.45">•</span> login required</div>
-        <div class="muted">Choose a sign-in method. If your email is not allowed, access is denied.</div>
+        <div class="muted">Sign in. If your email is not approved, access is denied.</div>
 
-        <div style="margin-top:14px;display:flex;justify-content:center">
-          <div id="gbtn"></div>
+        <div style="margin-top:14px;display:flex;flex-direction:column;align-items:center;gap:10px">
+          <button class="gLikeBtn" id="googleBtn" type="button">
+            <span class="gIcon">G</span>
+            <span>Sign in with Google</span>
+          </button>
         </div>
 
         <div class="gLikeWrap">
           <button class="gLikeBtn" id="showEmailBtn" type="button" aria-label="Login with email">
             <span class="gIcon">@</span>
-            <span>Sign in with Email</span>
+            <span>Admin Email Login</span>
           </button>
         </div>
 
         <div class="tiny">No sign-up. Admin grants access.</div>
       </div>
 
-      <!-- STEP 2: email form -->
       <div id="loginEmail">
-        <div class="badge">email <span style="opacity:.45">•</span> password</div>
-        <div class="muted" id="emailHint">Enter your credentials.</div>
+        <div class="badge">admin <span style="opacity:.45">•</span> email/password</div>
+        <div class="muted" id="emailHint">Admin login only.</div>
 
         <div style="margin-top:14px;display:flex;flex-direction:column;align-items:center;gap:10px">
-          <input id="emailLogin" type="text" placeholder="Email" autocomplete="username">
+          <input id="emailLogin" type="text" placeholder="Admin Email" autocomplete="username">
           <input id="passLogin" type="password" placeholder="Password" autocomplete="current-password">
           <button class="gLikeBtn" id="emailLoginBtn" type="button">
             <span class="gIcon">→</span>
@@ -266,14 +251,12 @@
         <div class="backRow">
           <button class="backBtn" id="backToChooseBtn" type="button">← Back</button>
         </div>
-
-        <div class="tiny" id="emailTiny">No sign-up. Admin grants access.</div>
+        <div class="tiny">Only admin can use this method.</div>
       </div>
 
       <div class="error" id="loginError"></div>
     </div>
 
-    <!-- BOTTOM MARQUEE -->
     <div class="marquee bottom" aria-hidden="true">
       <div class="track">
         <div class="block">
@@ -292,7 +275,7 @@
     </div>
   </div>
 
-  <!-- APP UI (hidden until login) -->
+  <!-- APP UI -->
   <div class="container" id="app">
     <div class="topbar">
       <div>
@@ -300,7 +283,7 @@
           <div class="pill" id="mePill">user</div>
           <div class="pill" id="rolePill">role</div>
         </div>
-        <div style="margin-top:8px;opacity:.7">Upload, view, and manage files by section.</div>
+        <div style="margin-top:8px;opacity:.7" id="subtitle">Upload, view, and manage files by section.</div>
       </div>
       <button class="btn" id="logoutBtn">Logout</button>
     </div>
@@ -315,35 +298,72 @@
     <!-- Admin panel -->
     <div id="adminPanel" class="card" style="display:none;margin-top:12px;text-align:left">
       <div style="font-weight:800;letter-spacing:-.4px;margin-bottom:8px">Admin</div>
-      <div class="row">
-        <input type="text" id="newUserEmail" placeholder="email to allow" />
-        <input type="text" id="newUserSections" placeholder="sections (comma) e.g. public,school" />
-        <button class="btn" id="addUserBtn">Add / Update user</button>
-      </div>
+      <div class="muted">Approve/reject requests and set sections.</div>
       <div class="ok" id="adminOk">Saved.</div>
-      <!-- Requests box is injected by JS -->
+
+      <div id="requestsBox" style="margin-top:12px;padding-top:10px;border-top:1px solid rgba(0,0,0,.12)">
+        <div style="font-weight:800;margin-bottom:8px">Requests</div>
+        <div class="row" style="align-items:center">
+          <button class="btn" id="reloadReqBtn">Reload</button>
+        </div>
+        <div id="reqList" style="margin-top:10px;display:grid;gap:10px"></div>
+      </div>
     </div>
 
     <div class="error" id="appError"></div>
     <div class="grid" id="filesGrid"></div>
   </div>
 
-  <script>
-    // =========================
-    // CONFIG (CHANGE THIS ONE)
-    // =========================
-    // Use one of these:
-    // 1) If same domain and you have a proxy endpoint: const API = "/api/drive";
-    // 2) If direct Worker URL: const API = "https://YOUR-WORKER.workers.dev/api/drive";
-    // 3) If direct Apps Script (not recommended for CORS): const API = "https://script.google.com/macros";
-    const API = "/api/drive";
+  <!-- Firebase (modular) -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
+    import {
+      getAuth,
+      GoogleAuthProvider,
+      signInWithPopup,
+      signInWithEmailAndPassword,
+      onAuthStateChanged,
+      signOut
+    } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
 
+    import {
+      getFirestore,
+      doc, getDoc, setDoc,
+      collection, query, where, orderBy, getDocs,
+      addDoc, serverTimestamp, updateDoc
+    } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+
+    import {
+      getStorage,
+      ref as sRef,
+      uploadBytes,
+      getDownloadURL,
+      deleteObject
+    } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-storage.js";
+
+    // ========= CONFIG =========
     const ADMIN_EMAIL = "hodelyproductions@gmail.com";
-    const GOOGLE_CLIENT_ID = "464476506382-nfabhdti6m2505futn4d02c9cuhqs2e6.apps.googleusercontent.com";
 
-    let idToken = null;
-    let sessionToken = null;
-    let me = null;
+    const firebaseConfig = {
+      apiKey: "AIzaSyDaAXaboJVS_j28ZAHLHw7-MLPFeZuImfs",
+      authDomain: "klexs-546bd.firebaseapp.com",
+      databaseURL: "https://klexs-546bd-default-rtdb.firebaseio.com",
+      projectId: "klexs-546bd",
+      storageBucket: "klexs-546bd.firebasestorage.app",
+      messagingSenderId: "321944936390",
+      appId: "1:321944936390:web:41a86d644edfdfa1f01cc7",
+      measurementId: "G-D00YGYYKDV"
+    };
+
+    // ========= INIT =========
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    const storage = getStorage(app);
+
+    // ========= UI refs =========
+    const loginScreen = document.getElementById("loginScreen");
+    const appScreen = document.getElementById("app");
 
     const loginError = document.getElementById("loginError");
     const appError = document.getElementById("appError");
@@ -351,254 +371,266 @@
     const loginChoose = document.getElementById("loginChoose");
     const loginEmail = document.getElementById("loginEmail");
 
+    const mePill = document.getElementById("mePill");
+    const rolePill = document.getElementById("rolePill");
+    const subtitle = document.getElementById("subtitle");
+
+    const sectionSelect = document.getElementById("sectionSelect");
+    const fileInput = document.getElementById("fileInput");
+    const uploadBtn = document.getElementById("uploadBtn");
+    const refreshBtn = document.getElementById("refreshBtn");
+    const filesGrid = document.getElementById("filesGrid");
+
+    const adminPanel = document.getElementById("adminPanel");
+    const adminOk = document.getElementById("adminOk");
+    const reloadReqBtn = document.getElementById("reloadReqBtn");
+    const reqList = document.getElementById("reqList");
+
+    let me = null; // user doc data
+    let meUid = null;
+
     function showError(el, msg){ el.style.display="block"; el.textContent=msg; }
     function clearError(el){ el.style.display="none"; el.textContent=""; }
-
-    function showEmailScreen(){
-      clearError(loginError);
-      loginChoose.style.display = "none";
-      loginEmail.style.display = "block";
-      setTimeout(() => document.getElementById("emailLogin").focus(), 50);
-      syncEmailMode();
-    }
-    function showChooseScreen(){
-      clearError(loginError);
-      loginEmail.style.display = "none";
-      loginChoose.style.display = "block";
-      document.getElementById("passLogin").value = "";
-    }
-
-    document.getElementById("showEmailBtn").addEventListener("click", showEmailScreen);
-    document.getElementById("backToChooseBtn").addEventListener("click", showChooseScreen);
-
-    document.addEventListener("keydown", (e) => {
-      if(e.key === "Escape" && loginEmail.style.display === "block") showChooseScreen();
-    });
-
-    function b64FromFile(file){
-      return new Promise((resolve, reject) => {
-        const r = new FileReader();
-        r.onload = () => resolve(String(r.result).split(",")[1] || "");
-        r.onerror = reject;
-        r.readAsDataURL(file);
-      });
-    }
-
-    async function apiRaw(payload){
-      const res = await fetch(API, {
-        method:"POST",
-        headers:{ "Content-Type":"application/json" },
-        body: JSON.stringify(payload)
-      });
-      const text = await res.text();
-      try{ return JSON.parse(text); }
-      catch{ throw new Error("Server returned non-JSON: " + text.slice(0,160)); }
-    }
-
-    async function apiCall(action, payload = {}){
-      const data = await apiRaw({ action, idToken, sessionToken, ...payload });
-      if(!data.ok) throw new Error(data.error || "Request failed");
-      return data;
-    }
-
     function escapeHtml(s){
       return String(s).replace(/[&<>"']/g, m => ({
         "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
       }[m]));
     }
 
-    // ====== Pending UI ======
-    function showPending(email){
-      document.getElementById("loginScreen").style.display = "none";
-      document.getElementById("app").style.display = "block";
-
-      document.getElementById("mePill").textContent = email || "user";
-      document.getElementById("rolePill").textContent = "pending";
-
-      document.getElementById("adminPanel").style.display = "none";
-      document.getElementById("filesGrid").innerHTML = "";
-      document.getElementById("sectionSelect").innerHTML = "";
-
-      document.getElementById("fileInput").disabled = true;
-      document.getElementById("uploadBtn").disabled = true;
-      document.getElementById("refreshBtn").disabled = true;
-      document.getElementById("sectionSelect").disabled = true;
-
-      showError(appError, "Waiting for admin approval. You can’t access files yet.");
+    function setAppEnabled(enabled){
+      fileInput.disabled = !enabled;
+      uploadBtn.disabled = !enabled;
+      refreshBtn.disabled = !enabled;
+      sectionSelect.disabled = !enabled;
     }
 
-    async function enterApp(){
-      document.getElementById("loginScreen").style.display = "none";
-      document.getElementById("app").style.display = "block";
-      await loadSectionsAndFiles();
+    function showPendingUI(email){
+      loginScreen.style.display = "none";
+      appScreen.style.display = "block";
+      mePill.textContent = email || "user";
+      rolePill.textContent = "pending";
+      subtitle.textContent = "Waiting for admin approval. No file access yet.";
+
+      adminPanel.style.display = "none";
+      filesGrid.innerHTML = "";
+      sectionSelect.innerHTML = "";
+      setAppEnabled(false);
+
+      showError(appError, "Pending approval. Ask admin to approve and assign sections.");
     }
 
-    async function loadSectionsAndFiles(){
+    function showApprovedUI(){
+      loginScreen.style.display = "none";
+      appScreen.style.display = "block";
+      clearError(appError);
+      setAppEnabled(true);
+    }
+
+    async function ensureUserDoc(user){
+      const uref = doc(db, "users", user.uid);
+      const snap = await getDoc(uref);
+
+      if(!snap.exists()){
+        // create as pending (user cannot approve themselves due to rules)
+        await setDoc(uref, {
+          email: user.email || "",
+          status: "pending",
+          sections: [],
+          isAdmin: (user.email === ADMIN_EMAIL),
+          createdAt: serverTimestamp()
+        });
+      }
+      const snap2 = await getDoc(uref);
+      return { ref: uref, data: snap2.data() };
+    }
+
+    async function ensureRequestIfPending(user, note){
+      const qy = query(collection(db, "requests"), where("uid", "==", user.uid));
+      const existing = await getDocs(qy);
+      if(!existing.empty) return;
+
+      await addDoc(collection(db, "requests"), {
+        uid: user.uid,
+        email: user.email || "",
+        status: "pending",
+        note: note || "Requested via Google",
+        sections: [],
+        createdAt: serverTimestamp()
+      });
+    }
+
+    async function loadMeAndEnter(user){
+      clearError(loginError);
       clearError(appError);
 
-      const data = await apiCall("me");
-      me = data.me;
+      meUid = user.uid;
+      mePill.textContent = user.email || "user";
 
-      document.getElementById("mePill").textContent = me.email;
-      document.getElementById("rolePill").textContent = me.isAdmin ? "admin" : (me.status || "user");
+      const { data } = await ensureUserDoc(user);
+      me = data;
+
+      const isAdmin = (user.email === ADMIN_EMAIL) || !!me.isAdmin;
+      rolePill.textContent = isAdmin ? "admin" : (me.status || "user");
 
       if(me.status !== "approved"){
-        showPending(me.email);
+        await ensureRequestIfPending(user, "Requested via sign-in");
+        showPendingUI(user.email);
         return;
       }
 
-      document.getElementById("fileInput").disabled = false;
-      document.getElementById("uploadBtn").disabled = false;
-      document.getElementById("refreshBtn").disabled = false;
-      document.getElementById("sectionSelect").disabled = false;
+      showApprovedUI();
+      subtitle.textContent = "Upload, view, and manage files by section.";
+      adminPanel.style.display = isAdmin ? "block" : "none";
 
-      const sel = document.getElementById("sectionSelect");
-      sel.innerHTML = "";
+      await loadSections();
+      await refreshFiles();
+
+      if(isAdmin) await renderAdminRequests();
+    }
+
+    async function loadSections(){
+      sectionSelect.innerHTML = "";
       (me.sections || []).forEach(s => {
         const o = document.createElement("option");
         o.value = s; o.textContent = s;
-        sel.appendChild(o);
+        sectionSelect.appendChild(o);
       });
-
-      document.getElementById("adminPanel").style.display = me.isAdmin ? "block" : "none";
-      if(me.isAdmin) await renderAdminRequests();
-
-      await refreshFiles();
     }
 
     async function refreshFiles(){
       clearError(appError);
-      if(!me || me.status !== "approved") return;
+      filesGrid.innerHTML = "";
 
-      const section = document.getElementById("sectionSelect").value;
-      const data = await apiCall("list", { section });
+      if(!me || me.status !== "approved"){
+        return;
+      }
+      const section = sectionSelect.value;
+      if(!section){
+        showError(appError, "No sections assigned. Admin must add sections.");
+        return;
+      }
 
-      const grid = document.getElementById("filesGrid");
-      grid.innerHTML = "";
+      // query metadata
+      const qy = query(
+        collection(db, "files"),
+        where("uid", "==", meUid),
+        where("section", "==", section),
+        orderBy("createdAt", "desc")
+      );
 
-      data.files.forEach(f => {
+      const snap = await getDocs(qy);
+      if(snap.empty){
+        filesGrid.innerHTML = `<div class="muted" style="padding:10px">No files in this section.</div>`;
+        return;
+      }
+
+      snap.forEach(docSnap => {
+        const f = docSnap.data();
         const card = document.createElement("div");
         card.className = "file";
+
         card.innerHTML = `
           <div class="name">${escapeHtml(f.name)}</div>
-          <div class="meta">${escapeHtml(f.mime)} • ${Math.round(f.size/1024)} KB</div>
+          <div class="meta">${escapeHtml(f.mime || "file")} • ${Math.round((f.size||0)/1024)} KB</div>
           <div class="actions">
-            <a class="btn" style="text-decoration:none;display:inline-block" target="_blank" href="${f.viewUrl}">View</a>
-            <a class="btn" style="text-decoration:none;display:inline-block" target="_blank" href="${f.downloadUrl}">Download</a>
-            ${me.isAdmin ? `<button class="btn" data-del="${f.id}">Delete</button>` : ``}
+            <a class="btn" style="text-decoration:none;display:inline-block" target="_blank" data-view>View</a>
+            <a class="btn" style="text-decoration:none;display:inline-block" target="_blank" data-dl>Download</a>
+            ${(me.email === ADMIN_EMAIL || me.isAdmin) ? `<button class="btn" data-del>Delete</button>` : ``}
           </div>
         `;
-        grid.appendChild(card);
-      });
 
-      if(me.isAdmin){
-        grid.querySelectorAll("button[data-del]").forEach(btn => {
-          btn.addEventListener("click", async () => {
+        const viewA = card.querySelector("[data-view]");
+        const dlA = card.querySelector("[data-dl]");
+
+        (async () => {
+          // get signed download url from storage
+          const url = await getDownloadURL(sRef(storage, f.path));
+          viewA.href = url;
+          dlA.href = url;
+        })().catch(() => {
+          viewA.href = "#";
+          dlA.href = "#";
+        });
+
+        const delBtn = card.querySelector("[data-del]");
+        if(delBtn){
+          delBtn.addEventListener("click", async () => {
             try{
               clearError(appError);
-              await apiCall("delete", { fileId: btn.dataset.del });
+              // delete in storage
+              await deleteObject(sRef(storage, f.path));
+              // delete metadata
+              // Firestore doc id is docSnap.id (we captured it via closure)
+              await import("https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js")
+                .then(({ deleteDoc, doc }) => deleteDoc(doc(db, "files", docSnap.id)));
               await refreshFiles();
-            }catch(e){ showError(appError, e.message); }
+            }catch(e){
+              showError(appError, e.message || "Delete failed.");
+            }
           });
-        });
-      }
+        }
+
+        filesGrid.appendChild(card);
+      });
     }
 
-    // Upload
-    document.getElementById("uploadBtn").addEventListener("click", async () => {
+    async function uploadCurrent(){
       try{
         clearError(appError);
         if(!me || me.status !== "approved") throw new Error("Pending approval.");
 
-        const section = document.getElementById("sectionSelect").value;
-        const file = document.getElementById("fileInput").files[0];
+        const section = sectionSelect.value;
+        const file = fileInput.files[0];
+        if(!section) throw new Error("No section selected.");
         if(!file) throw new Error("Choose a file.");
 
-        const base64 = await b64FromFile(file);
-        await apiCall("upload", {
+        // enforce section allowed client-side too
+        if(!(me.sections || []).includes(section)) throw new Error("Section not allowed.");
+
+        const safeName = file.name.replace(/[^\w.\- ()[\]]+/g, "_");
+        const path = `drive/${meUid}/${section}/${Date.now()}__${safeName}`;
+        const storageRef = sRef(storage, path);
+
+        await uploadBytes(storageRef, file, { contentType: file.type || "application/octet-stream" });
+
+        await addDoc(collection(db, "files"), {
+          uid: meUid,
+          email: me.email || "",
           section,
-          filename: file.name,
+          name: file.name,
+          path,
           mime: file.type || "application/octet-stream",
-          base64
+          size: file.size || 0,
+          createdAt: serverTimestamp()
         });
 
-        document.getElementById("fileInput").value = "";
+        fileInput.value = "";
         await refreshFiles();
-      }catch(e){ showError(appError, e.message); }
-    });
-
-    document.getElementById("refreshBtn").addEventListener("click", () => {
-      refreshFiles().catch(e => showError(appError, e.message));
-    });
-
-    // Admin: add/update user
-    document.getElementById("addUserBtn").addEventListener("click", async () => {
-      try{
-        clearError(appError);
-        const email = document.getElementById("newUserEmail").value.trim().toLowerCase();
-        const sections = document.getElementById("newUserSections").value
-          .split(",").map(s=>s.trim()).filter(Boolean);
-
-        if(!email) throw new Error("Email required.");
-        if(sections.length === 0) throw new Error("At least 1 section required.");
-
-        await apiCall("admin_upsert_user", { email, sections });
-
-        document.getElementById("adminOk").style.display = "block";
-        setTimeout(()=>document.getElementById("adminOk").style.display="none", 1200);
-
-        await renderAdminRequests();
-      }catch(e){ showError(appError, e.message); }
-    });
-
-    // ====== Admin Requests UI ======
-    function ensureRequestsBox(){
-      let box = document.getElementById("requestsBox");
-      if(box) return box;
-
-      box = document.createElement("div");
-      box.id = "requestsBox";
-      box.style.marginTop = "12px";
-      box.style.paddingTop = "10px";
-      box.style.borderTop = "1px solid rgba(0,0,0,.12)";
-      box.innerHTML = `
-        <div style="font-weight:800;margin-bottom:8px">Requests</div>
-        <div class="row" style="align-items:center">
-          <button class="btn" id="reloadReqBtn">Reload</button>
-        </div>
-        <div id="reqList" style="margin-top:10px;display:grid;gap:10px"></div>
-      `;
-      document.getElementById("adminPanel").appendChild(box);
-
-      box.querySelector("#reloadReqBtn").addEventListener("click", () => {
-        renderAdminRequests().catch(e=>showError(appError, e.message));
-      });
-
-      return box;
+      }catch(e){
+        showError(appError, e.message || "Upload failed.");
+      }
     }
 
+    // ===== Admin requests =====
     async function renderAdminRequests(){
-      if(!me || !me.isAdmin) return;
-      const box = ensureRequestsBox();
-      const list = box.querySelector("#reqList");
-      list.innerHTML = "Loading...";
+      reqList.innerHTML = "Loading...";
+      const qy = query(collection(db, "requests"), orderBy("createdAt", "desc"));
+      const snap = await getDocs(qy);
 
-      const data = await apiCall("admin_list_requests");
-      const reqs = data.requests || [];
-
-      if(reqs.length === 0){
-        list.innerHTML = `<div class="muted">No requests.</div>`;
+      if(snap.empty){
+        reqList.innerHTML = `<div class="muted">No requests.</div>`;
         return;
       }
 
-      list.innerHTML = "";
-      reqs.forEach(r => {
-        const card = document.createElement("div");
-        card.className = "file";
+      reqList.innerHTML = "";
+      snap.forEach(docSnap => {
+        const r = docSnap.data();
         const isPending = r.status === "pending";
 
+        const card = document.createElement("div");
+        card.className = "file";
         card.innerHTML = `
-          <div class="name">${escapeHtml(r.email)}</div>
+          <div class="name">${escapeHtml(r.email || "unknown")}</div>
           <div class="meta">${escapeHtml(r.status)}${r.note ? " • " + escapeHtml(r.note) : ""}</div>
           <div class="actions" style="margin-top:10px">
             ${isPending ? `
@@ -611,133 +643,145 @@
 
         if(isPending){
           const secInput = card.querySelector("[data-sections]");
+
           card.querySelector("[data-approve]").addEventListener("click", async () => {
             try{
-              clearError(appError);
               const sections = (secInput.value || "").split(",").map(s=>s.trim()).filter(Boolean);
-              await apiCall("admin_decide_request", { email:r.email, decision:"approve", sections });
+              if(sections.length === 0) throw new Error("Add at least 1 section.");
+
+              // update request
+              await updateDoc(doc(db, "requests", docSnap.id), {
+                status: "approved",
+                sections,
+                decidedAt: serverTimestamp(),
+                decidedBy: (auth.currentUser?.email || ADMIN_EMAIL)
+              });
+
+              // ensure user doc exists and approve
+              const userRef = doc(db, "users", r.uid);
+              await setDoc(userRef, {
+                email: r.email || "",
+                status: "approved",
+                sections,
+                isAdmin: (r.email === ADMIN_EMAIL),
+                createdAt: serverTimestamp()
+              }, { merge: true });
+
+              adminOk.style.display = "block";
+              setTimeout(()=>adminOk.style.display="none", 1200);
+
               await renderAdminRequests();
-            }catch(e){ showError(appError, e.message); }
+
+              // if admin is approving themselves or current session, reload me
+              if(auth.currentUser && auth.currentUser.uid === r.uid){
+                await loadMeAndEnter(auth.currentUser);
+              }
+            }catch(e){
+              showError(appError, e.message || "Approve failed.");
+            }
           });
+
           card.querySelector("[data-reject]").addEventListener("click", async () => {
             try{
-              clearError(appError);
-              await apiCall("admin_decide_request", { email:r.email, decision:"reject", sections:[] });
+              await updateDoc(doc(db, "requests", docSnap.id), {
+                status: "rejected",
+                decidedAt: serverTimestamp(),
+                decidedBy: (auth.currentUser?.email || ADMIN_EMAIL)
+              });
+
+              const userRef = doc(db, "users", r.uid);
+              await setDoc(userRef, {
+                email: r.email || "",
+                status: "rejected",
+                sections: [],
+                isAdmin: false
+              }, { merge: true });
+
               await renderAdminRequests();
-            }catch(e){ showError(appError, e.message); }
+            }catch(e){
+              showError(appError, e.message || "Reject failed.");
+            }
           });
         }
 
-        list.appendChild(card);
+        reqList.appendChild(card);
       });
     }
 
-    // Logout
-    document.getElementById("logoutBtn").addEventListener("click", () => {
-      idToken = null;
-      sessionToken = null;
-      me = null;
+    // ========= Login UI =========
+    function showEmailScreen(){
+      clearError(loginError);
+      loginChoose.style.display = "none";
+      loginEmail.style.display = "block";
+      setTimeout(()=>document.getElementById("emailLogin").focus(), 50);
+    }
+    function showChooseScreen(){
+      clearError(loginError);
+      loginEmail.style.display = "none";
+      loginChoose.style.display = "block";
+      document.getElementById("passLogin").value = "";
+    }
 
-      document.getElementById("app").style.display = "none";
-      document.getElementById("loginScreen").style.display = "block";
+    document.getElementById("showEmailBtn").addEventListener("click", showEmailScreen);
+    document.getElementById("backToChooseBtn").addEventListener("click", showChooseScreen);
 
-      document.getElementById("fileInput").disabled = false;
-      document.getElementById("uploadBtn").disabled = false;
-      document.getElementById("refreshBtn").disabled = false;
-      document.getElementById("sectionSelect").disabled = false;
-      clearError(appError);
-
-      showChooseScreen();
+    document.getElementById("googleBtn").addEventListener("click", async () => {
+      try{
+        clearError(loginError);
+        const provider = new GoogleAuthProvider();
+        await signInWithPopup(auth, provider);
+        // onAuthStateChanged will handle enter
+      }catch(e){
+        showError(loginError, e.message || "Google sign-in failed.");
+      }
     });
 
-    // ====== Email mode: admin login OR request access ======
-    function syncEmailMode(){
-      const email = document.getElementById("emailLogin").value.trim().toLowerCase();
-      const pass = document.getElementById("passLogin");
-      const btn = document.getElementById("emailLoginBtn");
-      const hint = document.getElementById("emailHint");
-      const tiny = document.getElementById("emailTiny");
-
-      if(email === ADMIN_EMAIL){
-        pass.style.display = "block";
-        hint.textContent = "Admin login (email + password).";
-        tiny.textContent = "Only admin can sign in with email.";
-        btn.querySelector("span:last-child").textContent = "Sign in (Admin)";
-      }else{
-        pass.style.display = "none";
-        hint.textContent = "Request access. Then use Google to verify and wait for approval.";
-        tiny.textContent = "Non-admin email sends a request (no access until approved).";
-        btn.querySelector("span:last-child").textContent = "Request access";
-      }
-    }
-    document.getElementById("emailLogin").addEventListener("input", syncEmailMode);
-
-    async function emailAction(){
+    document.getElementById("emailLoginBtn").addEventListener("click", async () => {
       try{
         clearError(loginError);
         const email = document.getElementById("emailLogin").value.trim().toLowerCase();
-        const password = document.getElementById("passLogin").value;
+        const pass = document.getElementById("passLogin").value;
 
-        if(!email) throw new Error("Email required.");
+        if(email !== ADMIN_EMAIL) throw new Error("Email login is admin-only.");
+        if(!pass) throw new Error("Password required.");
 
-        if(email === ADMIN_EMAIL){
-          if(!password) throw new Error("Password required.");
-          const data = await apiCall("login_email", { email, password });
-          sessionToken = data.sessionToken;
-          idToken = null;
-          await enterApp();
-          return;
-        }
-
-        // Request access (unverified email). Admin approves anyway.
-        const data = await apiRaw({ action:"request_access", email, note:"Requested via Email form" });
-        if(!data.ok) throw new Error(data.error || "Request failed");
-
-        showError(loginError, "Request sent. Now sign in with Google (same email) to verify ownership, then wait for approval.");
+        await signInWithEmailAndPassword(auth, email, pass);
       }catch(e){
-        sessionToken = null;
-        showError(loginError, e.message);
+        showError(loginError, e.message || "Email login failed.");
       }
-    }
+    });
 
-    document.getElementById("emailLoginBtn").addEventListener("click", emailAction);
-    document.getElementById("passLogin").addEventListener("keydown", (e) => { if(e.key==="Enter") emailAction(); });
-    document.getElementById("emailLogin").addEventListener("keydown", (e) => { if(e.key==="Enter") emailAction(); });
+    document.getElementById("logoutBtn").addEventListener("click", async () => {
+      await signOut(auth);
+    });
 
-    // ====== Google Sign-in init ======
-    window.onload = () => {
-      google.accounts.id.initialize({
-        client_id: GOOGLE_CLIENT_ID,
-        ux_mode: "popup",
-        callback: async (resp) => {
-          try{
-            clearError(loginError);
-            idToken = resp.credential;
-            sessionToken = null;
+    uploadBtn.addEventListener("click", uploadCurrent);
+    refreshBtn.addEventListener("click", () => refreshFiles().catch(e=>showError(appError, e.message)));
+    sectionSelect.addEventListener("change", () => refreshFiles().catch(()=>{}));
+    reloadReqBtn.addEventListener("click", () => renderAdminRequests().catch(e=>showError(appError, e.message)));
 
-            const data = await apiCall("me");
-            me = data.me;
+    // ========= Auth state =========
+    onAuthStateChanged(auth, async (user) => {
+      me = null; meUid = null;
 
-            if(me.status !== "approved"){
-              // create request using verified email
-              await apiCall("request_access", { note:"Requested via Google" });
-              showPending(me.email);
-            }else{
-              await enterApp();
-            }
-          }catch(e){
-            idToken = null;
-            showError(loginError, e.message);
-          }
-        }
-      });
+      if(!user){
+        // back to login
+        appScreen.style.display = "none";
+        loginScreen.style.display = "block";
+        showChooseScreen();
+        clearError(loginError);
+        clearError(appError);
+        filesGrid.innerHTML = "";
+        sectionSelect.innerHTML = "";
+        return;
+      }
 
-      google.accounts.id.renderButton(
-        document.getElementById("gbtn"),
-        { theme:"outline", size:"large", text:"signin_with" }
-      );
-    };
+      try{
+        await loadMeAndEnter(user);
+      }catch(e){
+        showError(loginError, e.message || "Failed to load profile.");
+      }
+    });
   </script>
-
 </body>
 </html>
