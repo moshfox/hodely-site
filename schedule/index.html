@@ -5,16 +5,10 @@
   <title>Schedule</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <!-- Favicon (browser tab) -->
   <link rel="icon" href="/favicon.png" type="image/png">
-
-  <!-- Manifest (installed app) -->
   <link rel="manifest" href="/manifest.webmanifest">
-
-  <!-- App top bar color -->
   <meta name="theme-color" content="#000000">
 
-  <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=JetBrains+Mono:wght@400;700&family=DM+Serif+Display&family=Space+Grotesk:wght@400;700&display=swap" rel="stylesheet">
 
   <style>
@@ -29,18 +23,24 @@
       --panel2:rgba(255,255,255,.70);
       --shadow: 0 18px 50px rgba(0,0,0,.10);
       --radius:18px;
+
+      /* ✅ highlight green */
+      --nowGreen: rgba(18, 180, 90, .18);
+      --nowGreenLine: rgba(18, 180, 90, .85);
+      --nextGreen: rgba(18, 180, 90, .08);
+      --nextGreenLine: rgba(18, 180, 90, .35);
     }
 
     body{
-      background:var(--bg);
-      color:var(--fg);
+      background: var(--bg);
+      color: var(--fg);
       font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-      min-height:100vh;
-      overflow:hidden;
+      min-height: 100vh;
+      overflow: auto;
     }
 
     /* =========================
-       MENU BUTTON + SIDEBAR
+       MENU BUTTON + SIDEBAR (restored)
        ========================= */
     .menu-btn{
       position: fixed;
@@ -55,7 +55,7 @@
       cursor: pointer;
       display: grid;
       place-items: center;
-      z-index: 50;
+      z-index: 250;
       transition: opacity .2s ease, transform .2s ease, background .2s ease;
       opacity: 0.78;
     }
@@ -86,7 +86,7 @@
       opacity: 0;
       pointer-events: none;
       transition: opacity .22s ease;
-      z-index: 40;
+      z-index: 240;
     }
     .overlay.show{
       opacity: 1;
@@ -104,7 +104,7 @@
       border-right: 1px solid rgba(0,0,0,0.10);
       transform: translateX(-105%);
       transition: transform .24s ease;
-      z-index: 45;
+      z-index: 245;
       padding: 18px 16px;
       display:flex;
       flex-direction: column;
@@ -171,25 +171,28 @@
       opacity: 0.55;
     }
 
-    /* =========================
-       MAIN LAYOUT
-       ========================= */
+    /* ===== App frame (centro en PC) ===== */
+    .app{
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 24px 16px;
+    }
+
     .wrap{
       width: min(1240px, 96vw);
-      height: min(860px, 90vh);
-      margin: 0 auto;
-      position: relative;
-      top: 50%;
-      transform: translateY(-50%);
+      height: min(860px, calc(100vh - 48px));
       display:flex;
       flex-direction: column;
       gap: 12px;
     }
 
+    /* ===== Top bar ===== */
     .header{
       display:flex;
       align-items:center;
       justify-content: space-between;
+      gap: 12px;
       padding: 8px 6px;
     }
     .brandRow{
@@ -210,35 +213,10 @@
       box-shadow: 0 10px 22px rgba(0,0,0,.12);
       flex: 0 0 auto;
     }
-    .logoChip img{
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display:block;
-    }
-    .titleBox{
-      min-width:0;
-      display:flex;
-      flex-direction: column;
-      gap: 2px;
-    }
-    .title{
-      font-weight: 800;
-      letter-spacing:-1px;
-      font-size: 1.25rem;
-      white-space: nowrap;
-      overflow:hidden;
-      text-overflow: ellipsis;
-    }
-    .subtitle{
-      font-size: .82rem;
-      opacity: .6;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      white-space: nowrap;
-      overflow:hidden;
-      text-overflow: ellipsis;
-    }
+    .logoChip img{width:100%;height:100%;object-fit:cover;display:block}
+    .titleBox{min-width:0;display:flex;flex-direction: column;gap:2px}
+    .title{font-weight:800;letter-spacing:-1px;font-size:1.25rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .subtitle{font-size:.82rem;opacity:.6;letter-spacing:2px;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
     .clock{
       font-family: "JetBrains Mono", ui-monospace, monospace;
       font-size: .95rem;
@@ -248,17 +226,19 @@
       padding: 10px 12px;
       border-radius: 14px;
       backdrop-filter: blur(10px);
+      white-space: nowrap;
     }
 
+    /* ===== Card layout ===== */
     .card{
       flex: 1;
       border: 1px solid var(--line);
       background: rgba(255,255,255,.70);
       border-radius: var(--radius);
       box-shadow: var(--shadow);
-      overflow:hidden;
-      display:grid;
-      grid-template-columns: 85% 15%;
+      overflow: hidden;
+      display: grid;
+      grid-template-columns: 1fr 320px;
       min-height: 0;
     }
 
@@ -272,6 +252,7 @@
       display:flex;
       flex-direction: column;
       gap: 10px;
+      overflow: hidden;
     }
 
     .legend{
@@ -280,17 +261,10 @@
       justify-content: space-between;
       gap: 10px;
       padding: 4px 2px 10px 2px;
+      flex: 0 0 auto;
     }
-    .legend .note{
-      font-size: .88rem;
-      opacity: .70;
-    }
-    .legend .chips{
-      display:flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      justify-content: flex-end;
-    }
+    .legend .note{font-size:.88rem;opacity:.70}
+    .legend .chips{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
     .chip{
       border: 1px solid var(--line);
       background: rgba(255,255,255,.70);
@@ -303,25 +277,24 @@
       gap: 8px;
       white-space: nowrap;
     }
-    .dot{
-      width: 8px;
-      height: 8px;
-      border-radius: 999px;
-      background: rgba(0,0,0,.22);
-    }
-    .dot.now{ background: rgba(0,0,0,.95); }
-    .dot.next{ background: rgba(0,0,0,.55); }
+    .dot{width:8px;height:8px;border-radius:999px;background:rgba(0,0,0,.22)}
+    .dot.now{background:var(--nowGreenLine)}
+    .dot.next{background:rgba(0,0,0,.55)}
 
-    .grid{
+    .gridWrap{
       flex: 1;
       min-height: 0;
       border: 1px solid var(--line);
       border-radius: 16px;
-      overflow:hidden;
+      overflow: auto;
+      background:#fff;
+    }
+
+    .grid{
+      min-width: 880px;
       display:grid;
       grid-template-columns: 110px repeat(5, 1fr);
       grid-auto-rows: minmax(76px, 1fr);
-      background: #fff;
     }
 
     .cell{
@@ -345,6 +318,10 @@
       opacity: .78;
       align-items:center;
       justify-content:center;
+      position: sticky;
+      top: 0;
+      z-index: 2;
+      backdrop-filter: blur(10px);
     }
     .time{
       background: rgba(0,0,0,.02);
@@ -352,6 +329,10 @@
       font-size: .78rem;
       opacity: .78;
       justify-content:center;
+      position: sticky;
+      left: 0;
+      z-index: 1;
+      backdrop-filter: blur(10px);
     }
 
     .subject{
@@ -374,15 +355,18 @@
     .isBreak .meta{ display:none; }
     .isBreak{ background: rgba(0,0,0,.02); }
 
+    /* ✅ green current highlight */
     .nowCell{
-      outline: 2px solid rgba(0,0,0,.92);
+      outline: 2px solid var(--nowGreenLine);
       outline-offset: -2px;
-      background: rgba(0,0,0,.03);
+      background: var(--nowGreen);
     }
+
+    /* keep next but slightly green */
     .nextCell{
-      outline: 2px dashed rgba(0,0,0,.35);
+      outline: 2px dashed var(--nextGreenLine);
       outline-offset: -2px;
-      background: rgba(0,0,0,.02);
+      background: var(--nextGreen);
     }
 
     /* info panel */
@@ -393,6 +377,7 @@
       display:flex;
       flex-direction: column;
       gap: 12px;
+      overflow: auto;
     }
     .panel{
       border: 1px solid var(--line);
@@ -421,7 +406,6 @@
       opacity: .7;
       line-height: 1.3;
     }
-
     .bar{
       height: 10px;
       border-radius: 999px;
@@ -433,11 +417,10 @@
     .fill{
       height: 100%;
       width: 0%;
-      background: rgba(0,0,0,.90);
+      background: var(--nowGreenLine);
       border-radius: 999px;
       transition: width .35s ease;
     }
-
     .row{
       display:flex;
       justify-content: space-between;
@@ -447,7 +430,6 @@
       opacity: .78;
       margin-top: 10px;
     }
-
     .select{
       width: 100%;
       border-radius: 12px;
@@ -458,7 +440,6 @@
       font-size: .92rem;
       outline: none;
     }
-
     .mutedLine{
       border-top: 1px solid var(--line);
       margin: 8px 0 0;
@@ -468,26 +449,175 @@
       line-height: 1.35;
     }
 
-    @media (max-width: 980px){
-      body{ overflow:auto; }
-      .wrap{
-        height: auto;
-        top: 0;
-        transform:none;
-        padding: 84px 0 28px;
-      }
-      .card{ grid-template-columns: 1fr; }
-      .schedule{ border-right:none; border-bottom: 1px solid var(--line); }
-      .grid{ grid-template-columns: 96px repeat(5, 1fr); }
+    /* ===== Auth / Waiting ===== */
+    .gate{
+      width: min(520px, 92vw);
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      background: rgba(255,255,255,.82);
+      box-shadow: var(--shadow);
+      padding: 18px;
     }
-    @media (max-width: 680px){
-      .grid{
-        grid-template-columns: 88px repeat(5, 1fr);
-        grid-auto-rows: minmax(70px, 1fr);
-      }
-      .subject{ font-size: .88rem; }
-      .meta{ font-size: .76rem; }
-      .clock{ display:none; }
+    .gateTop{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px}
+    .gateTitle{font-weight:800;letter-spacing:-0.8px;font-size:1.15rem}
+    .badge{
+      font-family:"JetBrains Mono", ui-monospace, monospace;
+      font-size:.78rem;
+      padding:6px 10px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      background:rgba(0,0,0,.03);
+      opacity:.85;
+    }
+    .tabs{display:flex;gap:10px;margin:10px 0 14px}
+    .tab{
+      flex:1;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.75);
+      border-radius:14px;
+      padding:10px 12px;
+      cursor:pointer;
+      font-weight:700;
+      opacity:.75;
+      transition:.15s;
+    }
+    .tab.active{opacity:1;transform:translateY(-1px);background:rgba(0,0,0,.03)}
+    .field{display:flex;flex-direction:column;gap:6px;margin-bottom:12px}
+    .label{font-size:.8rem;opacity:.7;letter-spacing:1px;text-transform:uppercase}
+    .input{
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.9);
+      border-radius:14px;
+      padding:12px 12px;
+      font-size:1rem;
+      outline:none;
+    }
+    .btnRow{display:flex;gap:10px;align-items:center}
+    .btn{
+      border:1px solid rgba(0,0,0,.12);
+      background:#0a0a0a;
+      color:#fff;
+      border-radius:14px;
+      padding:12px 14px;
+      font-weight:800;
+      cursor:pointer;
+      transition:.15s;
+      flex:1;
+    }
+    .btn:hover{transform:translateY(-1px)}
+    .btn.ghost{
+      background:rgba(255,255,255,.85);
+      color:#000;
+      flex:0 0 auto;
+      font-weight:800;
+    }
+    .msg{
+      margin-top:12px;
+      font-size:.9rem;
+      opacity:.75;
+      line-height:1.35;
+      word-break:break-word;
+    }
+    .msg.err{opacity:1}
+    .hide{display:none !important}
+
+    /* ===== Admin panel (modal) ===== */
+    .modalOverlay{
+      position:fixed;inset:0;
+      background:rgba(0,0,0,.22);
+      display:none;
+      place-items:center;
+      padding:18px;
+      z-index:300;
+    }
+    .modalOverlay.show{display:grid}
+    .modal{
+      width:min(900px, 96vw);
+      max-height:min(760px, 90vh);
+      overflow:auto;
+      border-radius:20px;
+      border:1px solid rgba(255,255,255,.25);
+      background:rgba(255,255,255,.92);
+      box-shadow: 0 22px 70px rgba(0,0,0,.18);
+      padding:16px;
+    }
+    .modalHead{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:12px;
+      margin-bottom:10px;
+    }
+    .modalHead h2{
+      font-size:1.05rem;
+      font-weight:900;
+      letter-spacing:-.6px;
+      margin:0;
+    }
+    .closeBtn{
+      border:1px solid var(--line);
+      background:rgba(0,0,0,.04);
+      border-radius:12px;
+      padding:10px 12px;
+      cursor:pointer;
+      font-weight:900;
+    }
+    .list{display:flex;flex-direction:column;gap:10px;margin-top:12px;}
+    .req{
+      border:1px solid var(--line);
+      border-radius:16px;
+      padding:12px;
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      background:rgba(255,255,255,.78);
+    }
+    .req .left{min-width:0}
+    .req .email{font-weight:900;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .req .meta2{font-family:"JetBrains Mono", ui-monospace, monospace;font-size:.78rem;opacity:.65;margin-top:4px}
+    .req .actions{display:flex;gap:8px;align-items:center}
+    .miniBtn{
+      border:1px solid rgba(0,0,0,.12);
+      border-radius:12px;
+      padding:10px 12px;
+      cursor:pointer;
+      font-weight:900;
+      background:#0a0a0a;
+      color:#fff;
+    }
+    .miniBtn.deny{background:rgba(0,0,0,.04);color:#000;}
+
+    /* test controls */
+    .testGrid{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:10px;
+      margin-top:10px;
+    }
+    .toggleRow{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      flex-wrap:wrap;
+      margin-top:8px;
+    }
+    .tag{
+      font-family:"JetBrains Mono", ui-monospace, monospace;
+      font-size:.78rem;
+      padding:6px 10px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      background:rgba(0,0,0,.03);
+      opacity:.85;
+    }
+
+    /* ===== responsive ===== */
+    @media (max-width: 980px){
+      .wrap{height:auto}
+      .card{grid-template-columns:1fr}
+      .schedule{border-right:none;border-bottom:1px solid var(--line)}
+      .clock{display:none}
+      .grid{min-width: 760px;}
     }
   </style>
 </head>
@@ -513,27 +643,22 @@
         <div class="left"><span class="pill">/</span><span>Home</span></div>
         <span class="arrow">↗</span>
       </a>
-
       <a href="https://hodely.net/schedule" title="Go to hodely.net/schedule">
         <div class="left"><span class="pill">/schedule</span><span>Schedule</span></div>
         <span class="arrow">↗</span>
       </a>
-
       <a href="https://hodely.net/a" title="Go to hodely.net/a">
         <div class="left"><span class="pill">/a</span><span>A</span></div>
         <span class="arrow">↗</span>
       </a>
-
       <a href="https://hodely.net/VerdaNet" title="Go to hodely.net/VerdaNet">
         <div class="left"><span class="pill">/VerdaNet</span><span>VerdaNet</span></div>
         <span class="arrow">↗</span>
       </a>
-
       <a href="https://hodely.net/screenshot" title="Go to hodely.net/screenshot">
         <div class="left"><span class="pill">/screenshot</span><span>Screenshot</span></div>
         <span class="arrow">↗</span>
       </a>
-
       <a href="https://hodely.net/periodictable" title="Go to hodely.net/periodictable">
         <div class="left"><span class="pill">/table</span><span>Periodic Table</span></div>
         <span class="arrow">↗</span>
@@ -543,83 +668,225 @@
     <div class="hint">Tip: press <b>ESC</b> to close.</div>
   </aside>
 
-  <main class="wrap" role="main">
-    <div class="header">
-      <div class="brandRow">
-        <div class="logoChip" title="logo">
-          <img src="/logo.png" alt="App logo">
+  <div class="app">
+
+    <!-- ===== AUTH / WAITING GATE ===== -->
+    <section class="gate" id="gate">
+      <div class="gateTop">
+        <div>
+          <div class="gateTitle">Schedule Access</div>
+          <div style="font-size:.85rem;opacity:.65;margin-top:2px;">Sign in to view the timetable.</div>
         </div>
-        <div class="titleBox">
-          <div class="title">Schedule</div>
-          <div class="subtitle">4th ESO • live tracker</div>
+        <div class="badge" id="gateBadge">LOCKED</div>
+      </div>
+
+      <div class="tabs">
+        <button class="tab active" id="tabLogin" type="button">Login</button>
+        <button class="tab" id="tabRegister" type="button">Register</button>
+      </div>
+
+      <div class="field">
+        <div class="label">Email</div>
+        <input class="input" id="email" type="email" autocomplete="email" placeholder="you@example.com">
+      </div>
+
+      <div class="field">
+        <div class="label">Password</div>
+        <input class="input" id="password" type="password" autocomplete="current-password" placeholder="••••••••">
+      </div>
+
+      <div class="btnRow">
+        <button class="btn" id="primaryBtn" type="button">Login</button>
+        <button class="btn ghost" id="logoutBtn" type="button" style="display:none;">Logout</button>
+      </div>
+
+      <div class="msg" id="gateMsg">—</div>
+    </section>
+
+    <!-- ===== MAIN APP (HIDDEN UNTIL APPROVED) ===== -->
+    <main class="wrap hide" id="mainApp" role="main">
+      <div class="header">
+        <div class="brandRow">
+          <div class="logoChip" title="logo">
+            <img src="/logo.png" alt="App logo">
+          </div>
+          <div class="titleBox">
+            <div class="title">Schedule</div>
+            <div class="subtitle">4th ESO • live tracker</div>
+          </div>
+        </div>
+
+        <div style="display:flex;gap:10px;align-items:center;">
+          <div class="clock" id="clock">--:--:--</div>
+          <button class="btn ghost hide" id="adminBtn" type="button" style="padding:10px 12px;">Admin</button>
+          <button class="btn ghost" id="signOutTop" type="button" style="padding:10px 12px;">Logout</button>
         </div>
       </div>
-      <div class="clock" id="clock">--:--:--</div>
+
+      <section class="card" aria-label="Schedule and status panel">
+        <div class="schedule">
+          <div class="legend">
+            <div class="note" id="todayLabel">Today: —</div>
+            <div class="chips" aria-hidden="true">
+              <div class="chip"><span class="dot now"></span>Now</div>
+              <div class="chip"><span class="dot next"></span>Next</div>
+            </div>
+          </div>
+
+          <div class="gridWrap" aria-label="Schedule scroll area">
+            <div class="grid" id="grid" aria-label="Weekly schedule grid">
+              <div class="cell head"></div>
+              <div class="cell head">Mon</div>
+              <div class="cell head">Tue</div>
+              <div class="cell head">Wed</div>
+              <div class="cell head">Thu</div>
+              <div class="cell head">Fri</div>
+              <!-- Rows injected by JS -->
+            </div>
+          </div>
+        </div>
+
+        <aside class="info">
+          <div class="panel">
+            <h3>Optative</h3>
+            <select class="select" id="optativeSelect">
+              <option value="physchem">Physics &amp; Chemistry</option>
+              <option value="bio">Biology &amp; Geology</option>
+              <option value="tech">Technology</option>
+            </select>
+            <div class="mutedLine">
+              Only these optatives are shown (others are removed).
+            </div>
+          </div>
+
+          <div class="panel">
+            <h3>Now</h3>
+            <div class="big" id="nowTitle">—</div>
+            <div class="small" id="nowMeta">—</div>
+
+            <div class="bar" aria-label="Class progress">
+              <div class="fill" id="progressFill"></div>
+            </div>
+            <div class="row">
+              <span id="timeLeft">—</span>
+              <span id="endsAt">—</span>
+            </div>
+          </div>
+
+          <div class="panel">
+            <h3>Next</h3>
+            <div class="big" id="nextTitle">—</div>
+            <div class="small" id="nextMeta">—</div>
+            <div class="mutedLine" id="untilNext">—</div>
+          </div>
+        </aside>
+      </section>
+    </main>
+
+    <!-- ===== ADMIN MODAL ===== -->
+    <div class="modalOverlay" id="adminOverlay" aria-hidden="true">
+      <div class="modal" role="dialog" aria-modal="true" aria-label="Admin approvals">
+        <div class="modalHead">
+          <div>
+            <h2>Admin Panel</h2>
+            <div style="font-size:.85rem;opacity:.65;margin-top:2px;">Approve/deny users + test schedule highlight.</div>
+          </div>
+          <button class="closeBtn" id="adminClose" type="button">Close</button>
+        </div>
+
+        <!-- ✅ TEST MODE -->
+        <div class="panel">
+          <h3>Test mode (admin)</h3>
+          <div class="toggleRow">
+            <button class="closeBtn" id="toggleTimeMode" type="button">Use: Real time</button>
+            <span class="tag" id="timeModeTag">REAL</span>
+          </div>
+
+          <div class="testGrid" id="testControls">
+            <div>
+              <div class="label">Day</div>
+              <select class="select" id="testDay">
+                <option value="Mon">Mon</option>
+                <option value="Tue">Tue</option>
+                <option value="Wed">Wed</option>
+                <option value="Thu">Thu</option>
+                <option value="Fri">Fri</option>
+              </select>
+            </div>
+            <div>
+              <div class="label">Time</div>
+              <input class="input" id="testTime" type="time" value="08:30">
+            </div>
+          </div>
+
+          <div class="mutedLine">
+            Tip: set a time inside a class slot to see the green highlight. Switch back to Real time when done.
+          </div>
+        </div>
+
+        <!-- REQUESTS -->
+        <div class="panel" style="padding:12px;">
+          <div style="display:flex;justify-content:space-between;gap:10px;align-items:center;">
+            <div style="font-family:'JetBrains Mono', ui-monospace, monospace;font-size:.8rem;opacity:.75;">
+              Collection: <b>accessRequests</b> → status: <b>pending</b>
+            </div>
+            <button class="closeBtn" id="refreshAdmin" type="button">Refresh</button>
+          </div>
+
+          <div class="list" id="reqList"></div>
+          <div class="mutedLine" id="adminMsg">—</div>
+        </div>
+      </div>
     </div>
 
-    <section class="card" aria-label="Schedule and status panel">
-      <div class="schedule">
-        <div class="legend">
-          <div class="note" id="todayLabel">Today: —</div>
-          <div class="chips" aria-hidden="true">
-            <div class="chip"><span class="dot now"></span>Now</div>
-            <div class="chip"><span class="dot next"></span>Next</div>
-          </div>
-        </div>
+  </div>
 
-        <div class="grid" id="grid" aria-label="Weekly schedule grid">
-          <!-- Header row -->
-          <div class="cell head"></div>
-          <div class="cell head">Mon</div>
-          <div class="cell head">Tue</div>
-          <div class="cell head">Wed</div>
-          <div class="cell head">Thu</div>
-          <div class="cell head">Fri</div>
-          <!-- Rows injected by JS -->
-        </div>
-      </div>
+  <script type="module">
+    // =========================
+    // FIREBASE (modular v10)
+    // =========================
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js";
+    import {
+      getAuth,
+      onAuthStateChanged,
+      signInWithEmailAndPassword,
+      createUserWithEmailAndPassword,
+      signOut
+    } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-auth.js";
 
-      <aside class="info">
-        <div class="panel">
-          <h3>Optative</h3>
-          <select class="select" id="optativeSelect">
-            <option value="physchem">Physics &amp; Chemistry</option>
-            <option value="bio">Biology &amp; Geology</option>
-            <option value="tech">Technology</option>
-          </select>
-          <div class="mutedLine">
-            Only these optatives are shown (others are removed).
-          </div>
-        </div>
+    import {
+      getFirestore,
+      doc,
+      getDoc,
+      setDoc,
+      updateDoc,
+      serverTimestamp,
+      collection,
+      query,
+      where,
+      orderBy,
+      getDocs
+    } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore.js";
 
-        <div class="panel">
-          <h3>Now</h3>
-          <div class="big" id="nowTitle">—</div>
-          <div class="small" id="nowMeta">—</div>
+    const ADMIN_EMAIL = "hodelyproductions@gmail.com";
 
-          <div class="bar" aria-label="Class progress">
-            <div class="fill" id="progressFill"></div>
-          </div>
-          <div class="row">
-            <span id="timeLeft">—</span>
-            <span id="endsAt">—</span>
-          </div>
-        </div>
+    const firebaseConfig = {
+      apiKey: "AIzaSyCfb1xcDCALp6ETePSBVoL_d2nzwebbli4",
+      authDomain: "hodelyscheduele.firebaseapp.com",
+      projectId: "hodelyscheduele",
+      storageBucket: "hodelyscheduele.firebasestorage.app",
+      messagingSenderId: "413377474122",
+      appId: "1:413377474122:web:c804e609f9940f3ecd00b3",
+      measurementId: "G-KS0W653JF4"
+    };
 
-        <div class="panel">
-          <h3>Next</h3>
-          <div class="big" id="nextTitle">—</div>
-          <div class="small" id="nextMeta">—</div>
-          <div class="mutedLine" id="untilNext">—</div>
-        </div>
-      </aside>
-    </section>
-  </main>
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
 
-  <script>
-    /* =========================
-       SIDEBAR
-       ========================= */
+    // =========================
+    // SIDEBAR (restored)
+    // =========================
     const menuBtn = document.getElementById('menuBtn');
     const sidebar = document.getElementById('sidebar');
     const overlay = document.getElementById('overlay');
@@ -630,21 +897,311 @@
 
     menuBtn.addEventListener('click', toggleMenu);
     overlay.addEventListener('click', closeMenu);
-    document.addEventListener('keydown', (e) => { if(e.key === 'Escape') closeMenu(); });
+    document.addEventListener('keydown', (e) => { if(e.key === 'Escape') { closeMenu(); closeAdmin(); } });
 
-    /* =========================
-       SCHEDULE DATA
-       (based on the image timetable)
-       ========================= */
+    // =========================
+    // UI refs (auth)
+    // =========================
+    const gate = document.getElementById("gate");
+    const gateMsg = document.getElementById("gateMsg");
+    const gateBadge = document.getElementById("gateBadge");
 
+    const tabLogin = document.getElementById("tabLogin");
+    const tabRegister = document.getElementById("tabRegister");
+    const primaryBtn = document.getElementById("primaryBtn");
+    const logoutBtn = document.getElementById("logoutBtn");
+
+    const emailEl = document.getElementById("email");
+    const passEl = document.getElementById("password");
+
+    const mainApp = document.getElementById("mainApp");
+    const signOutTop = document.getElementById("signOutTop");
+
+    // admin modal refs
+    const adminBtn = document.getElementById("adminBtn");
+    const adminOverlay = document.getElementById("adminOverlay");
+    const adminClose = document.getElementById("adminClose");
+    const refreshAdmin = document.getElementById("refreshAdmin");
+    const reqList = document.getElementById("reqList");
+    const adminMsg = document.getElementById("adminMsg");
+
+    // test mode refs
+    const toggleTimeModeBtn = document.getElementById("toggleTimeMode");
+    const timeModeTag = document.getElementById("timeModeTag");
+    const testDayEl = document.getElementById("testDay");
+    const testTimeEl = document.getElementById("testTime");
+    const testControls = document.getElementById("testControls");
+
+    let mode = "login"; // login | register
+
+    function setGateMessage(text, isErr=false){
+      gateMsg.textContent = text;
+      gateMsg.classList.toggle("err", isErr);
+    }
+
+    function setMode(nextMode){
+      mode = nextMode;
+      tabLogin.classList.toggle("active", mode === "login");
+      tabRegister.classList.toggle("active", mode === "register");
+      primaryBtn.textContent = (mode === "login") ? "Login" : "Register";
+      setGateMessage(mode === "login"
+        ? "Login with your account."
+        : "Register to request access. (Admin approves you.)"
+      );
+    }
+
+    tabLogin.addEventListener("click", () => setMode("login"));
+    tabRegister.addEventListener("click", () => setMode("register"));
+
+    function showApp(){
+      gate.classList.add("hide");
+      mainApp.classList.remove("hide");
+    }
+    function showGate(){
+      mainApp.classList.add("hide");
+      gate.classList.remove("hide");
+    }
+
+    function isAdmin(user){
+      return !!user && (user.email || "").toLowerCase() === ADMIN_EMAIL.toLowerCase();
+    }
+
+    async function ensureRequestDoc(user){
+      const ref = doc(db, "accessRequests", user.uid);
+      const snap = await getDoc(ref);
+      if (!snap.exists()){
+        await setDoc(ref, {
+          uid: user.uid,
+          email: user.email || "",
+          status: "pending",
+          createdAt: serverTimestamp()
+        });
+      }
+    }
+
+    async function isApproved(user){
+      if (isAdmin(user)) return true;
+
+      const allowedRef = doc(db, "allowedUsers", user.uid);
+      const allowedSnap = await getDoc(allowedRef);
+      if (allowedSnap.exists()) return true;
+
+      const reqRef = doc(db, "accessRequests", user.uid);
+      const reqSnap = await getDoc(reqRef);
+      if (!reqSnap.exists()) return false;
+      const st = (reqSnap.data()?.status || "").toLowerCase();
+      return st === "approved";
+    }
+
+    function showWaiting(user){
+      gateBadge.textContent = "WAITING";
+      logoutBtn.style.display = "inline-block";
+      setGateMessage(`Hi ${user.email}. Your access is pending approval.`);
+    }
+
+    async function enterByUser(user){
+      if (!user){
+        gateBadge.textContent = "LOCKED";
+        logoutBtn.style.display = "none";
+        showGate();
+        return;
+      }
+
+      if (isAdmin(user)){
+        gateBadge.textContent = "ADMIN";
+        adminBtn.classList.remove("hide");
+        showApp();
+        return;
+      }
+
+      const approved = await isApproved(user);
+      if (approved){
+        gateBadge.textContent = "APPROVED";
+        adminBtn.classList.add("hide");
+        showApp();
+      } else {
+        await ensureRequestDoc(user);
+        showGate();
+        showWaiting(user);
+      }
+    }
+
+    primaryBtn.addEventListener("click", async () => {
+      const email = (emailEl.value || "").trim();
+      const password = passEl.value || "";
+      if (!email || !password){
+        setGateMessage("Fill email and password.", true);
+        return;
+      }
+      try{
+        setGateMessage("Working…");
+        if (mode === "login"){
+          await signInWithEmailAndPassword(auth, email, password);
+        } else {
+          const cred = await createUserWithEmailAndPassword(auth, email, password);
+          if (!isAdmin(cred.user)){
+            await ensureRequestDoc(cred.user);
+          }
+        }
+      } catch(err){
+        setGateMessage(err?.message || "Auth error.", true);
+      }
+    });
+
+    async function doLogout(){
+      try{ await signOut(auth); }catch(e){}
+    }
+    logoutBtn.addEventListener("click", doLogout);
+    signOutTop.addEventListener("click", doLogout);
+
+    onAuthStateChanged(auth, (user) => {
+      enterByUser(user).catch(e => {
+        console.error(e);
+        showGate();
+        setGateMessage("Something went wrong. Check console.", true);
+      });
+    });
+
+    // =========================
+    // ADMIN PANEL + TEST MODE
+    // =========================
+    function openAdmin(){
+      adminOverlay.classList.add("show");
+      adminOverlay.setAttribute("aria-hidden", "false");
+    }
+    function closeAdmin(){
+      adminOverlay.classList.remove("show");
+      adminOverlay.setAttribute("aria-hidden", "true");
+    }
+
+    adminBtn.addEventListener("click", async () => {
+      openAdmin();
+      await loadRequests();
+      // make sure test mode UI reflects current mode
+      refreshTestUI();
+    });
+    adminClose.addEventListener("click", closeAdmin);
+    adminOverlay.addEventListener("click", (e) => {
+      if (e.target === adminOverlay) closeAdmin();
+    });
+    refreshAdmin.addEventListener("click", loadRequests);
+
+    function reqRow(data){
+      const wrap = document.createElement("div");
+      wrap.className = "req";
+
+      const left = document.createElement("div");
+      left.className = "left";
+
+      const email = document.createElement("div");
+      email.className = "email";
+      email.textContent = data.email || "(no email)";
+
+      const meta = document.createElement("div");
+      meta.className = "meta2";
+      meta.textContent = `uid: ${data.uid || "—"} • status: ${data.status || "—"}`;
+
+      left.appendChild(email);
+      left.appendChild(meta);
+
+      const actions = document.createElement("div");
+      actions.className = "actions";
+
+      const approve = document.createElement("button");
+      approve.className = "miniBtn";
+      approve.textContent = "Approve";
+
+      const deny = document.createElement("button");
+      deny.className = "miniBtn deny";
+      deny.textContent = "Deny";
+
+      approve.addEventListener("click", async () => {
+        try{
+          adminMsg.textContent = "Approving…";
+          await updateDoc(doc(db, "accessRequests", data.uid), {
+            status: "approved",
+            decidedAt: serverTimestamp(),
+            decidedBy: auth.currentUser?.email || "admin"
+          });
+          await setDoc(doc(db, "allowedUsers", data.uid), {
+            uid: data.uid,
+            email: data.email || "",
+            approvedAt: serverTimestamp(),
+            approvedBy: auth.currentUser?.email || "admin"
+          });
+          adminMsg.textContent = "Approved.";
+          await loadRequests();
+        } catch(err){
+          adminMsg.textContent = err?.message || "Approve failed.";
+        }
+      });
+
+      deny.addEventListener("click", async () => {
+        try{
+          adminMsg.textContent = "Denying…";
+          await updateDoc(doc(db, "accessRequests", data.uid), {
+            status: "denied",
+            decidedAt: serverTimestamp(),
+            decidedBy: auth.currentUser?.email || "admin"
+          });
+          adminMsg.textContent = "Denied.";
+          await loadRequests();
+        } catch(err){
+          adminMsg.textContent = err?.message || "Deny failed.";
+        }
+      });
+
+      actions.appendChild(approve);
+      actions.appendChild(deny);
+
+      wrap.appendChild(left);
+      wrap.appendChild(actions);
+
+      return wrap;
+    }
+
+    async function loadRequests(){
+      try{
+        const user = auth.currentUser;
+        if (!isAdmin(user)){
+          adminMsg.textContent = "Not admin.";
+          return;
+        }
+
+        reqList.innerHTML = "";
+        adminMsg.textContent = "Loading…";
+
+        const q = query(
+          collection(db, "accessRequests"),
+          where("status", "==", "pending"),
+          orderBy("createdAt", "desc")
+        );
+
+        const snaps = await getDocs(q);
+        if (snaps.empty){
+          adminMsg.textContent = "No pending requests.";
+          return;
+        }
+
+        const items = [];
+        snaps.forEach(s => items.push(s.data()));
+        items.forEach(d => reqList.appendChild(reqRow(d)));
+        adminMsg.textContent = `Pending: ${items.length}`;
+      } catch(err){
+        console.error(err);
+        adminMsg.textContent = err?.message || "Load failed (check Firestore rules).";
+      }
+    }
+
+    // =========================
+    // SCHEDULE + LIVE TRACKER (+ test override)
+    // =========================
     const DAYS = ["Mon","Tue","Wed","Thu","Fri"];
     const dayIndexByJs = (jsDay) => {
-      // JS: 0 Sun, 1 Mon ... 6 Sat
       if (jsDay === 0 || jsDay === 6) return -1;
-      return jsDay - 1; // Mon=0 ... Fri=4
+      return jsDay - 1;
     };
 
-    // time slots (school day)
     const SLOTS = [
       { key:"0830", start:"08:30", end:"09:30" },
       { key:"0930", start:"09:30", end:"10:30" },
@@ -656,69 +1213,59 @@
       { key:"1405", start:"14:05", end:"15:00" }
     ];
 
-    // Only show these optatives (others removed).
     const OPTATIVES = {
       physchem: { name: "Physics & Chemistry", teacher: "Ruth" },
       bio:      { name: "Biology & Geology",   teacher: "Lluís" },
       tech:     { name: "Technology",          teacher: "Raquel" }
     };
-
-    // Where the original timetable had multiple parallel options, we replace with a single optative.
-    // That matches your instruction: keep only Phys/Chem, Biology, Tech and remove other optatives.
     const OPTATIVE_PLACEHOLDER = { type:"optative" };
 
-    // Fixed subjects (English labels)
-    // NOTE: We keep core classes as they appear. Multi-option blocks become OPTATIVE_PLACEHOLDER.
     const WEEK = {
       Mon: {
-        "0830": OPTATIVE_PLACEHOLDER,                 // was: Entrepreneurship I / PhysChem / VIP I
+        "0830": OPTATIVE_PLACEHOLDER,
         "0930": { name:"Spanish Language", teacher:"Víctor" },
         "1100": { name:"Mathematics", teacher:"Josep Maria" },
         "1155": { name:"Catalan Language", teacher:"Eugènia" },
-        "1310": OPTATIVE_PLACEHOLDER,                 // was: Biology/Computing/VIP II
+        "1310": OPTATIVE_PLACEHOLDER,
         "1405": { name:"Mathematics", teacher:"Josep Maria" }
       },
       Tue: {
-        "0830": OPTATIVE_PLACEHOLDER,                 // was: Biology/Computing/VIP II
-        "0930": OPTATIVE_PLACEHOLDER,                 // was: Entrepreneurship I / PhysChem / VIP I
+        "0830": OPTATIVE_PLACEHOLDER,
+        "0930": OPTATIVE_PLACEHOLDER,
         "1100": { name:"English", teacher:"Anna C" },
-        "1155": { name:"Social Sciences", teacher:"Albert" }, // "CS"
+        "1155": { name:"Social Sciences", teacher:"Albert" },
         "1310": { name:"Catalan Language", teacher:"Eugènia" },
-        "1405": OPTATIVE_PLACEHOLDER                  // was: German / Entrepreneurship II / Music / Technology
+        "1405": OPTATIVE_PLACEHOLDER
       },
       Wed: {
         "0830": { name:"Spanish Language", teacher:"Víctor" },
-        "0930": OPTATIVE_PLACEHOLDER,                 // was: German / Entrepreneurship II / Music / Technology
+        "0930": OPTATIVE_PLACEHOLDER,
         "1100": { name:"English", teacher:"Anna C" },
-        "1155": { name:"Culture & Values", teacher:"Òscar" }, // "CV"
+        "1155": { name:"Culture & Values", teacher:"Òscar" },
         "1310": { name:"Mathematics", teacher:"Josep Maria" },
-        "1405": { name:"Social Sciences", teacher:"Albert" }  // "CS"
+        "1405": { name:"Social Sciences", teacher:"Albert" }
       },
       Thu: {
-        "0830": { name:"Science & Technology", teacher:"Lluís" }, // "Cientifico-tecnologica"
+        "0830": { name:"Science & Technology", teacher:"Lluís" },
         "0930": { name:"Mathematics", teacher:"Josep Maria" },
         "1100": { name:"Spanish Language", teacher:"Víctor" },
         "1155": { name:"English", teacher:"Anna C" },
         "1310": { name:"Physical Education", teacher:"Robert", room:"Gym" },
-        "1405": { name:"—", teacher:"", empty:true } // blank in the timetable
+        "1405": { name:"—", teacher:"", empty:true }
       },
       Fri: {
-        "0830": OPTATIVE_PLACEHOLDER,                 // was: Biology/Computing/VIP II
-        "0930": OPTATIVE_PLACEHOLDER,                 // was: Entrepreneurship I / PhysChem / VIP I
-        "1100": OPTATIVE_PLACEHOLDER,                 // was: German / Entrepreneurship II / Music / Technology
+        "0830": OPTATIVE_PLACEHOLDER,
+        "0930": OPTATIVE_PLACEHOLDER,
+        "1100": OPTATIVE_PLACEHOLDER,
         "1155": { name:"Catalan Language", teacher:"Eugènia" },
         "1310": { name:"Social Sciences", teacher:"Albert" },
         "1405": { name:"Tutoring", teacher:"Josep Maria" }
       }
     };
 
-    /* =========================
-       RENDER GRID
-       ========================= */
     const grid = document.getElementById('grid');
     const optativeSelect = document.getElementById('optativeSelect');
-
-    const cellMap = new Map(); // key: `${day}-${slotKey}` -> element
+    const cellMap = new Map();
 
     function minutesFromHHMM(hhmm){
       const [h,m] = hhmm.split(":").map(Number);
@@ -736,14 +1283,11 @@
     }
 
     function buildGrid(){
-      // remove old rows (keep first 6 header cells)
       while(grid.children.length > 6) grid.removeChild(grid.lastChild);
       cellMap.clear();
-
       const optKey = optativeSelect.value;
 
       for (const slot of SLOTS){
-        // time column
         const t = document.createElement('div');
         t.className = "cell time";
         t.textContent = `${slot.start}–${slot.end}`;
@@ -752,8 +1296,6 @@
         for (const day of DAYS){
           const c = document.createElement('div');
           const id = `${day}-${slot.key}`;
-          c.dataset.day = day;
-          c.dataset.slot = slot.key;
 
           if (slot.break){
             c.className = "cell isBreak";
@@ -780,15 +1322,11 @@
 
     optativeSelect.addEventListener('change', () => {
       buildGrid();
-      tick(); // refresh highlights + info instantly
+      tick();
     });
 
-    /* =========================
-       LIVE TRACKER
-       ========================= */
     const clockEl = document.getElementById('clock');
     const todayLabel = document.getElementById('todayLabel');
-
     const nowTitle = document.getElementById('nowTitle');
     const nowMeta  = document.getElementById('nowMeta');
     const nextTitle = document.getElementById('nextTitle');
@@ -811,7 +1349,6 @@
     }
 
     function setHighlights(current, next){
-      // clear all
       for (const el of cellMap.values()){
         el.classList.remove('nowCell','nextCell');
       }
@@ -825,24 +1362,9 @@
       }
     }
 
-    function getSlotByTime(mins){
-      // returns slot index for class slots only (not breaks), or -1
-      for (let i=0;i<SLOTS.length;i++){
-        const slot = SLOTS[i];
-        const a = minutesFromHHMM(slot.start);
-        const b = minutesFromHHMM(slot.end);
-        if (mins >= a && mins < b) return i;
-      }
-      return -1;
-    }
-
-    function isBreakSlot(slot){ return !!slot.break; }
-
     function getNextSchoolMoment(now){
-      // Find next class/break within the same day, else next weekday at 08:30.
       const jsDay = now.getDay();
       const di = dayIndexByJs(jsDay);
-
       const mins = now.getHours()*60 + now.getMinutes() + now.getSeconds()/60;
 
       const nextWeekdayStart = (startFromJsDay) => {
@@ -856,24 +1378,19 @@
         return null;
       };
 
-      // weekend -> next Monday 08:30
       if (di === -1){
         const nxt = nextWeekdayStart(jsDay);
         return { kind:"future", ...nxt };
       }
 
       const day = DAYS[di];
-
-      // scan slots: find first slot whose end is after now
       for (const slot of SLOTS){
-        const a = minutesFromHHMM(slot.start);
         const b = minutesFromHHMM(slot.end);
         if (mins < b){
           return { kind:"today", day, slotKey: slot.key, start: slot.start, end: slot.end, break: !!slot.break };
         }
       }
 
-      // after last slot -> next weekday 08:30
       const nxt = nextWeekdayStart(jsDay);
       return { kind:"future", ...nxt };
     }
@@ -884,13 +1401,11 @@
       const mins = now.getHours()*60 + now.getMinutes() + now.getSeconds()/60;
 
       if (di === -1){
-        // weekend
         return { current:null, next: getNextSchoolMoment(now), mode:"weekend" };
       }
 
       const day = DAYS[di];
 
-      // current slot?
       let currentSlot = null;
       for (const slot of SLOTS){
         const a = minutesFromHHMM(slot.start);
@@ -901,7 +1416,6 @@
         }
       }
 
-      // next slot (strictly after now)
       let nextSlot = null;
       for (const slot of SLOTS){
         const a = minutesFromHHMM(slot.start);
@@ -912,8 +1426,10 @@
       }
 
       if (currentSlot){
-        // if current is break, "now" becomes Break, "next" becomes next class
-        const next = nextSlot ? { day, slotKey: nextSlot.key, start: nextSlot.start, end: nextSlot.end, break: !!nextSlot.break } : getNextSchoolMoment(now);
+        const next = nextSlot
+          ? { day, slotKey: nextSlot.key, start: nextSlot.start, end: nextSlot.end, break: !!nextSlot.break }
+          : getNextSchoolMoment(now);
+
         return {
           current: { day, slotKey: currentSlot.key, start: currentSlot.start, end: currentSlot.end, break: !!currentSlot.break },
           next,
@@ -921,7 +1437,6 @@
         };
       }
 
-      // not in any slot (before 08:30 or between slots -> next is nextSlot or next day)
       const next = nextSlot
         ? { day, slotKey: nextSlot.key, start: nextSlot.start, end: nextSlot.end, break: !!nextSlot.break }
         : getNextSchoolMoment(now);
@@ -942,27 +1457,70 @@
       const title = entry?.name || "—";
       const teacher = entry?.teacher || "";
       const room = entry?.room ? ` • ${entry.room}` : "";
-      const metaBits = [];
-      metaBits.push(`${day} • ${slot.start}–${slot.end}`);
+      const metaBits = [`${day} • ${slot.start}–${slot.end}`];
       if (teacher) metaBits.push(`${teacher}${room}`);
       return { title, meta: metaBits.join("  —  ") };
     }
 
-    function tick(){
+    // ✅ TEST MODE state
+    let timeMode = "REAL"; // REAL | TEST
+
+    function refreshTestUI(){
+      const isTest = timeMode === "TEST";
+      toggleTimeModeBtn.textContent = `Use: ${isTest ? "Test time" : "Real time"}`;
+      timeModeTag.textContent = isTest ? "TEST" : "REAL";
+      testControls.style.opacity = isTest ? "1" : "0.55";
+    }
+
+    function getEffectiveNow(){
+      if (timeMode !== "TEST") return new Date();
+
+      // Build a "fake" Date with selected day + time.
+      // We pick the next occurrence of that weekday from today.
       const now = new Date();
+      const dayWanted = testDayEl.value; // Mon..Fri
+      const dayToJs = { Mon:1, Tue:2, Wed:3, Thu:4, Fri:5 };
+      const targetJsDay = dayToJs[dayWanted] ?? 1;
+
+      const [hh, mm] = (testTimeEl.value || "08:30").split(":").map(Number);
+
+      const d = new Date(now);
+      d.setHours(hh, mm, 0, 0);
+
+      const currentJs = now.getDay(); // 0..6
+      let add = (targetJsDay - currentJs);
+      if (add < 0) add += 7;
+      d.setDate(now.getDate() + add);
+
+      return d;
+    }
+
+    toggleTimeModeBtn.addEventListener("click", () => {
+      timeMode = (timeMode === "REAL") ? "TEST" : "REAL";
+      refreshTestUI();
+      tick();
+    });
+
+    testDayEl.addEventListener("change", tick);
+    testTimeEl.addEventListener("change", tick);
+
+    function tick(){
+      const now = getEffectiveNow();
+
       const h = pad2(now.getHours());
       const m = pad2(now.getMinutes());
       const s = pad2(now.getSeconds());
-      clockEl.textContent = `${h}:${m}:${s}`;
+      clockEl.textContent = `${h}:${m}:${s}${timeMode === "TEST" ? " (TEST)" : ""}`;
 
       const jsDay = now.getDay();
       const di = dayIndexByJs(jsDay);
-      const dayName = (di === -1) ? (jsDay === 0 ? "Sunday" : "Saturday") : ["Monday","Tuesday","Wednesday","Thursday","Friday"][di];
+      const dayName = (di === -1) ? (jsDay === 0 ? "Sunday" : "Saturday")
+        : ["Monday","Tuesday","Wednesday","Thursday","Friday"][di];
       todayLabel.textContent = `Today: ${dayName}`;
 
       const { current, next, mode } = findCurrentAndNext(now);
 
-      // highlights
+      // ✅ highlight only real classes (not breaks)
       setHighlights(
         current && !current.break ? { day: current.day, slotKey: current.slotKey } : null,
         next && next.kind !== "future" && next.slotKey && !next.break ? { day: next.day, slotKey: next.slotKey } : null
@@ -970,7 +1528,6 @@
 
       // NOW panel
       if (current){
-        const slot = SLOTS.find(s => s.key === current.slotKey);
         const startM = minutesFromHHMM(current.start);
         const endM = minutesFromHHMM(current.end);
         const nowM = now.getHours()*60 + now.getMinutes() + now.getSeconds()/60;
@@ -997,16 +1554,12 @@
       // NEXT panel
       if (next){
         if (next.kind === "future"){
-          // next school day 08:30
           const jsNow = now.getDay();
           const target = new Date(now);
-
-          // compute delta days to the next.jsDay
           let add = 1;
           while(((jsNow + add) % 7) !== next.jsDay) add++;
           target.setDate(now.getDate() + add);
           target.setHours(8,30,0,0);
-
           const sec = (target - now) / 1000;
 
           const d = describeEntry(next.day, next.slotKey);
@@ -1030,10 +1583,14 @@
       }
     }
 
-    // init
+    // init schedule
     buildGrid();
-    tick();
     setInterval(tick, 500);
+    tick();
+
+    // init gate
+    setMode("login");
+    refreshTestUI();
   </script>
 </body>
 </html>
