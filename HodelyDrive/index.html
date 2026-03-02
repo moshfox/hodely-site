@@ -11,13 +11,32 @@
 
   <style>
     *{margin:0;padding:0;box-sizing:border-box}
+    :root{
+      --bg:#ffffff;
+      --fg:#0a0a0a;
+      --muted:rgba(0,0,0,.62);
+      --muted2:rgba(0,0,0,.45);
+      --line:rgba(0,0,0,.10);
+      --line2:rgba(0,0,0,.14);
+      --card:rgba(255,255,255,.72);
+      --card2:rgba(255,255,255,.86);
+      --shadow: 0 14px 60px rgba(0,0,0,.06);
+      --radius:18px;
+      --radius2:14px;
+      --mono:"JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      --serif:"DM Serif Display", Georgia, "Times New Roman", serif;
+      --grotesk:"Space Grotesk", Inter, system-ui, sans-serif;
+    }
     body{
-      background:#fff;color:#000;
+      background:var(--bg);color:var(--fg);
       font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
       min-height:100vh;display:flex;align-items:center;justify-content:center;
       overflow:hidden;
     }
-    .container{width:100%;max-width:1100px;padding:28px 18px;text-align:center}
+
+    /* ====== Shared (login/app) ====== */
+    .container{width:100%;max-width:1200px;padding:28px 18px}
+    .center{text-align:center}
     h1{font-size:3.4rem;font-weight:800;letter-spacing:-2px;line-height:1}
     .line{width:90px;height:2px;background:#000;margin:18px auto;opacity:.95}
     h2{font-size:1rem;font-weight:400;letter-spacing:4px;text-transform:uppercase;opacity:.75}
@@ -26,9 +45,9 @@
     .track{display:flex;width:max-content;animation:scroll-left 18s linear infinite}
     .marquee.bottom .track{animation:scroll-right 18s linear infinite}
     .block{display:flex;align-items:center;white-space:nowrap;padding-right:60px;font-size:1.6rem;line-height:1}
-    .f1{font-family:"JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace}
-    .f2{font-family:"DM Serif Display", Georgia, "Times New Roman", serif}
-    .f3{font-family:"Space Grotesk", Inter, system-ui, sans-serif}
+    .f1{font-family:var(--mono)}
+    .f2{font-family:var(--serif)}
+    .f3{font-family:var(--grotesk)}
     .f4{font-family:Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif}
     .seg{opacity:.92}.dot{opacity:.35;padding:0 18px}
     @keyframes scroll-left{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
@@ -41,38 +60,41 @@
 
     .card{
       margin: 18px auto 0;
-      width: min(540px, 92vw);
-      border: 1px solid rgba(0,0,0,.10);
-      border-radius: 18px;
+      width: min(560px, 92vw);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
       padding: 16px;
-      background: rgba(255,255,255,.70);
+      background: var(--card);
       backdrop-filter: blur(10px);
-      text-align: center;
+      box-shadow: var(--shadow);
     }
-    .muted{opacity:.65;font-size:.92rem;line-height:1.35}
+    .muted{opacity:.75;font-size:.92rem;line-height:1.35}
     .badge{
       display:inline-flex;align-items:center;gap:8px;
-      font-family:"JetBrains Mono", ui-monospace, monospace;
+      font-family:var(--mono);
       font-size:.85rem;
       padding:6px 10px;border-radius:999px;
-      border:1px solid rgba(0,0,0,.12);
-      opacity:.9;
+      border:1px solid var(--line2);
+      opacity:.92;
       margin-bottom:10px;
+      background:rgba(255,255,255,.55);
     }
 
     select,input[type="file"],input[type="text"],input[type="password"]{
-      border:1px solid rgba(0,0,0,.12);
+      border:1px solid var(--line2);
       border-radius:12px;
       padding:10px 12px;
-      background: rgba(255,255,255,.65);
+      background: rgba(255,255,255,.75);
       font: inherit;
-      width: min(340px, 86vw);
+      width: min(360px, 86vw);
+      outline:none;
     }
+    input:focus, select:focus{border-color:rgba(0,0,0,.28)}
 
     .error{
       margin-top:10px;
       padding:10px 12px;
-      border:1px solid rgba(0,0,0,.12);
+      border:1px solid var(--line2);
       border-radius: 12px;
       background: rgba(0,0,0,.03);
       font-size:.95rem;
@@ -80,50 +102,35 @@
       text-align:left;
       white-space:pre-wrap;
     }
+    .ok{display:none;margin-top:10px;opacity:.75;font-size:.95rem}
 
-    #app{display:none;text-align:left}
-    .topbar{
-      display:flex;align-items:center;justify-content:space-between;
-      gap:12px;margin: 14px 0 10px;
-    }
     .btn{
       cursor:pointer;
-      border:1px solid rgba(0,0,0,.12);
-      background: rgba(255,255,255,.65);
+      border:1px solid var(--line2);
+      background: rgba(255,255,255,.70);
       border-radius: 12px;
       padding: 10px 12px;
       transition: transform .15s ease, background .15s ease, border .15s ease, opacity .15s ease;
-      font-weight:600;
+      font-weight:700;
+      user-select:none;
     }
-    .btn:hover{transform:translateY(-1px);background: rgba(0,0,0,.03);border-color: rgba(0,0,0,.18)}
+    .btn:hover{transform:translateY(-1px);background: rgba(0,0,0,.03);border-color: rgba(0,0,0,.22)}
     .btn:disabled{opacity:.5;cursor:not-allowed}
-    .row{display:flex;gap:10px;flex-wrap:wrap}
-    .grid{
-      margin-top: 12px;
-      display:grid;
-      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-      gap: 10px;
-    }
-    .file{
-      border:1px solid rgba(0,0,0,.10);
-      border-radius: 16px;
-      padding: 12px;
-      background: rgba(255,255,255,.70);
-      backdrop-filter: blur(10px);
-    }
-    .file .name{font-weight:800;letter-spacing:-.2px}
-    .file .meta{opacity:.65;font-size:.9rem;margin-top:6px}
-    .file .actions{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+    .btnGhost{background:transparent}
+    .btnSmall{padding:8px 10px;border-radius:12px;font-size:.92rem}
+    .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
     .pill{
-      font-family:"JetBrains Mono", ui-monospace, monospace;
+      font-family:var(--mono);
       font-size:.78rem;padding:3px 8px;border-radius:999px;
-      border:1px solid rgba(0,0,0,.12);opacity:.85;
+      border:1px solid var(--line2);opacity:.88;
+      background:rgba(255,255,255,.55);
     }
-    .ok{display:none;margin-top:10px;opacity:.75;font-size:.95rem}
+    .tiny{font-size:.85rem;opacity:.65;margin-top:10px}
 
+    /* ====== login specific ====== */
+    #app{display:none}
     #loginChoose{display:block}
     #loginEmail{display:none}
-
     .gLikeWrap{display:flex;justify-content:center;margin-top:10px;}
     .gLikeBtn{
       width: 252px;
@@ -161,17 +168,263 @@
       transition: background .15s ease, box-shadow .15s ease, transform .1s ease;
     }
     .backBtn:hover{background:#f8f9fa;box-shadow: 0 1px 2px rgba(0,0,0,.08);transform: translateY(-1px);}
-    .tiny{font-size:.85rem;opacity:.65;margin-top:10px}
 
     /* debug tag */
     .dbg{
       position:fixed;left:12px;bottom:12px;
-      font-family:"JetBrains Mono", ui-monospace, monospace;
+      font-family:var(--mono);
       font-size:12px;opacity:.65;
-      padding:6px 10px;border:1px solid rgba(0,0,0,.12);border-radius:999px;
-      background:rgba(255,255,255,.8);backdrop-filter:blur(10px);
+      padding:6px 10px;border:1px solid var(--line2);border-radius:999px;
+      background:rgba(255,255,255,.85);backdrop-filter:blur(10px);
       z-index:9999;
     }
+
+    /* ====== APP LAYOUT (the glow-up) ====== */
+    .appShell{
+      display:grid;
+      grid-template-columns: 270px 1fr;
+      gap: 14px;
+      align-items:start;
+    }
+    @media (max-width: 980px){
+      body{overflow:auto}
+      .appShell{grid-template-columns: 1fr}
+    }
+
+    .panel{
+      border:1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--card);
+      backdrop-filter: blur(10px);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    .panelHeader{
+      padding: 14px 14px 12px;
+      border-bottom:1px solid var(--line);
+      background: rgba(255,255,255,.55);
+    }
+    .panelBody{padding: 12px 14px}
+    .titleRow{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+    .appTitle{
+      font-weight:900;letter-spacing:-.6px;font-size:1.15rem;
+      display:flex;align-items:center;gap:10px;
+    }
+    .dotStatus{
+      width:10px;height:10px;border-radius:999px;border:1px solid var(--line2);
+      background:rgba(0,0,0,.06);
+      flex:0 0 auto;
+    }
+    .dotStatus.on{background:rgba(0,0,0,.75)}
+    .subText{margin-top:6px;opacity:.72;font-size:.92rem;line-height:1.35}
+
+    .sideNav{display:flex;flex-direction:column;gap:8px;margin-top:10px}
+    .navItem{
+      display:flex;align-items:center;justify-content:space-between;
+      gap:10px;padding:10px 12px;border-radius:14px;
+      border:1px solid transparent;
+      cursor:pointer;
+      user-select:none;
+      transition: background .15s ease, border .15s ease, transform .15s ease;
+      background: rgba(255,255,255,.45);
+    }
+    .navItem:hover{border-color:rgba(0,0,0,.12);background:rgba(0,0,0,.02);transform:translateY(-1px)}
+    .navItem.active{border-color:rgba(0,0,0,.18);background:rgba(0,0,0,.03)}
+    .navLeft{display:flex;align-items:center;gap:10px}
+    .navIcon{
+      width:26px;height:26px;border-radius:10px;border:1px solid var(--line);
+      display:flex;align-items:center;justify-content:center;
+      font-family:var(--mono);
+      background:rgba(255,255,255,.65);
+    }
+    .navName{font-weight:800;letter-spacing:-.2px}
+    .navMeta{opacity:.6;font-size:.85rem}
+    .navCount{
+      font-family:var(--mono);
+      font-size:.75rem;
+      padding:2px 7px;border-radius:999px;
+      border:1px solid var(--line2);
+      opacity:.85;
+      background:rgba(255,255,255,.6);
+    }
+
+    .toolbar{
+      display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;
+      margin-top: 10px;
+    }
+    .toolbarLeft,.toolbarRight{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+    .searchWrap{
+      display:flex;align-items:center;gap:8px;
+      border:1px solid var(--line2);
+      border-radius:14px;
+      padding:8px 10px;
+      background:rgba(255,255,255,.75);
+      min-width: min(520px, 92vw);
+    }
+    .searchWrap span{font-family:var(--mono);opacity:.55}
+    .searchWrap input{
+      border:none;background:transparent;padding:0;width:100%;
+      outline:none;
+    }
+    @media (max-width:980px){ .searchWrap{min-width: min(740px, 92vw)} }
+    @media (max-width:760px){ .searchWrap{min-width: 92vw} }
+
+    .segBtn{
+      display:flex;gap:6px;border:1px solid var(--line2);border-radius:999px;
+      padding:4px;background:rgba(255,255,255,.65);
+    }
+    .segBtn button{
+      border:none;background:transparent;
+      padding:7px 10px;border-radius:999px;
+      font-weight:800;cursor:pointer;
+      opacity:.75;
+    }
+    .segBtn button.active{background:rgba(0,0,0,.06);opacity:1}
+
+    .dropZone{
+      border:1px dashed rgba(0,0,0,.22);
+      border-radius: 18px;
+      padding: 14px;
+      background:rgba(255,255,255,.55);
+      display:flex;align-items:center;justify-content:space-between;gap:10px;
+      margin-top:12px;
+      transition: background .15s ease, border .15s ease, transform .15s ease;
+    }
+    .dropZone.drag{background:rgba(0,0,0,.03);border-color:rgba(0,0,0,.32);transform:translateY(-1px)}
+    .dzLeft{display:flex;flex-direction:column;gap:4px}
+    .dzTitle{font-weight:900;letter-spacing:-.4px}
+    .dzSub{opacity:.65;font-size:.92rem}
+
+    .grid{
+      margin-top: 12px;
+      display:grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 10px;
+    }
+    .list{
+      margin-top: 12px;
+      display:grid;
+      gap: 8px;
+    }
+
+    .fileCard{
+      border:1px solid var(--line);
+      border-radius: 16px;
+      padding: 12px;
+      background: var(--card2);
+      backdrop-filter: blur(10px);
+      transition: transform .12s ease, border .15s ease, background .15s ease;
+    }
+    .fileCard:hover{transform:translateY(-1px);border-color:rgba(0,0,0,.18);background:rgba(255,255,255,.92)}
+    .fileTop{
+      display:flex;align-items:flex-start;justify-content:space-between;gap:10px;
+    }
+    .fileName{font-weight:900;letter-spacing:-.2px}
+    .fileMeta{opacity:.65;font-size:.9rem;margin-top:6px}
+    .fileActions{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+    .star{
+      border:1px solid var(--line2);
+      border-radius:12px;
+      padding:8px 10px;
+      background:rgba(255,255,255,.7);
+      cursor:pointer;
+      font-family:var(--mono);
+      font-size:.88rem;
+      opacity:.85;
+      user-select:none;
+    }
+    .star.on{background:rgba(0,0,0,.06);opacity:1}
+
+    .tableHead, .tableRow{
+      display:grid;
+      grid-template-columns: 1.6fr .7fr .8fr .9fr .9fr;
+      gap:10px;
+      align-items:center;
+      padding: 10px 12px;
+      border:1px solid var(--line);
+      border-radius: 16px;
+      background: rgba(255,255,255,.72);
+    }
+    .tableHead{
+      font-family:var(--mono);
+      font-size:.78rem;
+      opacity:.75;
+      background: rgba(0,0,0,.02);
+    }
+    .tableRow:hover{border-color:rgba(0,0,0,.18);background: rgba(255,255,255,.92)}
+    .tdName{font-weight:900;letter-spacing:-.2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .tdMono{font-family:var(--mono);font-size:.86rem;opacity:.8}
+
+    .storageBar{
+      margin-top:12px;
+      border:1px solid var(--line);
+      border-radius: 18px;
+      padding: 12px;
+      background: rgba(255,255,255,.55);
+    }
+    .bar{
+      height:10px;border-radius:999px;border:1px solid var(--line2);
+      background:rgba(0,0,0,.04);
+      overflow:hidden;
+      margin-top:8px;
+    }
+    .bar > div{height:100%;width:0%;background:rgba(0,0,0,.75)}
+    .barRow{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:8px}
+    .kpi{
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.55);
+      border-radius: 16px;
+      padding: 10px 12px;
+      flex:1 1 150px;
+    }
+    .kpi .k{font-family:var(--mono);opacity:.65;font-size:.78rem}
+    .kpi .v{font-weight:900;letter-spacing:-.4px;margin-top:4px}
+
+    /* Modal */
+    .modal{
+      position:fixed;inset:0;
+      background:rgba(0,0,0,.35);
+      display:none;align-items:center;justify-content:center;
+      padding:18px;
+      z-index:9998;
+    }
+    .modalCard{
+      width:min(980px, 96vw);
+      border-radius: 22px;
+      background: rgba(255,255,255,.95);
+      border:1px solid rgba(255,255,255,.4);
+      box-shadow: 0 18px 90px rgba(0,0,0,.25);
+      overflow:hidden;
+    }
+    .modalTop{
+      padding: 12px 14px;
+      border-bottom:1px solid var(--line);
+      display:flex;align-items:center;justify-content:space-between;gap:10px;
+      background:rgba(255,255,255,.85);
+    }
+    .modalTitle{
+      font-weight:900;letter-spacing:-.4px;
+      overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+      max-width: 70vw;
+    }
+    .modalBody{padding: 14px;max-height: 74vh;overflow:auto}
+    .modalClose{cursor:pointer}
+    .previewBox{
+      border:1px solid var(--line);
+      border-radius: 18px;
+      overflow:hidden;
+      background:rgba(0,0,0,.02);
+    }
+    .previewBox iframe, .previewBox img, .previewBox video, .previewBox audio{
+      width:100%;display:block;
+    }
+    .previewBox img{max-height:70vh;object-fit:contain;background:#fff}
+    .previewBox iframe{height:70vh;border:0}
+    .previewBox video{max-height:70vh;background:#000}
+
+    /* Admin cards */
+    .adminWrap{margin-top:12px}
+    .adminGrid{display:grid;gap:10px;margin-top:10px}
   </style>
 
   <!-- ✅ GLOBAL DEBUG (captures errors even if module fails) -->
@@ -198,7 +451,6 @@
       __showFatal("PROMISE ERROR:\n" + msg);
     });
 
-    // if Firebase imports never load, you'll see it.
     setTimeout(() => {
       if(!window.__APP_READY){
         __showFatal("APP DID NOT START.\nUsually: Firebase imports blocked, wrong MIME, or network blocked.\nOpen DevTools > Console for details.");
@@ -211,7 +463,7 @@
   <div class="dbg" id="dbgTag">loading…</div>
 
   <!-- LOGIN SCREEN -->
-  <div class="container" id="loginScreen">
+  <div class="container center" id="loginScreen">
     <div class="marquee top" aria-hidden="true">
       <div class="track">
         <div class="block">
@@ -254,7 +506,7 @@
 
         <div class="gLikeWrap">
           <button class="gLikeBtn" id="showEmailBtn" type="button">
-            <span style="font-family:'JetBrains Mono';opacity:.85">@</span>
+            <span style="font-family:var(--mono);opacity:.85">@</span>
             <span>Admin Email Login</span>
           </button>
         </div>
@@ -270,7 +522,7 @@
           <input id="emailLogin" type="text" placeholder="Admin Email" autocomplete="username">
           <input id="passLogin" type="password" placeholder="Password" autocomplete="current-password">
           <button class="gLikeBtn" id="emailLoginBtn" type="button">
-            <span style="font-family:'JetBrains Mono';opacity:.85">→</span>
+            <span style="font-family:var(--mono);opacity:.85">→</span>
             <span>Sign in</span>
           </button>
         </div>
@@ -305,45 +557,156 @@
 
   <!-- APP UI -->
   <div class="container" id="app">
-    <div class="topbar">
-      <div>
-        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
-          <div class="pill" id="mePill">user</div>
-          <div class="pill" id="rolePill">role</div>
+    <div class="appShell">
+      <!-- SIDEBAR -->
+      <div class="panel">
+        <div class="panelHeader">
+          <div class="titleRow">
+            <div>
+              <div class="appTitle">
+                <span class="dotStatus" id="statusDot"></span>
+                <span>HodelyDrive</span>
+              </div>
+              <div class="subText" id="subtitle">Upload, view, and manage files by section.</div>
+            </div>
+            <button class="btn btnSmall" id="logoutBtn" title="Logout">⎋</button>
+          </div>
+
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:10px">
+            <div class="pill" id="mePill">user</div>
+            <div class="pill" id="rolePill">role</div>
+            <div class="pill" id="activeSectionPill">section</div>
+          </div>
         </div>
-        <div style="margin-top:8px;opacity:.7" id="subtitle">Upload, view, and manage files by section.</div>
-      </div>
-      <button class="btn" id="logoutBtn">Logout</button>
-    </div>
 
-    <div class="row" style="margin-top:10px;align-items:center">
-      <select id="sectionSelect"></select>
-      <input type="file" id="fileInput" />
-      <button class="btn" id="uploadBtn">Upload</button>
-      <button class="btn" id="refreshBtn">Refresh</button>
-    </div>
+        <div class="panelBody">
+          <div style="display:flex;gap:10px;flex-wrap:wrap">
+            <button class="btn btnSmall" id="newFolderBtn" title="Visual folders (metadata)">+ Folder</button>
+            <button class="btn btnSmall btnGhost" id="toggleAdminBtn" style="display:none">Admin</button>
+          </div>
 
-    <div id="adminPanel" class="card" style="display:none;margin-top:12px;text-align:left">
-      <div style="font-weight:800;letter-spacing:-.4px;margin-bottom:8px">Admin</div>
-      <div class="muted">Approve/reject requests and set sections.</div>
-      <div class="ok" id="adminOk">Saved.</div>
+          <div class="sideNav" id="sideNav"></div>
 
-      <div style="margin-top:12px;padding-top:10px;border-top:1px solid rgba(0,0,0,.12)">
-        <div style="font-weight:800;margin-bottom:8px">Requests</div>
-        <div class="row" style="align-items:center">
-          <button class="btn" id="reloadReqBtn">Reload</button>
+          <div class="storageBar">
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:10px">
+              <div style="font-weight:900;letter-spacing:-.3px">Storage</div>
+              <div class="pill" id="quotaPill">—</div>
+            </div>
+            <div class="bar"><div id="barFill"></div></div>
+            <div class="barRow">
+              <div class="kpi"><div class="k">Files</div><div class="v" id="kpiFiles">—</div></div>
+              <div class="kpi"><div class="k">Used</div><div class="v" id="kpiUsed">—</div></div>
+              <div class="kpi"><div class="k">Section</div><div class="v" id="kpiSection">—</div></div>
+            </div>
+          </div>
+
+          <div class="tiny" id="tipLine">Tip: drag a file into the upload box. (Yes, it works.)</div>
         </div>
-        <div id="reqList" style="margin-top:10px;display:grid;gap:10px"></div>
+      </div>
+
+      <!-- MAIN -->
+      <div class="panel">
+        <div class="panelHeader">
+          <div class="toolbar">
+            <div class="toolbarLeft">
+              <div class="searchWrap">
+                <span>⌕</span>
+                <input id="searchInput" type="text" placeholder="Search files… (name, type)" />
+              </div>
+
+              <select id="typeFilter" style="width:200px">
+                <option value="all">All types</option>
+                <option value="image">Images</option>
+                <option value="pdf">PDF</option>
+                <option value="video">Video</option>
+                <option value="audio">Audio</option>
+                <option value="text">Text</option>
+                <option value="other">Other</option>
+              </select>
+
+              <select id="sortSelect" style="width:210px">
+                <option value="new">Sort: Newest</option>
+                <option value="old">Sort: Oldest</option>
+                <option value="name">Sort: Name (A→Z)</option>
+                <option value="size">Sort: Size (big→small)</option>
+              </select>
+            </div>
+
+            <div class="toolbarRight">
+              <div class="segBtn" aria-label="view mode">
+                <button id="viewGridBtn" class="active" type="button">Grid</button>
+                <button id="viewListBtn" type="button">List</button>
+              </div>
+
+              <button class="btn btnSmall" id="refreshBtn">Refresh</button>
+            </div>
+          </div>
+
+          <div class="dropZone" id="dropZone">
+            <div class="dzLeft">
+              <div class="dzTitle">Upload</div>
+              <div class="dzSub">Drop files here or choose one. Section rules apply.</div>
+            </div>
+            <div class="row">
+              <select id="sectionSelect" style="width:220px"></select>
+              <input type="file" id="fileInput" />
+              <button class="btn" id="uploadBtn">Upload</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="panelBody">
+          <div class="error" id="appError"></div>
+          <div id="filesWrap">
+            <div class="grid" id="filesGrid"></div>
+          </div>
+
+          <!-- ADMIN PANEL (toggle) -->
+          <div class="adminWrap" id="adminPanel" style="display:none">
+            <div class="card" style="width:100%;margin:0;text-align:left">
+              <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap">
+                <div style="font-weight:900;letter-spacing:-.4px">Admin Panel</div>
+                <div class="pill">requests</div>
+              </div>
+              <div class="muted" style="margin-top:6px">Approve/reject requests and assign sections.</div>
+              <div class="ok" id="adminOk">Saved.</div>
+
+              <div style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+                <button class="btn btnSmall" id="reloadReqBtn">Reload</button>
+                <span class="muted">Use sections like: <span style="font-family:var(--mono)">public, school, photos</span></span>
+              </div>
+
+              <div class="adminGrid" id="reqList"></div>
+            </div>
+          </div>
+
+        </div>
       </div>
     </div>
+  </div>
 
-    <div class="error" id="appError"></div>
-    <div class="grid" id="filesGrid"></div>
+  <!-- PREVIEW MODAL -->
+  <div class="modal" id="previewModal" aria-hidden="true">
+    <div class="modalCard">
+      <div class="modalTop">
+        <div class="modalTitle" id="previewTitle">Preview</div>
+        <button class="btn btnSmall modalClose" id="closePreviewBtn">Close</button>
+      </div>
+      <div class="modalBody">
+        <div class="previewBox" id="previewBox"></div>
+        <div style="margin-top:10px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between">
+          <div class="muted" id="previewMeta">—</div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap">
+            <a class="btn btnSmall" id="previewOpenBtn" target="_blank" rel="noopener">Open</a>
+            <a class="btn btnSmall" id="previewDownloadBtn" target="_blank" rel="noopener">Download</a>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 
   <!-- Firebase -->
   <script type="module">
-    // ✅ If this file runs, we mark the app ready.
     window.__APP_READY = true;
     document.getElementById("dbgTag").textContent = "app ready";
 
@@ -354,7 +717,7 @@
     } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
     import {
       getFirestore, doc, getDoc, setDoc, collection, query, where, orderBy,
-      getDocs, addDoc, serverTimestamp, updateDoc, deleteDoc
+      getDocs, addDoc, serverTimestamp, updateDoc, deleteDoc, limit
     } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
     import {
       getStorage, ref as sRef, uploadBytes, getDownloadURL, deleteObject
@@ -362,8 +725,6 @@
 
     const ADMIN_EMAIL = "hodelyproductions@gmail.com";
 
-    // 🔥 IMPORTANT: storageBucket usually is "...appspot.com"
-    // If your console shows a different bucket, use that exact one.
     const firebaseConfig = {
       apiKey: "AIzaSyDaAXaboJVS_j28ZAHLHw7-MLPFeZuImfs",
       authDomain: "klexs-546bd.firebaseapp.com",
@@ -380,27 +741,71 @@
     const db = getFirestore(app);
     const storage = getStorage(app);
 
+    // Elements
     const loginScreen = document.getElementById("loginScreen");
     const appScreen = document.getElementById("app");
     const loginError = document.getElementById("loginError");
     const appError = document.getElementById("appError");
     const loginChoose = document.getElementById("loginChoose");
     const loginEmail = document.getElementById("loginEmail");
+
     const mePill = document.getElementById("mePill");
     const rolePill = document.getElementById("rolePill");
+    const activeSectionPill = document.getElementById("activeSectionPill");
     const subtitle = document.getElementById("subtitle");
+    const statusDot = document.getElementById("statusDot");
+
+    const sideNav = document.getElementById("sideNav");
     const sectionSelect = document.getElementById("sectionSelect");
     const fileInput = document.getElementById("fileInput");
     const uploadBtn = document.getElementById("uploadBtn");
     const refreshBtn = document.getElementById("refreshBtn");
+
+    const searchInput = document.getElementById("searchInput");
+    const typeFilter = document.getElementById("typeFilter");
+    const sortSelect = document.getElementById("sortSelect");
+    const viewGridBtn = document.getElementById("viewGridBtn");
+    const viewListBtn = document.getElementById("viewListBtn");
     const filesGrid = document.getElementById("filesGrid");
+    const filesWrap = document.getElementById("filesWrap");
+
+    const dropZone = document.getElementById("dropZone");
+
+    const newFolderBtn = document.getElementById("newFolderBtn");
+    const toggleAdminBtn = document.getElementById("toggleAdminBtn");
+
     const adminPanel = document.getElementById("adminPanel");
     const adminOk = document.getElementById("adminOk");
     const reloadReqBtn = document.getElementById("reloadReqBtn");
     const reqList = document.getElementById("reqList");
 
+    // KPI
+    const quotaPill = document.getElementById("quotaPill");
+    const barFill = document.getElementById("barFill");
+    const kpiFiles = document.getElementById("kpiFiles");
+    const kpiUsed = document.getElementById("kpiUsed");
+    const kpiSection = document.getElementById("kpiSection");
+
+    // Modal
+    const previewModal = document.getElementById("previewModal");
+    const previewTitle = document.getElementById("previewTitle");
+    const previewBox = document.getElementById("previewBox");
+    const previewMeta = document.getElementById("previewMeta");
+    const previewOpenBtn = document.getElementById("previewOpenBtn");
+    const previewDownloadBtn = document.getElementById("previewDownloadBtn");
+    const closePreviewBtn = document.getElementById("closePreviewBtn");
+
     let me = null;
     let meUid = null;
+
+    let currentSection = null; // null means "All files"
+    let viewMode = "grid"; // grid | list
+
+    let cachedFiles = []; // current section files fetched
+    let filteredFiles = []; // after search/filter/sort
+
+    // "Quota" (visual only)
+    const QUOTA_BYTES = 1.5 * 1024 * 1024 * 1024; // 1.5 GB visual quota
 
     const dbg = (t) => { document.getElementById("dbgTag").textContent = t; };
 
@@ -416,7 +821,12 @@
       uploadBtn.disabled = !enabled;
       refreshBtn.disabled = !enabled;
       sectionSelect.disabled = !enabled;
+      searchInput.disabled = !enabled;
+      typeFilter.disabled = !enabled;
+      sortSelect.disabled = !enabled;
+      newFolderBtn.disabled = !enabled;
     }
+
     function showChooseScreen(){
       clearError(loginError);
       loginEmail.style.display = "none";
@@ -429,23 +839,420 @@
       loginEmail.style.display = "block";
       setTimeout(()=>document.getElementById("emailLogin").focus(), 40);
     }
+
     function showPendingUI(email){
       loginScreen.style.display = "none";
       appScreen.style.display = "block";
       mePill.textContent = email || "user";
       rolePill.textContent = "pending";
+      activeSectionPill.textContent = "—";
       subtitle.textContent = "Waiting for admin approval. No file access yet.";
+      statusDot.classList.remove("on");
       adminPanel.style.display = "none";
+      toggleAdminBtn.style.display = "none";
+      sideNav.innerHTML = "";
       filesGrid.innerHTML = "";
       sectionSelect.innerHTML = "";
       setAppEnabled(false);
       showError(appError, "Pending approval.\nAsk admin to approve and assign sections.");
+      quotaPill.textContent = "locked";
+      kpiFiles.textContent = "—";
+      kpiUsed.textContent = "—";
+      kpiSection.textContent = "—";
+      barFill.style.width = "0%";
     }
+
     function showApprovedShell(){
       loginScreen.style.display = "none";
       appScreen.style.display = "block";
       clearError(appError);
       setAppEnabled(true);
+      statusDot.classList.add("on");
+    }
+
+    function bytesToNice(b){
+      const n = Number(b || 0);
+      const gb = 1024*1024*1024;
+      const mb = 1024*1024;
+      const kb = 1024;
+      if(n >= gb) return (n/gb).toFixed(2) + " GB";
+      if(n >= mb) return (n/mb).toFixed(1) + " MB";
+      if(n >= kb) return Math.round(n/kb) + " KB";
+      return n + " B";
+    }
+
+    function getTypeGroup(mime, name){
+      const m = String(mime || "").toLowerCase();
+      const n = String(name || "").toLowerCase();
+      if(m.startsWith("image/")) return "image";
+      if(m === "application/pdf" || n.endsWith(".pdf")) return "pdf";
+      if(m.startsWith("video/")) return "video";
+      if(m.startsWith("audio/")) return "audio";
+      if(m.startsWith("text/") || n.endsWith(".txt") || n.endsWith(".md") || n.endsWith(".json") || n.endsWith(".csv")) return "text";
+      return "other";
+    }
+
+    function applyFilters(){
+      const q = (searchInput.value || "").trim().toLowerCase();
+      const tf = typeFilter.value;
+      const sort = sortSelect.value;
+
+      let arr = [...cachedFiles];
+
+      if(q){
+        arr = arr.filter(f => {
+          const name = String(f.name || "").toLowerCase();
+          const mime = String(f.mime || "").toLowerCase();
+          return name.includes(q) || mime.includes(q);
+        });
+      }
+
+      if(tf !== "all"){
+        arr = arr.filter(f => getTypeGroup(f.mime, f.name) === tf);
+      }
+
+      // favorites first? (optional)
+      arr.sort((a,b) => {
+        const fa = a.favorite ? 1 : 0;
+        const fb = b.favorite ? 1 : 0;
+        if(fa !== fb) return fb - fa;
+        return 0;
+      });
+
+      if(sort === "new"){
+        arr.sort((a,b)=> (b.createdAtMs||0) - (a.createdAtMs||0));
+      } else if(sort === "old"){
+        arr.sort((a,b)=> (a.createdAtMs||0) - (b.createdAtMs||0));
+      } else if(sort === "name"){
+        arr.sort((a,b)=> String(a.name||"").localeCompare(String(b.name||""), undefined, {numeric:true, sensitivity:"base"}));
+      } else if(sort === "size"){
+        arr.sort((a,b)=> (b.size||0) - (a.size||0));
+      }
+
+      filteredFiles = arr;
+      renderFiles();
+      updateKPIs();
+    }
+
+    function setViewMode(mode){
+      viewMode = mode;
+      viewGridBtn.classList.toggle("active", mode === "grid");
+      viewListBtn.classList.toggle("active", mode === "list");
+      renderFiles();
+    }
+
+    function renderFiles(){
+      if(!me || me.status !== "approved"){
+        filesGrid.innerHTML = "";
+        return;
+      }
+
+      // wrapper content
+      if(viewMode === "grid"){
+        filesGrid.className = "grid";
+        filesGrid.innerHTML = "";
+      } else {
+        filesGrid.className = "list";
+        filesGrid.innerHTML = "";
+        const head = document.createElement("div");
+        head.className = "tableHead";
+        head.innerHTML = `
+          <div>Name</div>
+          <div>Type</div>
+          <div>Size</div>
+          <div>Section</div>
+          <div>Actions</div>
+        `;
+        filesGrid.appendChild(head);
+      }
+
+      if(filteredFiles.length === 0){
+        const empty = document.createElement("div");
+        empty.className = "muted";
+        empty.style.padding = "10px";
+        empty.textContent = "No files match your filters.";
+        filesGrid.appendChild(empty);
+        return;
+      }
+
+      const isAdmin = ((auth.currentUser?.email || "").toLowerCase() === ADMIN_EMAIL.toLowerCase()) || !!me.isAdmin;
+
+      for(const f of filteredFiles){
+        if(viewMode === "grid"){
+          const card = document.createElement("div");
+          card.className = "fileCard";
+          card.innerHTML = `
+            <div class="fileTop">
+              <div>
+                <div class="fileName">${escapeHtml(f.name)}</div>
+                <div class="fileMeta">${escapeHtml(f.mime || "file")} • ${bytesToNice(f.size)} • <span style="font-family:var(--mono)">${escapeHtml(f.section || "-")}</span></div>
+              </div>
+              <div class="star ${f.favorite ? "on":""}" title="Favorite" data-star>★</div>
+            </div>
+            <div class="fileActions">
+              <button class="btn btnSmall" data-preview>Preview</button>
+              <a class="btn btnSmall" style="text-decoration:none;display:inline-block" target="_blank" rel="noopener" data-view>Open</a>
+              <button class="btn btnSmall" data-copy>Copy link</button>
+              <button class="btn btnSmall" data-rename>Rename</button>
+              ${isAdmin ? `<button class="btn btnSmall" data-del>Delete</button>` : ``}
+            </div>
+          `;
+
+          wireFileCard(card, f, isAdmin);
+          filesGrid.appendChild(card);
+        } else {
+          const row = document.createElement("div");
+          row.className = "tableRow";
+          const t = getTypeGroup(f.mime, f.name);
+          row.innerHTML = `
+            <div class="tdName" title="${escapeHtml(f.name)}">${escapeHtml(f.name)}</div>
+            <div class="tdMono">${escapeHtml(t)}</div>
+            <div class="tdMono">${escapeHtml(bytesToNice(f.size))}</div>
+            <div class="tdMono">${escapeHtml(f.section || "-")}</div>
+            <div class="row" style="justify-content:flex-end">
+              <button class="btn btnSmall" data-preview>Preview</button>
+              <a class="btn btnSmall" style="text-decoration:none;display:inline-block" target="_blank" rel="noopener" data-view>Open</a>
+              <button class="btn btnSmall" data-copy>Copy</button>
+              <div class="star ${f.favorite ? "on":""}" title="Favorite" data-star>★</div>
+              ${isAdmin ? `<button class="btn btnSmall" data-del>Delete</button>` : ``}
+            </div>
+          `;
+          wireFileCard(row, f, isAdmin);
+          filesGrid.appendChild(row);
+        }
+      }
+    }
+
+    function openPreview(file, url){
+      previewTitle.textContent = file.name || "Preview";
+      previewMeta.textContent = `${file.mime || "file"} • ${bytesToNice(file.size)} • section: ${file.section || "-"}`;
+      previewOpenBtn.href = url;
+      previewDownloadBtn.href = url;
+
+      previewBox.innerHTML = "";
+
+      const type = getTypeGroup(file.mime, file.name);
+      if(type === "image"){
+        const img = document.createElement("img");
+        img.src = url;
+        img.alt = file.name || "image";
+        previewBox.appendChild(img);
+      } else if(type === "pdf"){
+        const iframe = document.createElement("iframe");
+        iframe.src = url;
+        previewBox.appendChild(iframe);
+      } else if(type === "video"){
+        const v = document.createElement("video");
+        v.src = url;
+        v.controls = true;
+        previewBox.appendChild(v);
+      } else if(type === "audio"){
+        const a = document.createElement("audio");
+        a.src = url;
+        a.controls = true;
+        a.style.width = "100%";
+        previewBox.appendChild(a);
+      } else if(type === "text"){
+        // best-effort: show in iframe (some content types will render)
+        const iframe = document.createElement("iframe");
+        iframe.src = url;
+        previewBox.appendChild(iframe);
+      } else {
+        const box = document.createElement("div");
+        box.style.padding = "14px";
+        box.innerHTML = `<div style="font-weight:900">No preview for this type.</div><div class="muted" style="margin-top:6px">Use Open / Download.</div>`;
+        previewBox.appendChild(box);
+      }
+
+      previewModal.style.display = "flex";
+      previewModal.setAttribute("aria-hidden", "false");
+    }
+
+    function closePreview(){
+      previewModal.style.display = "none";
+      previewModal.setAttribute("aria-hidden", "true");
+      previewBox.innerHTML = "";
+    }
+
+    function toast(text){
+      const old = document.getElementById("toast");
+      if(old) old.remove();
+      const t = document.createElement("div");
+      t.id = "toast";
+      t.style.position = "fixed";
+      t.style.left = "50%";
+      t.style.top = "18px";
+      t.style.transform = "translateX(-50%)";
+      t.style.padding = "10px 12px";
+      t.style.border = "1px solid rgba(0,0,0,.12)";
+      t.style.borderRadius = "999px";
+      t.style.background = "rgba(255,255,255,.92)";
+      t.style.backdropFilter = "blur(10px)";
+      t.style.boxShadow = "0 10px 40px rgba(0,0,0,.10)";
+      t.style.fontFamily = "var(--mono)";
+      t.style.fontSize = "12px";
+      t.style.opacity = ".92";
+      t.style.zIndex = "9999";
+      t.textContent = text;
+      document.body.appendChild(t);
+      setTimeout(()=>t.remove(), 1200);
+    }
+
+    async function copyToClipboard(text){
+      try{
+        await navigator.clipboard.writeText(text);
+        toast("copied ✔");
+      }catch{
+        // fallback
+        const ta = document.createElement("textarea");
+        ta.value = text;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand("copy");
+        ta.remove();
+        toast("copied ✔");
+      }
+    }
+
+    async function toggleFavorite(fileId, newVal){
+      await updateDoc(doc(db, "files", fileId), { favorite: !!newVal });
+      // update local cache
+      const idx = cachedFiles.findIndex(x => x.id === fileId);
+      if(idx >= 0) cachedFiles[idx].favorite = !!newVal;
+      applyFilters();
+    }
+
+    async function renameFile(fileId, currentName){
+      const next = prompt("Rename file:", currentName || "");
+      if(!next) return;
+      // Only rename in Firestore metadata (Storage path stays same)
+      await updateDoc(doc(db, "files", fileId), { name: next });
+      const idx = cachedFiles.findIndex(x => x.id === fileId);
+      if(idx >= 0) cachedFiles[idx].name = next;
+      applyFilters();
+      toast("renamed ✔");
+    }
+
+    async function wireFileCard(el, file, isAdmin){
+      const viewA = el.querySelector("[data-view]");
+      const previewBtn = el.querySelector("[data-preview]");
+      const copyBtn = el.querySelector("[data-copy]");
+      const delBtn = el.querySelector("[data-del]");
+      const starBtn = el.querySelector("[data-star]");
+      const renameBtn = el.querySelector("[data-rename]");
+
+      let url = "#";
+      try{
+        url = await getDownloadURL(sRef(storage, file.path));
+      }catch{}
+
+      if(viewA) viewA.href = url;
+
+      if(previewBtn){
+        previewBtn.addEventListener("click", () => openPreview(file, url));
+      }
+      if(copyBtn){
+        copyBtn.addEventListener("click", () => copyToClipboard(url));
+      }
+      if(starBtn){
+        starBtn.addEventListener("click", async () => {
+          await toggleFavorite(file.id, !file.favorite);
+        });
+      }
+      if(renameBtn){
+        renameBtn.addEventListener("click", async () => {
+          await renameFile(file.id, file.name);
+        });
+      }
+      if(delBtn && isAdmin){
+        delBtn.addEventListener("click", async () => {
+          if(!confirm("Delete this file?")) return;
+          try{
+            await deleteObject(sRef(storage, file.path));
+            await deleteDoc(doc(db, "files", file.id));
+            await refreshFiles();
+            toast("deleted ✔");
+          }catch(e){
+            showError(appError, e.message || "Delete failed.");
+          }
+        });
+      }
+    }
+
+    function updateKPIs(){
+      const totalFiles = cachedFiles.length;
+      const usedBytes = cachedFiles.reduce((a,f)=>a+(f.size||0),0);
+
+      kpiFiles.textContent = String(totalFiles);
+      kpiUsed.textContent = bytesToNice(usedBytes);
+      kpiSection.textContent = currentSection ? currentSection : "all";
+
+      const pct = Math.min(100, Math.round((usedBytes / QUOTA_BYTES) * 100));
+      barFill.style.width = pct + "%";
+      quotaPill.textContent = `${pct}% of ${bytesToNice(QUOTA_BYTES)}`;
+    }
+
+    function renderSideNav(){
+      sideNav.innerHTML = "";
+
+      // All
+      const allItem = document.createElement("div");
+      allItem.className = "navItem" + (!currentSection ? " active":"");
+      allItem.innerHTML = `
+        <div class="navLeft">
+          <div class="navIcon">∞</div>
+          <div>
+            <div class="navName">All files</div>
+            <div class="navMeta">Across sections</div>
+          </div>
+        </div>
+        <div class="navCount" id="countAll">—</div>
+      `;
+      allItem.addEventListener("click", async ()=>{
+        currentSection = null;
+        activeSectionPill.textContent = "all";
+        await loadSectionsIntoSelect(); // keep select, but not forced
+        await refreshFiles();
+      });
+      sideNav.appendChild(allItem);
+
+      // Sections
+      const secs = (me?.sections || []);
+      for(const s of secs){
+        const it = document.createElement("div");
+        it.className = "navItem" + (currentSection === s ? " active":"");
+        it.innerHTML = `
+          <div class="navLeft">
+            <div class="navIcon">${escapeHtml(String(s).slice(0,2).toUpperCase())}</div>
+            <div>
+              <div class="navName">${escapeHtml(s)}</div>
+              <div class="navMeta">personal</div>
+            </div>
+          </div>
+          <div class="navCount" data-count="${escapeHtml(s)}">—</div>
+        `;
+        it.addEventListener("click", async ()=>{
+          currentSection = s;
+          activeSectionPill.textContent = s;
+          sectionSelect.value = s;
+          await refreshFiles();
+        });
+        sideNav.appendChild(it);
+      }
+    }
+
+    async function loadSectionsIntoSelect(){
+      sectionSelect.innerHTML = "";
+      (me.sections || []).forEach(s => {
+        const o = document.createElement("option");
+        o.value = s; o.textContent = s;
+        sectionSelect.appendChild(o);
+      });
+      if(currentSection && (me.sections || []).includes(currentSection)){
+        sectionSelect.value = currentSection;
+      } else if(sectionSelect.options.length){
+        sectionSelect.value = sectionSelect.options[0].value;
+      }
     }
 
     async function ensureUserDoc(user){
@@ -480,7 +1287,7 @@
       const isAdminEmail = (user.email || "").toLowerCase() === ADMIN_EMAIL.toLowerCase();
       if(isAdminEmail) return;
 
-      const qy = query(collection(db, "requests"), where("uid", "==", user.uid));
+      const qy = query(collection(db, "requests"), where("uid", "==", user.uid), limit(1));
       const existing = await getDocs(qy);
       if(!existing.empty) return;
 
@@ -494,90 +1301,90 @@
       });
     }
 
-    async function loadSections(){
-      sectionSelect.innerHTML = "";
-      (me.sections || []).forEach(s => {
-        const o = document.createElement("option");
-        o.value = s; o.textContent = s;
-        sectionSelect.appendChild(o);
-      });
-    }
-
     async function refreshFiles(){
       clearError(appError);
       filesGrid.innerHTML = "";
+      cachedFiles = [];
+      filteredFiles = [];
+
       if(!me || me.status !== "approved") return;
-
-      const section = sectionSelect.value;
-      if(!section){
-        showError(appError, "No sections assigned. Admin must add sections.");
-        return;
-      }
-
-      const qy = query(
-        collection(db, "files"),
-        where("uid", "==", meUid),
-        where("section", "==", section),
-        orderBy("createdAt", "desc")
-      );
-
-      const snap = await getDocs(qy);
-      if(snap.empty){
-        filesGrid.innerHTML = `<div class="muted" style="padding:10px">No files in this section.</div>`;
-        return;
-      }
 
       const isAdmin = ((auth.currentUser?.email || "").toLowerCase() === ADMIN_EMAIL.toLowerCase()) || !!me.isAdmin;
 
-      for(const docSnap of snap.docs){
-        const f = docSnap.data();
-        const card = document.createElement("div");
-        card.className = "file";
-        card.innerHTML = `
-          <div class="name">${escapeHtml(f.name)}</div>
-          <div class="meta">${escapeHtml(f.mime || "file")} • ${Math.round((f.size||0)/1024)} KB</div>
-          <div class="actions">
-            <a class="btn" style="text-decoration:none;display:inline-block" target="_blank" rel="noopener" data-view>View</a>
-            <a class="btn" style="text-decoration:none;display:inline-block" target="_blank" rel="noopener" data-dl>Download</a>
-            ${isAdmin ? `<button class="btn" data-del>Delete</button>` : ``}
-          </div>
-        `;
-
-        const viewA = card.querySelector("[data-view]");
-        const dlA = card.querySelector("[data-dl]");
-
-        try{
-          const url = await getDownloadURL(sRef(storage, f.path));
-          viewA.href = url;
-          dlA.href = url;
-        }catch(e){
-          viewA.href = "#"; dlA.href = "#";
-        }
-
-        const delBtn = card.querySelector("[data-del]");
-        if(delBtn){
-          delBtn.addEventListener("click", async () => {
-            try{
-              await deleteObject(sRef(storage, f.path));
-              await deleteDoc(doc(db, "files", docSnap.id));
-              await refreshFiles();
-            }catch(e){
-              showError(appError, e.message || "Delete failed.");
-            }
-          });
-        }
-
-        filesGrid.appendChild(card);
+      // which section to query?
+      let qy;
+      if(currentSection){
+        qy = query(
+          collection(db, "files"),
+          where("uid", "==", meUid),
+          where("section", "==", currentSection),
+          orderBy("createdAt", "desc")
+        );
+      } else {
+        qy = query(
+          collection(db, "files"),
+          where("uid", "==", meUid),
+          orderBy("createdAt", "desc")
+        );
       }
+
+      const snap = await getDocs(qy);
+
+      if(snap.empty){
+        cachedFiles = [];
+        applyFilters();
+        updateKPIs();
+        await renderCounts();
+        return;
+      }
+
+      cachedFiles = snap.docs.map(d => {
+        const f = d.data() || {};
+        const ms = f.createdAt?.toMillis ? f.createdAt.toMillis() : 0;
+        return { ...f, id: d.id, createdAtMs: ms };
+      });
+
+      applyFilters();
+      updateKPIs();
+      await renderCounts();
+
+      // admin panel toggle visibility
+      toggleAdminBtn.style.display = isAdmin ? "inline-block" : "none";
     }
 
-    async function uploadCurrent(){
+    async function renderCounts(){
+      // counts based on cached? We want counts for all + each section.
+      // We'll compute from a lightweight query to all files once (for sidebar counts).
+      if(!me || me.status !== "approved") return;
+
+      const qy = query(collection(db, "files"), where("uid", "==", meUid));
+      const snap = await getDocs(qy);
+      const all = snap.docs.map(d => d.data() || {});
+
+      const countAll = document.getElementById("countAll");
+      if(countAll) countAll.textContent = String(all.length);
+
+      const map = {};
+      for(const f of all){
+        const s = f.section || "-";
+        map[s] = (map[s] || 0) + 1;
+      }
+
+      sideNav.querySelectorAll("[data-count]").forEach(el=>{
+        const s = el.getAttribute("data-count");
+        el.textContent = String(map[s] || 0);
+      });
+    }
+
+    async function uploadCurrent(fileOverride){
       try{
         clearError(appError);
         if(!me || me.status !== "approved") throw new Error("Pending approval.");
 
-        const section = sectionSelect.value;
-        const file = fileInput.files[0];
+        // section: if user clicked a sidebar section use that, else use select
+        const section = currentSection || sectionSelect.value;
+        const file = fileOverride || fileInput.files[0];
+
         if(!section) throw new Error("No section selected.");
         if(!file) throw new Error("Choose a file.");
         if(!(me.sections || []).includes(section)) throw new Error("Section not allowed.");
@@ -595,10 +1402,12 @@
           path,
           mime: file.type || "application/octet-stream",
           size: file.size || 0,
+          favorite: false,
           createdAt: serverTimestamp()
         });
 
         fileInput.value = "";
+        toast("uploaded ✔");
         await refreshFiles();
       }catch(e){
         showError(appError, e.message || "Upload failed.");
@@ -621,16 +1430,25 @@
         const isPending = r.status === "pending";
 
         const card = document.createElement("div");
-        card.className = "file";
+        card.className = "fileCard";
         card.innerHTML = `
-          <div class="name">${escapeHtml(r.email || "unknown")}</div>
-          <div class="meta">${escapeHtml(r.status)}${r.note ? " • " + escapeHtml(r.note) : ""}</div>
-          <div class="actions" style="margin-top:10px">
+          <div class="fileTop">
+            <div>
+              <div class="fileName">${escapeHtml(r.email || "unknown")}</div>
+              <div class="fileMeta">${escapeHtml(r.status)}${r.note ? " • " + escapeHtml(r.note) : ""}</div>
+            </div>
+            <div class="pill">${escapeHtml(r.uid ? String(r.uid).slice(0,6) : "—")}</div>
+          </div>
+
+          <div class="fileActions" style="margin-top:10px">
             ${isPending ? `
-              <input type="text" class="btn" style="padding:10px 12px" data-sections placeholder="sections (comma) e.g. public,school">
-              <button class="btn" data-approve>Approve</button>
-              <button class="btn" data-reject>Reject</button>
-            ` : `<span class="pill">decidedBy: ${escapeHtml(r.decidedBy || "-")}</span>`}
+              <input type="text" class="btn btnSmall" style="padding:10px 12px;min-width:260px" data-sections
+                placeholder="sections (comma) e.g. public,school,photos">
+              <button class="btn btnSmall" data-approve>Approve</button>
+              <button class="btn btnSmall" data-reject>Reject</button>
+            ` : `
+              <span class="pill">decidedBy: ${escapeHtml(r.decidedBy || "-")}</span>
+            `}
           </div>
         `;
 
@@ -658,6 +1476,7 @@
 
               adminOk.style.display = "block";
               setTimeout(()=>adminOk.style.display="none", 1200);
+              toast("approved ✔");
 
               await renderAdminRequests();
             }catch(e){
@@ -680,6 +1499,7 @@
                 isAdmin: false
               }, { merge: true });
 
+              toast("rejected ✔");
               await renderAdminRequests();
             }catch(e){
               showError(appError, e.message || "Reject failed.");
@@ -712,15 +1532,22 @@
       }
 
       showApprovedShell();
-      subtitle.textContent = "Upload, view, and manage files by section.";
-      adminPanel.style.display = isAdmin ? "block" : "none";
+      subtitle.textContent = "Search, preview, favorite, and manage files.";
+      toggleAdminBtn.style.display = isAdmin ? "inline-block" : "none";
 
-      await loadSections();
+      currentSection = (me.sections && me.sections.length) ? me.sections[0] : null;
+      activeSectionPill.textContent = currentSection || "all";
+
+      renderSideNav();
+      await loadSectionsIntoSelect();
+
+      // set default to first section in sidebar
+      if(currentSection) sectionSelect.value = currentSection;
+
       await refreshFiles();
-      if(isAdmin) await renderAdminRequests();
     }
 
-    // UI events
+    // UI events (login)
     document.getElementById("showEmailBtn").addEventListener("click", showEmailScreen);
     document.getElementById("backToChooseBtn").addEventListener("click", showChooseScreen);
 
@@ -751,15 +1578,83 @@
       }
     });
 
+    // App events
     document.getElementById("logoutBtn").addEventListener("click", async () => {
       await signOut(auth);
       dbg("signed out");
     });
 
-    uploadBtn.addEventListener("click", uploadCurrent);
+    uploadBtn.addEventListener("click", () => uploadCurrent());
     refreshBtn.addEventListener("click", () => refreshFiles().catch(e=>showError(appError, e.message)));
-    sectionSelect.addEventListener("change", () => refreshFiles().catch(()=>{}));
+
+    sectionSelect.addEventListener("change", async () => {
+      // user changed select; treat it like selecting that section
+      const v = sectionSelect.value;
+      currentSection = v || null;
+      activeSectionPill.textContent = currentSection || "all";
+      renderSideNav();
+      await refreshFiles();
+    });
+
+    searchInput.addEventListener("input", applyFilters);
+    typeFilter.addEventListener("change", applyFilters);
+    sortSelect.addEventListener("change", applyFilters);
+
+    viewGridBtn.addEventListener("click", ()=>setViewMode("grid"));
+    viewListBtn.addEventListener("click", ()=>setViewMode("list"));
+
+    toggleAdminBtn.addEventListener("click", async ()=>{
+      const isOpen = adminPanel.style.display !== "none";
+      adminPanel.style.display = isOpen ? "none" : "block";
+      if(!isOpen) await renderAdminRequests();
+    });
+
     reloadReqBtn.addEventListener("click", () => renderAdminRequests().catch(e=>showError(appError, e.message)));
+
+    // Drag & drop upload
+    ["dragenter","dragover"].forEach(evt => {
+      dropZone.addEventListener(evt, (e)=>{
+        e.preventDefault(); e.stopPropagation();
+        dropZone.classList.add("drag");
+      });
+    });
+    ["dragleave","drop"].forEach(evt => {
+      dropZone.addEventListener(evt, (e)=>{
+        e.preventDefault(); e.stopPropagation();
+        dropZone.classList.remove("drag");
+      });
+    });
+    dropZone.addEventListener("drop", async (e)=>{
+      const f = e.dataTransfer?.files?.[0];
+      if(f) await uploadCurrent(f);
+    });
+
+    // Visual folder (metadata only)
+    newFolderBtn.addEventListener("click", async ()=>{
+      if(!me || me.status !== "approved") return;
+      const name = prompt("Folder name (visual):", "New folder");
+      if(!name) return;
+      // store folder metadata (optional)
+      try{
+        await addDoc(collection(db, "folders"), {
+          uid: meUid,
+          name,
+          createdAt: serverTimestamp()
+        });
+        toast("folder created ✔ (visual)");
+      }catch(e){
+        toast("folder not saved");
+      }
+    });
+
+    // Preview modal close
+    closePreviewBtn.addEventListener("click", closePreview);
+    previewModal.addEventListener("click", (e)=>{
+      if(e.target === previewModal) closePreview();
+    });
+    window.addEventListener("keydown", (e)=>{
+      if(e.key === "Escape") closePreview();
+    });
 
     onAuthStateChanged(auth, async (user) => {
       me = null; meUid = null;
@@ -772,6 +1667,8 @@
         clearError(appError);
         filesGrid.innerHTML = "";
         sectionSelect.innerHTML = "";
+        sideNav.innerHTML = "";
+        statusDot.classList.remove("on");
         dbg("logged out");
         return;
       }
