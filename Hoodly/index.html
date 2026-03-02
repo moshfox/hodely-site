@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hoodly</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=JetBrains+Mono:wght@400;600&family=DM+Serif+Display&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --bg:#ffffff;
+      --fg:#0a0a0a;
+      --muted:rgba(10,10,10,.55);
+      --line:rgba(10,10,10,.10);
+      --card:rgba(10,10,10,.035);
+      --card2:rgba(10,10,10,.05);
+      --shadow: 0 18px 60px rgba(10,10,10,.08);
+      --shadow2: 0 14px 50px rgba(10,10,10,.06);
+      --radius: 22px;
+      --radius2: 18px;
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      background:var(--bg);
+      color:var(--fg);
+      font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+      overflow-x:hidden;
+    }
+
+    /* subtle paper + grain */
+    body:before{
+      content:"";
+      position:fixed; inset:0;
+      pointer-events:none;
+      background:
+        radial-gradient(circle at 18% 8%, rgba(0,0,0,.06), transparent 36%),
+        radial-gradient(circle at 82% 0%, rgba(0,0,0,.05), transparent 42%),
+        radial-gradient(circle at 60% 95%, rgba(0,0,0,.06), transparent 48%),
+        linear-gradient(180deg, rgba(0,0,0,.012), rgba(0,0,0,.00));
+      opacity:.35;
+      mix-blend-mode:multiply;
+    }
+
+    .wrap{
+      min-height:100%;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:28px 18px;
+      position:relative;
+    }
+
+    /* ===== HOME ===== */
+    .home{
+      width:min(980px, 100%);
+      text-align:center;
+      transform:translateY(0) scale(1);
+      opacity:1;
+      transition: transform .6s cubic-bezier(.2,.9,.1,1), opacity .45s ease, filter .45s ease;
+      will-change: transform, opacity, filter;
+    }
+    .home.vanish{
+      transform:translateY(-26px) scale(.985);
+      opacity:0;
+      filter: blur(10px);
+      pointer-events:none;
+      position:absolute;
+    }
+
+    .brand{
+      font-family:"DM Serif Display", serif;
+      font-size: clamp(48px, 7vw, 92px);
+      letter-spacing:.5px;
+      line-height:1;
+      margin: 0 0 16px;
+      transform: translateY(0);
+      animation: floatIn .9s cubic-bezier(.2,.9,.1,1) both;
+    }
+
+    .tag{
+      margin:0 auto 22px;
+      max-width:600px;
+      font-size: 14px;
+      color: var(--muted);
+      line-height:1.55;
+      animation: fadeIn .9s ease .05s both;
+    }
+
+    .searchShell{
+      width:min(760px, 100%);
+      margin: 0 auto;
+      border:1px solid var(--line);
+      border-radius:999px;
+      background:rgba(255,255,255,.78);
+      backdrop-filter: blur(12px);
+      box-shadow: var(--shadow);
+      padding:10px;
+      display:flex;
+      gap:10px;
+      align-items:center;
+      transition: transform .18s ease, border-color .2s ease, box-shadow .25s ease;
+      animation: fadeIn .8s ease .1s both;
+    }
+    .searchShell:focus-within{
+      border-color:rgba(10,10,10,.22);
+      transform: translateY(-1px);
+      box-shadow: 0 22px 80px rgba(10,10,10,.10);
+    }
+
+    .pill{
+      font-family:"JetBrains Mono", monospace;
+      font-size:12px;
+      padding:10px 12px;
+      border-radius:999px;
+      background: var(--card);
+      border:1px solid var(--line);
+      color: rgba(10,10,10,.75);
+      user-select:none;
+      white-space:nowrap;
+    }
+
+    .input{
+      flex:1;
+      border:none;
+      outline:none;
+      font-size:16px;
+      padding:12px 10px;
+      background:transparent;
+      color:var(--fg);
+    }
+    .input::placeholder{color:rgba(10,10,10,.35)}
+
+    .go{
+      border:none;
+      border-radius:999px;
+      padding:12px 16px;
+      font-weight:800;
+      cursor:pointer;
+      background:#0a0a0a;
+      color:#fff;
+      transition: transform .14s ease, opacity .2s ease, filter .2s ease;
+    }
+    .go:hover{transform: translateY(-1px)}
+    .go:active{transform: translateY(0px); opacity:.85}
+
+    .quick{
+      margin:16px auto 0;
+      display:flex;
+      gap:10px;
+      justify-content:center;
+      flex-wrap:wrap;
+      color: var(--muted);
+      font-size:13px;
+      animation: fadeIn .8s ease .18s both;
+    }
+    .chip{
+      border:1px solid var(--line);
+      background:rgba(10,10,10,.03);
+      padding:10px 12px;
+      border-radius:999px;
+      cursor:pointer;
+      transition:.18s;
+    }
+    .chip:hover{background:rgba(10,10,10,.055); transform: translateY(-1px)}
+
+    /* ===== RESULTS VIEW ===== */
+    .resultsView{
+      width:min(1100px, 100%);
+      opacity:0;
+      pointer-events:none;
+      filter: blur(10px);
+      position:absolute;
+      top:22px;
+      left:50%;
+      transform:translate(-50%, 18px);
+      padding: 0 18px 70px;
+      transition: opacity .5s ease, transform .65s cubic-bezier(.2,.9,.1,1), filter .5s ease;
+      will-change: transform, opacity, filter;
+    }
+    .resultsView.show{
+      opacity:1;
+      pointer-events:auto;
+      transform:translate(-50%, 0px);
+      filter: blur(0px);
+    }
+
+    .topbar{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      padding: 12px 0 16px;
+      position:sticky;
+      top:0;
+      background: linear-gradient(#ffffff 74%, rgba(255,255,255,0));
+      backdrop-filter: blur(10px);
+      z-index:20;
+    }
+    .miniBrand{
+      font-family:"DM Serif Display", serif;
+      font-size:22px;
+      letter-spacing:.2px;
+      cursor:pointer;
+      user-select:none;
+      transition: transform .18s ease, opacity .2s ease;
+    }
+    .miniBrand:hover{transform: translateY(-1px)}
+
+    .miniSearch{
+      flex:1;
+      border:1px solid var(--line);
+      border-radius:999px;
+      padding:10px;
+      display:flex;
+      gap:10px;
+      align-items:center;
+      background:rgba(255,255,255,.82);
+      box-shadow: var(--shadow2);
+      transition: transform .18s ease, border-color .2s ease;
+    }
+    .miniSearch:focus-within{
+      border-color:rgba(10,10,10,.22);
+      transform: translateY(-1px);
+    }
+    .miniSearch input{
+      width:100%;
+      border:none;
+      outline:none;
+      font-size:14px;
+      padding:8px 10px;
+      background:transparent;
+    }
+    .miniBtn{
+      border:none;
+      border-radius:999px;
+      padding:10px 14px;
+      font-weight:800;
+      cursor:pointer;
+      background:#0a0a0a;
+      color:#fff;
+      transition: transform .14s ease, opacity .2s ease;
+    }
+    .miniBtn:hover{transform: translateY(-1px)}
+    .miniBtn:active{transform: translateY(0px); opacity:.86}
+
+    .metaLine{
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      flex-wrap:wrap;
+      margin: 10px 0 14px;
+      color:var(--muted);
+      font-size:13px;
+    }
+    .mono{
+      font-family:"JetBrains Mono", monospace;
+      font-size:12px;
+      color: rgba(10,10,10,.6);
+    }
+
+    /* Layout: left history, main cards */
+    .layout{
+      display:grid;
+      grid-template-columns: 290px 1fr;
+      gap:14px;
+      align-items:start;
+    }
+    @media (max-width: 980px){
+      .layout{grid-template-columns: 1fr}
+    }
+
+    .panel{
+      border:1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(10,10,10,.02);
+      box-shadow: 0 12px 40px rgba(10,10,10,.05);
+      overflow:hidden;
+    }
+    .panelHead{
+      padding:14px 14px 12px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      border-bottom:1px solid var(--line);
+      background: rgba(255,255,255,.7);
+      backdrop-filter: blur(8px);
+    }
+    .panelHead strong{
+      font-size:13px;
+      letter-spacing:.2px;
+    }
+    .panelHead button{
+      border:1px solid var(--line);
+      background: rgba(10,10,10,.03);
+      border-radius:999px;
+      padding:8px 10px;
+      cursor:pointer;
+      font-weight:700;
+      font-size:12px;
+      transition:.18s;
+    }
+    .panelHead button:hover{transform: translateY(-1px); background: rgba(10,10,10,.05)}
+    .panelBody{padding:12px}
+
+    .historyList{
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+    }
+    .hItem{
+      border:1px solid var(--line);
+      background: rgba(255,255,255,.65);
+      border-radius: 14px;
+      padding:10px 10px;
+      cursor:pointer;
+      transition:.18s;
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+    }
+    .hItem:hover{transform: translateY(-1px); background: rgba(255,255,255,.85)}
+    .hItem .q{
+      font-size:13px;
+      color: rgba(10,10,10,.85);
+      line-height:1.25;
+    }
+    .hItem .t{
+      font-size:11px;
+      color: rgba(10,10,10,.5);
+      font-family:"JetBrains Mono", monospace;
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap:14px;
+    }
+    .card{
+      grid-column: span 6;
+      border:1px solid var(--line);
+      background:rgba(10,10,10,.03);
+      border-radius: var(--radius);
+      padding:18px;
+      box-shadow: 0 10px 40px rgba(10,10,10,.05);
+      transition: transform .18s ease, background .2s ease;
+      transform: translateY(6px);
+      opacity: 0;
+      animation: cardIn .45s cubic-bezier(.2,.9,.1,1) forwards;
+    }
+    .card:hover{
+      transform: translateY(-2px);
+      background:rgba(10,10,10,.045);
+    }
+    .card h3{
+      margin:12px 0 8px;
+      font-size:16px;
+      letter-spacing:-.2px;
+    }
+    .card p{
+      margin:0;
+      color: rgba(10,10,10,.72);
+      font-size:14px;
+      line-height:1.55;
+      white-space:pre-line;
+    }
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      font-family:"JetBrains Mono", monospace;
+      font-size:11px;
+      padding:8px 10px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.72);
+      width: fit-content;
+    }
+    .dot{
+      width:8px; height:8px; border-radius:999px;
+      background: rgba(10,10,10,.65);
+      opacity:.75;
+    }
+    .foot{
+      margin-top:12px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      color: rgba(10,10,10,.55);
+      font-size:12px;
+    }
+    .wide{grid-column: span 12}
+
+    @media (max-width: 860px){
+      .card{grid-column: span 12}
+    }
+
+    /* ===== MINI ASSISTANT ===== */
+    .assistant{
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      width: 320px;
+      max-width: calc(100vw - 36px);
+      border:1px solid var(--line);
+      border-radius: 22px;
+      background: rgba(255,255,255,.85);
+      box-shadow: 0 18px 60px rgba(10,10,10,.12);
+      backdrop-filter: blur(12px);
+      overflow:hidden;
+      transform: translateY(12px);
+      opacity: 0;
+      pointer-events:none;
+      transition: opacity .35s ease, transform .45s cubic-bezier(.2,.9,.1,1);
+      z-index: 30;
+    }
+    .assistant.show{
+      opacity: 1;
+      transform: translateY(0px);
+      pointer-events:auto;
+    }
+    .aHead{
+      padding:12px 12px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      border-bottom:1px solid var(--line);
+      background: rgba(255,255,255,.75);
+    }
+    .aTitle{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      font-weight:800;
+      font-size:13px;
+    }
+    .orb{
+      width:26px; height:26px; border-radius:999px;
+      border:1px solid var(--line);
+      background: radial-gradient(circle at 30% 30%, rgba(10,10,10,.20), rgba(10,10,10,.05));
+      position:relative;
+      overflow:hidden;
+    }
+    .orb:after{
+      content:"";
+      position:absolute; inset:-18px;
+      background: conic-gradient(from 180deg, rgba(10,10,10,.0), rgba(10,10,10,.18), rgba(10,10,10,.0));
+      animation: spin 1.6s linear infinite;
+      opacity:.65;
+    }
+    .aClose{
+      border:1px solid var(--line);
+      background: rgba(10,10,10,.03);
+      border-radius:999px;
+      padding:8px 10px;
+      cursor:pointer;
+      font-weight:800;
+      font-size:12px;
+      transition:.18s;
+    }
+    .aClose:hover{transform: translateY(-1px); background: rgba(10,10,10,.05)}
+    .aBody{
+      padding:12px;
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
+    .bubble{
+      border:1px solid var(--line);
+      background: rgba(10,10,10,.03);
+      border-radius: 16px;
+      padding:10px 12px;
+      font-size:13px;
+      color: rgba(10,10,10,.78);
+      line-height:1.45;
+      animation: bubbleIn .35s ease both;
+    }
+    .typing{
+      display:flex; gap:6px; align-items:center;
+      color: rgba(10,10,10,.55);
+      font-family:"JetBrains Mono", monospace;
+      font-size:12px;
+    }
+    .dots{
+      display:inline-flex; gap:4px;
+    }
+    .dots i{
+      width:6px; height:6px; border-radius:999px;
+      background: rgba(10,10,10,.40);
+      display:inline-block;
+      animation: bop .9s ease infinite;
+    }
+    .dots i:nth-child(2){animation-delay:.12s}
+    .dots i:nth-child(3){animation-delay:.24s}
+
+    /* animations */
+    @keyframes floatIn{
+      from{opacity:0; transform: translateY(10px)}
+      to{opacity:1; transform: translateY(0px)}
+    }
+    @keyframes fadeIn{
+      from{opacity:0}
+      to{opacity:1}
+    }
+    @keyframes cardIn{
+      to{transform: translateY(0); opacity: 1;}
+    }
+    @keyframes bubbleIn{
+      from{opacity:0; transform: translateY(6px)}
+      to{opacity:1; transform: translateY(0px)}
+    }
+    @keyframes spin{
+      to{transform: rotate(360deg)}
+    }
+    @keyframes bop{
+      0%,100%{transform: translateY(0); opacity:.65}
+      50%{transform: translateY(-3px); opacity:1}
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+
+    <!-- HOME -->
+    <main class="home" id="home">
+      <h1 class="brand">Hoodly</h1>
+      <p class="tag">A clean, white, minimal search experience. Results become capsules — not a messy link dump.</p>
+
+      <div class="searchShell" id="homeShell">
+        <div class="pill">CTRL / ⌘ + K</div>
+        <input class="input" id="qHome" placeholder="Search something…" autocomplete="off" />
+        <button class="go" id="goHome">Search</button>
+      </div>
+
+      <div class="quick">
+        <div class="chip" data-q="Minimal web app ideas">Minimal app ideas</div>
+        <div class="chip" data-q="How to study with 25 minute focus blocks">Focus study</div>
+        <div class="chip" data-q="Modern white UI design principles">White UI</div>
+        <div class="chip" data-q="Gym routine 3 days a week">Gym 3 days</div>
+      </div>
+    </main>
+
+    <!-- RESULTS -->
+    <section class="resultsView" id="resultsView">
+      <div class="topbar">
+        <div class="miniBrand" id="backHome" title="Back to Home">Hoodly</div>
+
+        <div class="miniSearch">
+          <input id="qTop" placeholder="Search again…" autocomplete="off" />
+          <button class="miniBtn" id="goTop">Search</button>
+        </div>
+      </div>
+
+      <div class="metaLine">
+        <div id="metaLeft">—</div>
+        <div class="mono">Hoodly // capsule mode</div>
+      </div>
+
+      <div class="layout">
+        <!-- History panel -->
+        <aside class="panel" id="historyPanel">
+          <div class="panelHead">
+            <strong>History</strong>
+            <button id="clearHistory">Clear</button>
+          </div>
+          <div class="panelBody">
+            <div class="historyList" id="historyList"></div>
+            <div class="mono" id="historyHint" style="margin-top:10px; opacity:.75;"></div>
+          </div>
+        </aside>
+
+        <!-- Main cards -->
+        <main class="panel" style="border-radius: var(--radius);">
+          <div class="panelHead">
+            <strong>Capsules</strong>
+            <button id="copyQuery">Copy query</button>
+          </div>
+          <div class="panelBody">
+            <div class="grid" id="cards"></div>
+          </div>
+        </main>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- Mini Assistant -->
+  <div class="assistant" id="assistant">
+    <div class="aHead">
+      <div class="aTitle">
+        <div class="orb" aria-hidden="true"></div>
+        Hoodly Assistant
+      </div>
+      <button class="aClose" id="aClose">Hide</button>
+    </div>
+    <div class="aBody" id="aBody">
+      <!-- bubbles injected -->
+    </div>
+  </div>
+
+<script>
+  const home = document.getElementById("home");
+  const resultsView = document.getElementById("resultsView");
+
+  const qHome = document.getElementById("qHome");
+  const goHome = document.getElementById("goHome");
+
+  const qTop = document.getElementById("qTop");
+  const goTop = document.getElementById("goTop");
+
+  const cards = document.getElementById("cards");
+  const metaLeft = document.getElementById("metaLeft");
+  const backHome = document.getElementById("backHome");
+
+  // History
+  const historyList = document.getElementById("historyList");
+  const clearHistory = document.getElementById("clearHistory");
+  const historyHint = document.getElementById("historyHint");
+
+  // Assistant
+  const assistant = document.getElementById("assistant");
+  const aBody = document.getElementById("aBody");
+  const aClose = document.getElementById("aClose");
+
+  // Utility
+  const clamp = (n,min,max)=>Math.max(min,Math.min(max,n));
+
+  // ===== LocalStorage History =====
+  const HISTORY_KEY = "hoodly_history_v1";
+  function loadHistory(){
+    try{
+      return JSON.parse(localStorage.getItem(HISTORY_KEY) || "[]");
+    }catch{
+      return [];
+    }
+  }
+  function saveHistory(items){
+    localStorage.setItem(HISTORY_KEY, JSON.stringify(items.slice(0, 20)));
+  }
+  function addToHistory(query){
+    const q = query.trim();
+    if(!q) return;
+    const items = loadHistory();
+    const now = new Date();
+    const stamp = now.toLocaleString(undefined, { dateStyle:"medium", timeStyle:"short" });
+
+    // remove duplicates
+    const filtered = items.filter(x => (x.q || "").toLowerCase() !== q.toLowerCase());
+    filtered.unshift({ q, t: stamp });
+    saveHistory(filtered);
+    renderHistory();
+  }
+  function renderHistory(){
+    const items = loadHistory();
+    historyList.innerHTML = "";
+    if(items.length === 0){
+      historyHint.textContent = "No searches yet. Your last 20 searches will appear here.";
+      return;
+    }
+    historyHint.textContent = "Tip: click an item to re-run it.";
+    items.forEach((it)=>{
+      const el = document.createElement("div");
+      el.className = "hItem";
+      el.innerHTML = `<div class="q"></div><div class="t"></div>`;
+      el.querySelector(".q").textContent = it.q;
+      el.querySelector(".t").textContent = it.t || "";
+      el.addEventListener("click", ()=> goResultsView(it.q));
+      historyList.appendChild(el);
+    });
+  }
+
+  clearHistory.addEventListener("click", ()=>{
+    localStorage.removeItem(HISTORY_KEY);
+    renderHistory();
+  });
+
+  // ===== Assistant bubbles =====
+  function assistantShow(){
+    assistant.classList.add("show");
+  }
+  function assistantHide(){
+    assistant.classList.remove("show");
+  }
+  aClose.addEventListener("click", assistantHide);
+
+  function bubble(text){
+    const b = document.createElement("div");
+    b.className = "bubble";
+    b.textContent = text;
+    aBody.appendChild(b);
+    aBody.scrollTop = aBody.scrollHeight;
+  }
+
+  function typingBubble(){
+    const wrap = document.createElement("div");
+    wrap.className = "bubble";
+    wrap.innerHTML = `
+      <div class="typing">
+        <span>thinking</span>
+        <span class="dots"><i></i><i></i><i></i></span>
+      </div>
+    `;
+    aBody.appendChild(wrap);
+    aBody.scrollTop = aBody.scrollHeight;
+    return wrap;
+  }
+
+  function runAssistantSequence(query){
+    aBody.innerHTML = "";
+    assistantShow();
+
+    bubble(`Searching: “${query}”`);
+    const t = typingBubble();
+
+    // staged messages
+    setTimeout(()=>{ t.remove(); bubble("Drafting a quick capsule summary…"); }, 550);
+    setTimeout(()=>{ bubble("Pulling key points and next actions…"); }, 950);
+    setTimeout(()=>{ bubble("Ready. Scroll the capsules — they’re clean and focused."); }, 1350);
+  }
+
+  // ===== Demo capsules generator =====
+  function buildDemoCapsules(query){
+    const q = query.trim();
+    const now = new Date();
+    const stamp = now.toLocaleString(undefined, { dateStyle:"medium", timeStyle:"short" });
+
+    const wide = {
+      wide:true,
+      type:"Main capsule",
+      title:`Hoodly Capsule: ${q}`,
+      body:
+`This is the clean capsule view.
+Instead of throwing 40 blue links at you, Hoodly gives you:
+• a fast summary
+• key points
+• next steps
+• examples
+
+`,
+      tag:"HOODLY"
+    };
+
+    const data = [
+      {
+        type:"Summary",
+        title:`What “${q}” means (fast)`,
+        body:`A short explanation of “${q}” in plain language, with no fluff.`,
+        tag:"TL;DR"
+      },
+      {
+        type:"Key points",
+        title:"Key takeaways",
+        body:`• The core idea\n• The common misconception\n• The part you should actually remember`,
+        tag:"KEY"
+      },
+      {
+        type:"Next steps",
+        title:"What to do next",
+        body:`1) Define your goal\n2) Build the smallest version\n3) Improve it with feedback`,
+        tag:"NEXT"
+      },
+      {
+        type:"Example",
+        title:"Tiny example",
+        body:`If “${q}” was a project: start with a simple prototype, then expand.`,
+        tag:"EX"
+      }
+    ];
+
+    return { stamp, wide, data };
+  }
+
+  function escapeHTML(s){
+    return (s || "")
+      .replaceAll("&","&amp;")
+      .replaceAll("<","&lt;")
+      .replaceAll(">","&gt;");
+  }
+
+  function cardHTML(item, index){
+    const delay = clamp(index * 60, 0, 420);
+    return `
+      <article class="card ${item.wide ? "wide" : ""}" style="animation-delay:${delay}ms">
+        <div class="badge"><span class="dot"></span>${escapeHTML(item.type)}</div>
+        <h3>${escapeHTML(item.title)}</h3>
+        <p>${escapeHTML(item.body)}</p>
+        <div class="foot">
+          <span>Capsule</span>
+          <span class="badge">${escapeHTML(item.tag)}</span>
+        </div>
+      </article>
+    `;
+  }
+
+  // ===== View transitions =====
+  function goResultsView(query){
+    const q = (query || "").trim();
+    if(!q) return;
+
+    // animate away from home
+    home.classList.add("vanish");
+    resultsView.classList.add("show");
+
+    // fill top query box
+    qTop.value = q;
+    qTop.focus();
+
+    // assistant sequence
+    runAssistantSequence(q);
+
+    // store history
+    addToHistory(q);
+
+    // render demo cards
+    cards.innerHTML = "";
+    const built = buildDemoCapsules(q);
+    metaLeft.textContent = `Results for “${q}” · ${built.stamp}`;
+
+    const all = [built.wide, ...built.data];
+    all.forEach((it, idx) => cards.insertAdjacentHTML("beforeend", cardHTML(it, idx)));
+
+    // URL state
+    history.replaceState({ q }, "", `#q=${encodeURIComponent(q)}`);
+  }
+
+  function goHomeView(){
+    resultsView.classList.remove("show");
+    home.classList.remove("vanish");
+    qHome.focus();
+    history.replaceState({}, "", "#");
+  }
+
+  // Keyboard: Ctrl/Cmd+K focus, ESC back
+  window.addEventListener("keydown", (e) => {
+    const isK = (e.key || "").toLowerCase() === "k";
+    if((e.ctrlKey || e.metaKey) && isK){
+      e.preventDefault();
+      (resultsView.classList.contains("show") ? qTop : qHome).focus();
+    }
+    if(e.key === "Escape"){
+      if(resultsView.classList.contains("show")) goHomeView();
+    }
+  });
+
+  // Buttons
+  goHome.addEventListener("click", ()=> goResultsView(qHome.value));
+  qHome.addEventListener("keydown", (e)=>{ if(e.key==="Enter") goResultsView(qHome.value); });
+
+  goTop.addEventListener("click", ()=> goResultsView(qTop.value));
+  qTop.addEventListener("keydown", (e)=>{ if(e.key==="Enter") goResultsView(qTop.value); });
+
+  backHome.addEventListener("click", goHomeView);
+
+  // Quick chips
+  document.querySelectorAll(".chip").forEach(chip=>{
+    chip.addEventListener("click", ()=>{
+      qHome.value = chip.getAttribute("data-q") || chip.textContent.trim();
+      goResultsView(qHome.value);
+    });
+  });
+
+  // Copy query
+  document.getElementById("copyQuery").addEventListener("click", async ()=>{
+    const q = qTop.value.trim();
+    if(!q) return;
+    try{
+      await navigator.clipboard.writeText(q);
+      assistantShow();
+      bubble("Copied query to clipboard.");
+    }catch{
+      assistantShow();
+      bubble("Clipboard blocked by browser permissions.");
+    }
+  });
+
+  // Boot: history + hash
+  (function boot(){
+    renderHistory();
+    const h = location.hash || "";
+    const m = h.match(/#q=(.+)$/);
+    if(m){
+      const q = decodeURIComponent(m[1]);
+      qHome.value = q;
+      goResultsView(q);
+    }else{
+      qHome.focus();
+    }
+  })();
+</script>
+</body>
+</html>
