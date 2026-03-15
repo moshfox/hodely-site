@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!DOCTYPE html> 
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -8,24 +8,285 @@
 <link rel="icon" type="image/png" href="Classifactsmuseum/Artifacts.png">
 
 <style>
-html, body {
-margin: 0;
-padding: 0;
-height: 100%;
-overflow: hidden;
+
+html, body{
+margin:0;
+padding:0;
+height:100%;
+overflow:hidden;
 }
 
-iframe {
-width: 100%;
-height: 100%;
-border: none;
+/* iframe full screen */
+
+iframe{
+width:100%;
+height:100%;
+border:none;
 }
+
+/* =====================
+MENU BUTTON
+===================== */
+
+.menu-btn{
+position:fixed;
+bottom:18px;
+left:18px;
+
+width:40px;
+height:40px;
+
+border-radius:10px;
+border:1px solid rgba(0,0,0,0.12);
+
+background:rgba(0,0,0,0.55);
+backdrop-filter:blur(6px);
+
+cursor:pointer;
+
+display:flex;
+align-items:center;
+justify-content:center;
+
+opacity:.75;
+transition:all .2s ease;
+
+z-index:100;
+}
+
+.menu-btn:hover{
+opacity:.95;
+transform:translateY(-2px);
+}
+
+.burger{
+width:18px;
+height:12px;
+display:flex;
+flex-direction:column;
+justify-content:space-between;
+}
+
+.burger span{
+display:block;
+height:2px;
+background:white;
+border-radius:2px;
+}
+
+/* =====================
+OVERLAY
+===================== */
+
+.overlay{
+position:fixed;
+inset:0;
+background:rgba(0,0,0,0.25);
+opacity:0;
+pointer-events:none;
+transition:.2s;
+z-index:90;
+}
+
+.overlay.show{
+opacity:1;
+pointer-events:auto;
+}
+
+/* =====================
+SIDEBAR
+===================== */
+
+.sidebar{
+position:fixed;
+top:0;
+left:0;
+height:100vh;
+width:270px;
+
+background:rgba(0,0,0,0.92);
+backdrop-filter:blur(12px);
+
+border-right:1px solid rgba(255,255,255,0.08);
+
+transform:translateX(-105%);
+transition:.25s;
+
+padding:18px;
+
+display:flex;
+flex-direction:column;
+gap:12px;
+
+z-index:95;
+}
+
+.sidebar.open{
+transform:translateX(0);
+}
+
+.side-title{
+display:flex;
+justify-content:space-between;
+font-size:.9rem;
+color:white;
+opacity:.8;
+margin-bottom:6px;
+}
+
+.nav{
+display:flex;
+flex-direction:column;
+gap:10px;
+}
+
+.nav a{
+text-decoration:none;
+color:white;
+
+border:1px solid rgba(255,255,255,0.08);
+background:rgba(255,255,255,0.03);
+
+padding:12px;
+border-radius:10px;
+
+display:flex;
+justify-content:space-between;
+align-items:center;
+
+transition:.15s;
+}
+
+.nav a:hover{
+background:rgba(255,255,255,0.08);
+transform:translateX(2px);
+}
+
+.left{
+display:flex;
+gap:10px;
+align-items:center;
+}
+
+.pill{
+font-size:.75rem;
+padding:3px 7px;
+border-radius:999px;
+border:1px solid rgba(255,255,255,0.15);
+opacity:.8;
+}
+
+.arrow{
+opacity:.45;
+}
+
+.hint{
+margin-top:auto;
+font-size:.75rem;
+opacity:.5;
+color:white;
+}
+
 </style>
 </head>
 
 <body>
 
+<!-- MENU BUTTON -->
+
+<button class="menu-btn" id="menuBtn">
+<div class="burger">
+<span></span>
+<span></span>
+<span></span>
+</div>
+</button>
+
+<!-- OVERLAY -->
+
+<div class="overlay" id="overlay"></div>
+
+<!-- SIDEBAR -->
+
+<aside class="sidebar" id="sidebar">
+
+<div class="side-title">
+<div>Hodely</div>
+<div>menu</div>
+</div>
+
+<nav class="nav">
+
+<a href="https://hodely.net">
+<div class="left">
+<span class="pill">/</span>
+<span>Home</span>
+</div>
+<span class="arrow">↗</span>
+</a>
+
+<a href="https://hodely.net/a">
+<div class="left">
+<span class="pill">/a</span>
+<span>A</span>
+</div>
+<span class="arrow">↗</span>
+</a>
+
+<a href="https://hodely.net/Classifactsmuseum/">
+<div class="left">
+<span class="pill">/Museum</span>
+<span>Classifacts</span>
+</div>
+<span class="arrow">↗</span>
+</a>
+
+<a href="https://hodely.net/HodelyGames">
+<div class="left">
+<span class="pill">/Games</span>
+<span>HodelyGames</span>
+</div>
+<span class="arrow">↗</span>
+</a>
+
+</nav>
+
+<div class="hint">ESC to close</div>
+
+</aside>
+
+<!-- IFRAME -->
+
 <iframe src="https://classifacts.netlify.app/"></iframe>
+
+<script>
+
+const menuBtn = document.getElementById('menuBtn');
+const sidebar = document.getElementById('sidebar');
+const overlay = document.getElementById('overlay');
+
+function openMenu(){
+sidebar.classList.add('open');
+overlay.classList.add('show');
+}
+
+function closeMenu(){
+sidebar.classList.remove('open');
+overlay.classList.remove('show');
+}
+
+function toggleMenu(){
+sidebar.classList.contains('open') ? closeMenu() : openMenu();
+}
+
+menuBtn.addEventListener('click', toggleMenu);
+overlay.addEventListener('click', closeMenu);
+
+document.addEventListener('keydown', e=>{
+if(e.key==="Escape") closeMenu();
+});
+
+</script>
 
 </body>
 </html>
