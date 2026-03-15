@@ -1,203 +1,86 @@
-<!DOCTYPE html>
+<!DOCTYPE html> 
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <title>Hodely.net</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
+  <!-- Favicon (solo pestaña navegador) -->
   <link rel="icon" href="/favicon.png" type="image/png">
+
+  <!-- Manifest (para app instalada) -->
   <link rel="manifest" href="/manifest.webmanifest?v=999">
+ 
+  <!-- Color barra superior app -->
   <meta name="theme-color" content="#000000">
 
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&family=DM+Serif+Display&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
-
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=JetBrains+Mono:wght@400;700&family=DM+Serif+Display&family=Space+Grotesk:wght@400;700&display=swap" rel="stylesheet">
   <style>
-    :root{
-      --bg: #f8f8f6;
-      --bg-2: #ffffff;
-      --text: #0a0a0a;
-      --muted: rgba(0,0,0,0.56);
-      --soft: rgba(0,0,0,0.08);
-      --soft-2: rgba(0,0,0,0.12);
-      --glass: rgba(255,255,255,0.62);
-      --shadow-lg: 0 30px 80px rgba(0,0,0,0.10);
-      --shadow-md: 0 12px 30px rgba(0,0,0,0.08);
-      --radius: 22px;
-    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
 
-    *{
-      margin:0;
-      padding:0;
-      box-sizing:border-box;
-    }
-
-    html, body{
-      width:100%;
-      min-height:100%;
+    html{
+      height:100%;
     }
 
     body{
-      background:
-        radial-gradient(circle at 20% 20%, rgba(0,0,0,0.045), transparent 28%),
-        radial-gradient(circle at 80% 30%, rgba(0,0,0,0.03), transparent 25%),
-        radial-gradient(circle at 50% 90%, rgba(0,0,0,0.025), transparent 30%),
-        linear-gradient(180deg, #ffffff 0%, #f5f5f2 100%);
-      color:var(--text);
+      background:#fff;
+      color:#000;
       font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
       min-height:100vh;
       display:flex;
       align-items:center;
       justify-content:center;
       overflow:hidden;
-      position:relative;
-    }
-
-    body::before{
-      content:"";
-      position:fixed;
-      inset:0;
-      pointer-events:none;
-      opacity:.045;
-      background-image:
-        linear-gradient(rgba(0,0,0,0.25) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(0,0,0,0.25) 1px, transparent 1px);
-      background-size: 120px 120px;
-      mask-image: radial-gradient(circle at center, black 40%, transparent 100%);
-      -webkit-mask-image: radial-gradient(circle at center, black 40%, transparent 100%);
-    }
-
-    body::after{
-      content:"";
-      position:fixed;
-      inset:0;
-      pointer-events:none;
-      background:
-        radial-gradient(circle at center, transparent 40%, rgba(0,0,0,0.06) 100%);
-      opacity:.65;
     }
 
     .container{
-      position:relative;
-      z-index:2;
       width:100%;
-      max-width:1180px;
-      padding: 34px 20px;
+      max-width:1100px;
+      padding: 28px 18px;
       text-align:center;
-    }
-
-    .hero{
-      max-width:860px;
-      margin:0 auto;
-      padding:44px 30px 34px;
-      background: rgba(255,255,255,0.46);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border:1px solid rgba(0,0,0,0.07);
-      border-radius: 30px;
-      box-shadow: var(--shadow-lg);
-      position:relative;
-      overflow:hidden;
-    }
-
-    .hero::before{
-      content:"";
-      position:absolute;
-      inset:auto -20% -80px -20%;
-      height:180px;
-      background: radial-gradient(circle, rgba(0,0,0,0.045), transparent 60%);
-      filter: blur(40px);
-      pointer-events:none;
-    }
-
-    .eyebrow{
-      display:inline-flex;
-      align-items:center;
-      gap:10px;
-      font-family: "JetBrains Mono", monospace;
-      font-size:.76rem;
-      letter-spacing:2px;
-      text-transform:uppercase;
-      color:rgba(0,0,0,.62);
-      border:1px solid rgba(0,0,0,.09);
-      background:rgba(255,255,255,.7);
-      padding:8px 12px;
-      border-radius:999px;
-      margin-bottom:24px;
-    }
-
-    .eyebrow::before{
-      content:"";
-      width:8px;
-      height:8px;
-      border-radius:50%;
-      background:#000;
-      opacity:.75;
-      display:block;
+      opacity:0;
+      transform: translateY(18px) scale(0.99);
+      animation: hero-in 1s cubic-bezier(.2,.8,.2,1) forwards;
+      will-change: transform, opacity;
     }
 
     h1{
-      font-size: clamp(3.2rem, 8vw, 6.4rem);
+      font-size:4rem;
       font-weight:800;
-      letter-spacing:-0.06em;
-      line-height:.95;
+      letter-spacing:-2px;
+      line-height:1;
+      opacity:0;
+      transform: translateY(14px);
+      animation:
+        rise-fade .9s cubic-bezier(.2,.8,.2,1) .18s forwards,
+        float-title 5.2s ease-in-out 1.2s infinite;
+      will-change: transform, opacity;
     }
 
     .line{
-      width:110px;
+      width:90px;
       height:2px;
-      background: linear-gradient(90deg, transparent, #000, transparent);
-      margin:20px auto 18px;
-      opacity:0.92;
+      background:#000;
+      margin:18px auto;
+      opacity:0;
+      transform: scaleX(.6);
+      transform-origin:center;
+      animation:
+        line-in .9s cubic-bezier(.2,.8,.2,1) .34s forwards,
+        pulse-line 3.5s ease-in-out 1.4s infinite;
+      will-change: transform, opacity;
     }
 
     h2{
-      font-size:0.96rem;
-      font-weight:500;
-      letter-spacing:5px;
-      text-transform:uppercase;
-      color:rgba(0,0,0,.66);
-    }
-
-    .desc{
-      margin:20px auto 0;
-      max-width:620px;
       font-size:1rem;
-      line-height:1.7;
-      color:var(--muted);
-    }
-
-    .cta-row{
-      margin-top:28px;
-      display:flex;
-      justify-content:center;
-      gap:12px;
-      flex-wrap:wrap;
-    }
-
-    .cta{
-      text-decoration:none;
-      color:#000;
-      padding:13px 18px;
-      border-radius:14px;
-      border:1px solid rgba(0,0,0,.10);
-      background:rgba(255,255,255,.82);
-      backdrop-filter: blur(8px);
-      font-weight:600;
-      font-size:.95rem;
-      transition: transform .18s ease, box-shadow .18s ease, background .18s ease, border-color .18s ease;
-      box-shadow: var(--shadow-md);
-    }
-
-    .cta:hover{
-      transform: translateY(-2px);
-      background:#fff;
-      border-color:rgba(0,0,0,.16);
-      box-shadow: 0 18px 40px rgba(0,0,0,.10);
-    }
-
-    .cta.secondary{
-      background:rgba(255,255,255,.45);
-      box-shadow:none;
+      font-weight:400;
+      letter-spacing:4px;
+      text-transform:uppercase;
+      opacity:0;
+      transform: translateY(12px);
+      animation: rise-fade .9s cubic-bezier(.2,.8,.2,1) .48s forwards;
+      will-change: transform, opacity;
     }
 
     /* Marquee */
@@ -206,91 +89,189 @@
       overflow:hidden;
       user-select:none;
       -webkit-user-select:none;
-      margin: 24px 0;
-      mask-image: linear-gradient(to right, transparent, black 12%, black 88%, transparent);
-      -webkit-mask-image: linear-gradient(to right, transparent, black 12%, black 88%, transparent);
+      margin: 22px 0;
+      opacity:0;
+      animation: fade-only .9s ease .55s forwards;
+      mask-image: linear-gradient(to right, transparent 0%, black 12%, black 88%, transparent 100%);
+      -webkit-mask-image: linear-gradient(to right, transparent 0%, black 12%, black 88%, transparent 100%);
     }
 
     .track{
       display:flex;
       width:max-content;
-      gap:0;
-      animation: scroll-left 22s linear infinite;
+      gap: 0px;
+      animation: scroll-left 18s linear infinite;
+      will-change: transform;
+    }
+
+    .marquee.top{
+      transform: translateY(-10px);
+      animation:
+        fade-only .9s ease .12s forwards,
+        settle-top 1s cubic-bezier(.2,.8,.2,1) .12s forwards;
+    }
+
+    .marquee.bottom{
+      transform: translateY(10px);
+      animation:
+        fade-only .9s ease .22s forwards,
+        settle-bottom 1s cubic-bezier(.2,.8,.2,1) .22s forwards;
     }
 
     .marquee.bottom .track{
-      animation: scroll-right 22s linear infinite;
+      animation: scroll-right 18s linear infinite;
     }
 
+    /* duplicate blocks so it never "runs out" */
     .block{
       display:flex;
       align-items:center;
       white-space:nowrap;
       padding-right: 60px;
-      font-size: 1.6rem;
+      font-size: 1.8rem;
       line-height:1;
     }
 
-    .f1{ font-family: "JetBrains Mono", ui-monospace, monospace; }
-    .f2{ font-family: "DM Serif Display", Georgia, serif; }
-    .f3{ font-family: "Space Grotesk", Inter, sans-serif; }
-    .f4{ font-family: Inter, system-ui, sans-serif; }
+    /* different font segments */
+    .f1{ font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+    .f2{ font-family: "DM Serif Display", Georgia, "Times New Roman", serif; }
+    .f3{ font-family: "Space Grotesk", Inter, system-ui, sans-serif; }
+    .f4{ font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; }
 
-    .seg{ opacity:0.9; }
-    .dot{ opacity:0.28; padding: 0 18px; }
+    .seg{
+      opacity:0.92;
+      transition: opacity .25s ease, transform .25s ease;
+    }
+
+    .dot{
+      opacity:0.35;
+      padding: 0 18px;
+      transition: opacity .25s ease;
+    }
+
+    .marquee:hover .seg{
+      opacity:1;
+    }
+    .marquee:hover .dot{
+      opacity:0.5;
+    }
 
     @keyframes scroll-left{
-      0%{ transform: translateX(0); }
-      100%{ transform: translateX(-50%); }
+      0%   { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
     }
     @keyframes scroll-right{
-      0%{ transform: translateX(-50%); }
-      100%{ transform: translateX(0); }
+      0%   { transform: translateX(-50%); }
+      100% { transform: translateX(0); }
     }
 
-    /* MENU BUTTON + SIDEBAR */
+    @keyframes hero-in{
+      to{
+        opacity:1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    @keyframes rise-fade{
+      to{
+        opacity:1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes fade-only{
+      to{ opacity:1; }
+    }
+
+    @keyframes line-in{
+      0%{
+        opacity:0;
+        transform: scaleX(.55);
+      }
+      100%{
+        opacity:.95;
+        transform: scaleX(1);
+      }
+    }
+
+    @keyframes pulse-line{
+      0%,100%{ transform: scaleX(1); }
+      50%{ transform: scaleX(1.06); }
+    }
+
+    @keyframes float-title{
+      0%,100%{ transform: translateY(0); }
+      50%{ transform: translateY(-3px); }
+    }
+
+    @keyframes settle-top{
+      to{ transform: translateY(0); }
+    }
+
+    @keyframes settle-bottom{
+      to{ transform: translateY(0); }
+    }
+
+    @media (max-width: 650px){
+      h1{ font-size:2.6rem; }
+      .block{ font-size:1.35rem; }
+      h2{ font-size:0.95rem; letter-spacing:3px; }
+    }
+
+    /* =========================
+       MENU BUTTON + SIDEBAR
+       ========================= */
+
     .menu-btn{
-      position:fixed;
-      top:18px;
-      left:18px;
-      width:42px;
-      height:38px;
-      border:1px solid rgba(0,0,0,0.10);
-      background:rgba(255,255,255,0.58);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      border-radius:12px;
-      cursor:pointer;
-      display:grid;
-      place-items:center;
-      z-index:60;
-      transition: opacity .2s ease, transform .2s ease, background .2s ease, border .2s ease;
-      opacity:.85;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+      position: fixed;
+      top: 14px;
+      left: 14px;
+      width: 38px;
+      height: 34px;
+      border: 1px solid rgba(0,0,0,0.12);
+      background: rgba(255,255,255,0.55);
+      backdrop-filter: blur(6px);
+      border-radius: 10px;
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+      z-index: 50;
+      transition:
+        opacity .2s ease,
+        transform .2s ease,
+        background .2s ease,
+        box-shadow .25s ease;
+      opacity: 0;
+      animation: menu-appear .7s cubic-bezier(.2,.8,.2,1) .65s forwards;
     }
 
     .menu-btn:hover{
-      opacity:1;
-      transform:translateY(-1px);
-      background:rgba(255,255,255,0.82);
-      border-color:rgba(0,0,0,.16);
+      opacity: 1;
+      transform: translateY(-1px) scale(1.03);
+      background: rgba(255,255,255,0.75);
+      box-shadow: 0 10px 24px rgba(0,0,0,0.08);
+    }
+
+    .menu-btn:active{
+      transform: scale(0.97);
     }
 
     .burger{
-      width:18px;
-      height:12px;
-      display:flex;
-      flex-direction:column;
-      justify-content:space-between;
+      width: 18px;
+      height: 12px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
     }
 
     .burger span{
       display:block;
-      height:2px;
+      height: 2px;
       background:#000;
-      border-radius:2px;
-      opacity:.86;
-      transition: transform .2s ease, opacity .2s ease;
+      border-radius: 2px;
+      opacity:0.85;
+      transform-origin:center;
+      transition: transform .28s cubic-bezier(.2,.8,.2,1), opacity .22s ease;
     }
 
     .menu-btn.active .burger span:nth-child(1){
@@ -298,46 +279,44 @@
     }
     .menu-btn.active .burger span:nth-child(2){
       opacity:0;
+      transform: scaleX(.2);
     }
     .menu-btn.active .burger span:nth-child(3){
       transform: translateY(-5px) rotate(-45deg);
     }
 
     .overlay{
-      position:fixed;
-      inset:0;
-      background:rgba(0,0,0,0.18);
-      backdrop-filter: blur(2px);
-      -webkit-backdrop-filter: blur(2px);
-      opacity:0;
-      pointer-events:none;
-      transition: opacity .22s ease;
-      z-index:40;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.18);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .28s ease;
+      z-index: 40;
     }
 
     .overlay.show{
-      opacity:1;
-      pointer-events:auto;
+      opacity: 1;
+      pointer-events: auto;
     }
 
     .sidebar{
-      position:fixed;
-      top:0;
-      left:0;
-      height:100vh;
-      width:290px;
-      background:rgba(255,255,255,0.88);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      border-right:1px solid rgba(0,0,0,0.08);
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 100vh;
+      width: 280px;
+      background: rgba(255,255,255,0.92);
+      backdrop-filter: blur(10px);
+      border-right: 1px solid rgba(0,0,0,0.10);
       transform: translateX(-105%);
-      transition: transform .26s cubic-bezier(.2,.8,.2,1);
-      z-index:50;
-      padding:18px 16px;
+      transition: transform .34s cubic-bezier(.2,.8,.2,1);
+      z-index: 45;
+      padding: 18px 16px;
       display:flex;
-      flex-direction:column;
-      gap:14px;
-      box-shadow: 18px 0 50px rgba(0,0,0,.08);
+      flex-direction: column;
+      gap: 14px;
+      box-shadow: 16px 0 40px rgba(0,0,0,0.06);
     }
 
     .sidebar.open{
@@ -346,189 +325,180 @@
 
     .side-title{
       display:flex;
-      align-items:baseline;
-      justify-content:space-between;
-      padding:8px 8px 12px;
-      border-bottom:1px solid rgba(0,0,0,.06);
+      align-items: baseline;
+      justify-content: space-between;
+      padding: 6px 6px 10px 6px;
+      opacity:0;
+      transform: translateY(10px);
+      transition: opacity .32s ease .07s, transform .32s ease .07s;
+    }
+
+    .sidebar.open .side-title{
+      opacity:1;
+      transform: translateY(0);
     }
 
     .side-title .brand{
-      font-weight:800;
-      letter-spacing:-0.03em;
-      font-size:1.05rem;
+      font-weight: 800;
+      letter-spacing: -0.8px;
+      font-size: 1.05rem;
     }
 
     .side-title .mini{
-      font-size:.72rem;
-      letter-spacing:2px;
-      opacity:.5;
-      text-transform:uppercase;
-      font-family:"JetBrains Mono", monospace;
+      font-size: 0.75rem;
+      letter-spacing: 2px;
+      opacity: 0.55;
+      text-transform: uppercase;
     }
 
     .nav{
       display:flex;
-      flex-direction:column;
-      gap:10px;
-      padding:6px;
-      overflow:auto;
+      flex-direction: column;
+      gap: 10px;
+      padding: 6px;
     }
 
     .nav a{
-      text-decoration:none;
+      text-decoration: none;
       color:#000;
-      border:1px solid rgba(0,0,0,0.08);
-      background:rgba(255,255,255,0.58);
-      border-radius:14px;
-      padding:13px 12px;
+      border: 1px solid rgba(0,0,0,0.10);
+      background: rgba(255,255,255,0.6);
+      border-radius: 12px;
+      padding: 12px 12px;
       display:flex;
       align-items:center;
-      justify-content:space-between;
-      transition: transform .16s ease, background .16s ease, border .16s ease, box-shadow .16s ease;
+      justify-content: space-between;
+      transition:
+        transform .18s ease,
+        background .18s ease,
+        border .18s ease,
+        box-shadow .22s ease,
+        opacity .24s ease;
+      opacity: 0;
+      transform: translateX(-12px);
     }
 
+    .sidebar.open .nav a{
+      opacity:1;
+      transform: translateX(0);
+    }
+
+    .sidebar.open .nav a:nth-child(1){ transition-delay: .05s; }
+    .sidebar.open .nav a:nth-child(2){ transition-delay: .08s; }
+    .sidebar.open .nav a:nth-child(3){ transition-delay: .11s; }
+    .sidebar.open .nav a:nth-child(4){ transition-delay: .14s; }
+    .sidebar.open .nav a:nth-child(5){ transition-delay: .17s; }
+    .sidebar.open .nav a:nth-child(6){ transition-delay: .20s; }
+    .sidebar.open .nav a:nth-child(7){ transition-delay: .23s; }
+    .sidebar.open .nav a:nth-child(8){ transition-delay: .26s; }
+    .sidebar.open .nav a:nth-child(9){ transition-delay: .29s; }
+    .sidebar.open .nav a:nth-child(10){ transition-delay: .32s; }
+
     .nav a:hover{
-      transform: translateX(4px);
-      background:#fff;
-      border-color:rgba(0,0,0,.14);
-      box-shadow: 0 10px 24px rgba(0,0,0,.06);
+      transform: translateX(2px);
+      background: rgba(0,0,0,0.03);
+      border-color: rgba(0,0,0,0.18);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.05);
     }
 
     .nav a .left{
       display:flex;
       gap:10px;
       align-items:center;
-      min-width:0;
-    }
-
-    .nav a .left span:last-child{
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
     }
 
     .pill{
-      font-family:"JetBrains Mono", monospace;
-      font-size:.76rem;
-      padding:4px 8px;
-      border-radius:999px;
-      border:1px solid rgba(0,0,0,.10);
-      background:rgba(255,255,255,.75);
-      opacity:.88;
-      flex-shrink:0;
+      font-family: "JetBrains Mono", ui-monospace, monospace;
+      font-size: 0.78rem;
+      padding: 3px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(0,0,0,0.12);
+      opacity: 0.85;
+      transition: transform .18s ease, background .18s ease;
+    }
+
+    .nav a:hover .pill{
+      transform: translateX(1px);
+      background: rgba(0,0,0,0.02);
     }
 
     .arrow{
-      opacity:.38;
-      transition: transform .16s ease, opacity .16s ease;
-      flex-shrink:0;
-      margin-left:10px;
+      opacity:0.45;
+      transition: transform .18s ease, opacity .18s ease;
     }
 
     .nav a:hover .arrow{
-      opacity:.72;
+      opacity:0.72;
       transform: translateX(2px);
     }
 
     .hint{
-      margin-top:auto;
-      padding:12px 10px 4px;
-      font-size:.8rem;
-      line-height:1.5;
-      color:rgba(0,0,0,.5);
+      margin-top: auto;
+      padding: 10px 8px;
+      font-size: 0.8rem;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: opacity .3s ease .18s, transform .3s ease .18s;
     }
 
-    .floating-mark{
-      position:fixed;
-      right:18px;
-      bottom:18px;
-      z-index:2;
-      font-family:"JetBrains Mono", monospace;
-      font-size:.72rem;
-      letter-spacing:2px;
-      text-transform:uppercase;
-      color:rgba(0,0,0,.38);
-      border:1px solid rgba(0,0,0,.08);
-      background:rgba(255,255,255,.45);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      padding:8px 10px;
-      border-radius:999px;
-      box-shadow: 0 8px 22px rgba(0,0,0,.05);
+    .sidebar.open .hint{
+      opacity:0.55;
+      transform: translateY(0);
     }
 
-    @media (max-width: 760px){
-      .container{
-        padding:22px 14px;
-      }
-
-      .hero{
-        padding:30px 18px 24px;
-        border-radius:24px;
-      }
-
-      h1{
-        font-size:3.1rem;
-      }
-
-      .block{
-        font-size:1.18rem;
-      }
-
-      h2{
-        font-size:.88rem;
-        letter-spacing:3px;
-      }
-
-      .desc{
-        font-size:.95rem;
-        line-height:1.65;
-      }
-
-      .cta-row{
-        gap:10px;
-      }
-
-      .cta{
-        width:100%;
-        max-width:320px;
-      }
-
-      .sidebar{
-        width:86vw;
-        max-width:320px;
-      }
-
-      .floating-mark{
-        right:14px;
-        bottom:14px;
-        font-size:.66rem;
+    @keyframes menu-appear{
+      to{
+        opacity:0.75;
       }
     }
 
+    /* Reduced motion */
     @media (prefers-reduced-motion: reduce){
-      .track,
+      *,
+      *::before,
+      *::after{
+        animation: none !important;
+        transition: none !important;
+        scroll-behavior: auto !important;
+      }
+
+      .container,
+      h1,
+      h2,
+      .line,
+      .marquee,
       .menu-btn,
+      .side-title,
       .nav a,
-      .cta,
-      .sidebar,
-      .overlay{
-        animation:none !important;
-        transition:none !important;
+      .hint{
+        opacity:1 !important;
+        transform:none !important;
+      }
+
+      .track{
+        animation: scroll-left 18s linear infinite !important;
+      }
+
+      .marquee.bottom .track{
+        animation: scroll-right 18s linear infinite !important;
       }
     }
   </style>
 </head>
+
 <body>
 
-  <button class="menu-btn" id="menuBtn" aria-label="Open menu" aria-expanded="false" aria-controls="sidebar">
+  <!-- Menu Button -->
+  <button class="menu-btn" id="menuBtn" aria-label="Open menu">
     <div class="burger" aria-hidden="true">
       <span></span><span></span><span></span>
     </div>
   </button>
 
+  <!-- Overlay -->
   <div class="overlay" id="overlay"></div>
 
+  <!-- Sidebar -->
   <aside class="sidebar" id="sidebar" aria-label="Navigation menu">
     <div class="side-title">
       <div class="brand">Hodely</div>
@@ -617,97 +587,83 @@
       </a>
     </nav>
 
-    <div class="hint">Tip: press <b>ESC</b> to close the menu.</div>
+    <div class="hint">Tip: press <b>ESC</b> to close.</div>
   </aside>
 
-  <div class="container">
-    <div class="hero">
+  <div class="container" id="hero">
 
-      <div class="eyebrow">Digital space / archive / experiments</div>
-
-      <div class="marquee top" aria-hidden="true">
-        <div class="track">
-          <div class="block">
-            <span class="seg f1">⌘ ⟁ ∆ Ø Ξ Λ ⌬</span><span class="dot">•</span>
-            <span class="seg f2">✦ ✧ † ꙮ ⊕</span><span class="dot">•</span>
-            <span class="seg f3">ᚠ ⌁ ⚑ ⟡</span><span class="dot">•</span>
-            <span class="seg f4">H O D E L Y</span><span class="dot">•</span>
-            <span class="seg f1">⧉ ⌂ ⊗ ⊘</span><span class="dot">•</span>
-            <span class="seg f2">✶ ✷ ✸ ✹</span><span class="dot">•</span>
-            <span class="seg f3">⟟ ⟠ ⟐ ⟑</span>
-          </div>
-          <div class="block">
-            <span class="seg f1">⌘ ⟁ ∆ Ø Ξ Λ ⌬</span><span class="dot">•</span>
-            <span class="seg f2">✦ ✧ † ꙮ ⊕</span><span class="dot">•</span>
-            <span class="seg f3">ᚠ ⌁ ⚑ ⟡</span><span class="dot">•</span>
-            <span class="seg f4">H O D E L Y</span><span class="dot">•</span>
-            <span class="seg f1">⧉ ⌂ ⊗ ⊘</span><span class="dot">•</span>
-            <span class="seg f2">✶ ✷ ✸ ✹</span><span class="dot">•</span>
-            <span class="seg f3">⟟ ⟠ ⟐ ⟑</span>
-          </div>
+    <!-- TOP MARQUEE (right -> left) -->
+    <div class="marquee top" aria-hidden="true">
+      <div class="track">
+        <div class="block">
+          <span class="seg f1">⌘ ⟁ ∆ Ø Ξ Λ ⌬</span><span class="dot">•</span>
+          <span class="seg f2">✦ ✧ † ꙮ ⊕</span><span class="dot">•</span>
+          <span class="seg f3">ᚠ ⌁ ⚑ ⟡</span><span class="dot">•</span>
+          <span class="seg f4">H O D E L Y</span><span class="dot">•</span>
+          <span class="seg f1">⧉ ⌂ ⊗ ⊘</span><span class="dot">•</span>
+          <span class="seg f2">✶ ✷ ✸ ✹</span><span class="dot">•</span>
+          <span class="seg f3">⟟ ⟠ ⟐ ⟑</span>
+        </div>
+        <div class="block">
+          <span class="seg f1">⌘ ⟁ ∆ Ø Ξ Λ ⌬</span><span class="dot">•</span>
+          <span class="seg f2">✦ ✧ † ꙮ ⊕</span><span class="dot">•</span>
+          <span class="seg f3">ᚠ ⌁ ⚑ ⟡</span><span class="dot">•</span>
+          <span class="seg f4">H O D E L Y</span><span class="dot">•</span>
+          <span class="seg f1">⧉ ⌂ ⊗ ⊘</span><span class="dot">•</span>
+          <span class="seg f2">✶ ✷ ✸ ✹</span><span class="dot">•</span>
+          <span class="seg f3">⟟ ⟠ ⟐ ⟑</span>
         </div>
       </div>
-
-      <h1>Hodely</h1>
-      <div class="line"></div>
-      <h2>Hodely.net</h2>
-
-      <p class="desc">
-        A personal digital universe of experiments, tools, projects, worlds and interfaces.
-        Clean on the surface. Slightly unhinged underneath. Exactly as it should be.
-      </p>
-
-      <div class="cta-row">
-        <a class="cta" href="https://hodely.net/a">Enter /a</a>
-        <a class="cta secondary" href="https://hodely.net/HodelyOS">Open HodelyOS</a>
-        <a class="cta secondary" href="https://hodely.net/Classifactsmuseum/">Visit Classifacts</a>
-      </div>
-
-      <div class="marquee bottom" aria-hidden="true">
-        <div class="track">
-          <div class="block">
-            <span class="seg f3">⟑ ⟐ ⟠ ⟟</span><span class="dot">•</span>
-            <span class="seg f2">✹ ✸ ✷ ✶</span><span class="dot">•</span>
-            <span class="seg f1">⊘ ⊗ ⌂ ⧉</span><span class="dot">•</span>
-            <span class="seg f4">H O D E L Y . N E T</span><span class="dot">•</span>
-            <span class="seg f3">⟡ ⚑ ⌁ ᚠ</span><span class="dot">•</span>
-            <span class="seg f2">⊕ ꙮ † ✧ ✦</span><span class="dot">•</span>
-            <span class="seg f1">⌬ Λ Ξ Ø ∆ ⟁ ⌘</span>
-          </div>
-          <div class="block">
-            <span class="seg f3">⟑ ⟐ ⟠ ⟟</span><span class="dot">•</span>
-            <span class="seg f2">✹ ✸ ✷ ✶</span><span class="dot">•</span>
-            <span class="seg f1">⊘ ⊗ ⌂ ⧉</span><span class="dot">•</span>
-            <span class="seg f4">H O D E L Y . N E T</span><span class="dot">•</span>
-            <span class="seg f3">⟡ ⚑ ⌁ ᚠ</span><span class="dot">•</span>
-            <span class="seg f2">⊕ ꙮ † ✧ ✦</span><span class="dot">•</span>
-            <span class="seg f1">⌬ Λ Ξ Ø ∆ ⟁ ⌘</span>
-          </div>
-        </div>
-      </div>
-
     </div>
-  </div>
 
-  <div class="floating-mark">Hodely Network</div>
+    <!-- TITLE -->
+    <h1 id="title">Hodely</h1>
+    <div class="line"></div>
+    <h2>Hodely.net</h2>
+
+    <!-- BOTTOM MARQUEE (left -> right) -->
+    <div class="marquee bottom" aria-hidden="true">
+      <div class="track">
+        <div class="block">
+          <span class="seg f3">⟑ ⟐ ⟠ ⟟</span><span class="dot">•</span>
+          <span class="seg f2">✹ ✸ ✷ ✶</span><span class="dot">•</span>
+          <span class="seg f1">⊘ ⊗ ⌂ ⧉</span><span class="dot">•</span>
+          <span class="seg f4">H O D E L Y . N E T</span><span class="dot">•</span>
+          <span class="seg f3">⟡ ⚑ ⌁ ᚠ</span><span class="dot">•</span>
+          <span class="seg f2">⊕ ꙮ † ✧ ✦</span><span class="dot">•</span>
+          <span class="seg f1">⌬ Λ Ξ Ø ∆ ⟁ ⌘</span>
+        </div>
+        <div class="block">
+          <span class="seg f3">⟑ ⟐ ⟠ ⟟</span><span class="dot">•</span>
+          <span class="seg f2">✹ ✸ ✷ ✶</span><span class="dot">•</span>
+          <span class="seg f1">⊘ ⊗ ⌂ ⧉</span><span class="dot">•</span>
+          <span class="seg f4">H O D E L Y . N E T</span><span class="dot">•</span>
+          <span class="seg f3">⟡ ⚑ ⌁ ᚠ</span><span class="dot">•</span>
+          <span class="seg f2">⊕ ꙮ † ✧ ✦</span><span class="dot">•</span>
+          <span class="seg f1">⌬ Λ Ξ Ø ∆ ⟁ ⌘</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
 
   <script>
     const menuBtn = document.getElementById('menuBtn');
     const sidebar = document.getElementById('sidebar');
     const overlay = document.getElementById('overlay');
+    const hero = document.getElementById('hero');
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
     function openMenu(){
       sidebar.classList.add('open');
       overlay.classList.add('show');
       menuBtn.classList.add('active');
-      menuBtn.setAttribute('aria-expanded', 'true');
     }
 
     function closeMenu(){
       sidebar.classList.remove('open');
       overlay.classList.remove('show');
       menuBtn.classList.remove('active');
-      menuBtn.setAttribute('aria-expanded', 'false');
     }
 
     function toggleMenu(){
@@ -721,6 +677,19 @@
     document.addEventListener('keydown', (e) => {
       if(e.key === 'Escape') closeMenu();
     });
+
+    // Parallax muy sutil, sin romper la estética
+    if(!prefersReducedMotion){
+      window.addEventListener('mousemove', (e) => {
+        const x = (e.clientX / window.innerWidth - 0.5) * 8;
+        const y = (e.clientY / window.innerHeight - 0.5) * 8;
+        hero.style.transform = `translate(${x * 0.35}px, ${y * 0.35}px)`;
+      });
+
+      window.addEventListener('mouseleave', () => {
+        hero.style.transform = `translate(0px, 0px)`;
+      });
+    }
   </script>
 
 </body>
