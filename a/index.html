@@ -4,7 +4,8 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>A — Hodely</title>
-<link rel="icon" type="image/png" href="/favicon.png">
+  <link rel="icon" type="image/png" href="/favicon.png">
+
   <!-- Fuentes (Google Fonts) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -16,6 +17,17 @@
       --fg:#fff;
       --wm: rgba(255,255,255,.06);
       --a: rgba(255,255,255,.92);
+
+      --menu-bg: rgba(8,8,8,.88);
+      --menu-line: rgba(255,255,255,.08);
+      --menu-soft: rgba(255,255,255,.04);
+      --menu-hover: rgba(255,255,255,.08);
+      --menu-text: rgba(255,255,255,.94);
+      --menu-muted: rgba(255,255,255,.52);
+    }
+
+    *{
+      box-sizing:border-box;
     }
 
     html, body {
@@ -62,17 +74,310 @@
       will-change: transform, left;
       text-shadow: 0 0 18px rgba(255,255,255,.08);
       opacity: .95;
-      /* Tamaño gigante que ocupa casi toda la pantalla */
       font-size: clamp(140px, 42vw, 720px);
     }
 
-    /* Un poquito de variedad opcional */
     .a.soft { opacity: .70; }
     .a.hard { opacity: .98; }
+
+    /* =========================
+       MENU
+       ========================= */
+
+    .menu-btn{
+      position: fixed;
+      top: 16px;
+      left: 16px;
+      width: 42px;
+      height: 42px;
+      border: 1px solid rgba(255,255,255,.08);
+      background: rgba(0,0,0,.45);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-radius: 12px;
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+      z-index: 100;
+      transition: transform .18s ease, background .18s ease, border-color .18s ease, opacity .18s ease;
+      opacity: .9;
+    }
+
+    .menu-btn:hover{
+      transform: translateY(-1px);
+      background: rgba(255,255,255,.06);
+      border-color: rgba(255,255,255,.14);
+      opacity: 1;
+    }
+
+    .burger{
+      width: 18px;
+      height: 12px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .burger span{
+      display:block;
+      height: 2px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.92);
+      transition: transform .2s ease, opacity .2s ease;
+      transform-origin: center;
+    }
+
+    .menu-btn.active .burger span:nth-child(1){
+      transform: translateY(5px) rotate(45deg);
+    }
+    .menu-btn.active .burger span:nth-child(2){
+      opacity: 0;
+    }
+    .menu-btn.active .burger span:nth-child(3){
+      transform: translateY(-5px) rotate(-45deg);
+    }
+
+    .overlay{
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.34);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .22s ease;
+      z-index: 90;
+    }
+
+    .overlay.show{
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .sidebar{
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: min(300px, 86vw);
+      height: 100vh;
+      background: var(--menu-bg);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-right: 1px solid var(--menu-line);
+      transform: translateX(-105%);
+      transition: transform .24s ease;
+      z-index: 95;
+      display: flex;
+      flex-direction: column;
+      padding: 16px 14px;
+      gap: 14px;
+      box-shadow: 0 24px 80px rgba(0,0,0,.45);
+    }
+
+    .sidebar.open{
+      transform: translateX(0);
+    }
+
+    .side-title{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 12px;
+      padding: 6px 4px 10px 4px;
+    }
+
+    .brand{
+      color: var(--menu-text);
+      font-weight: 800;
+      font-size: 1rem;
+      letter-spacing: -.02em;
+    }
+
+    .mini{
+      color: var(--menu-muted);
+      font-size: .72rem;
+      letter-spacing: .22em;
+      text-transform: uppercase;
+    }
+
+    .nav{
+      display:flex;
+      flex-direction:column;
+      gap: 10px;
+      overflow-y:auto;
+      min-height: 0;
+      padding: 4px 2px;
+    }
+
+    .nav::-webkit-scrollbar{
+      width: 8px;
+    }
+    .nav::-webkit-scrollbar-thumb{
+      background: rgba(255,255,255,.10);
+      border-radius: 999px;
+    }
+
+    .nav a{
+      text-decoration:none;
+      color: var(--menu-text);
+      border: 1px solid var(--menu-line);
+      background: var(--menu-soft);
+      border-radius: 14px;
+      padding: 12px 12px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 12px;
+      transition: transform .15s ease, background .15s ease, border-color .15s ease;
+    }
+
+    .nav a:hover{
+      transform: translateX(2px);
+      background: var(--menu-hover);
+      border-color: rgba(255,255,255,.14);
+    }
+
+    .left{
+      display:flex;
+      align-items:center;
+      gap: 10px;
+      min-width: 0;
+    }
+
+    .pill{
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: .76rem;
+      color: rgba(255,255,255,.84);
+      padding: 4px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.09);
+      background: rgba(255,255,255,.03);
+      white-space: nowrap;
+    }
+
+    .link-label{
+      color: rgba(255,255,255,.94);
+      font-size: .98rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .arrow{
+      color: rgba(255,255,255,.38);
+      flex: 0 0 auto;
+    }
+
+    .hint{
+      margin-top:auto;
+      padding: 10px 6px 4px;
+      color: var(--menu-muted);
+      font-size: .8rem;
+    }
   </style>
 </head>
 
 <body>
+  <!-- Botón menú -->
+  <button class="menu-btn" id="menuBtn" aria-label="Open menu">
+    <div class="burger" aria-hidden="true">
+      <span></span><span></span><span></span>
+    </div>
+  </button>
+
+  <!-- Overlay -->
+  <div class="overlay" id="overlay"></div>
+
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar" aria-label="Navigation menu">
+    <div class="side-title">
+      <div class="brand">Hodely</div>
+      <div class="mini">menu</div>
+    </div>
+
+    <nav class="nav">
+      <a href="https://hodely.net" title="Go to hodely.net">
+        <div class="left">
+          <span class="pill">/</span>
+          <span class="link-label">Home</span>
+        </div>
+        <span class="arrow">↗</span>
+      </a>
+
+      <a href="https://hodely.net/a" title="Go to hodely.net/a">
+        <div class="left">
+          <span class="pill">/a</span>
+          <span class="link-label">A</span>
+        </div>
+        <span class="arrow">↗</span>
+      </a>
+
+      <a href="https://hodely.net/VerdaNet" title="Go to hodely.net/VerdaNet">
+        <div class="left">
+          <span class="pill">/VerdaNet</span>
+          <span class="link-label">VerdaNet</span>
+        </div>
+        <span class="arrow">↗</span>
+      </a>
+
+      <a href="https://hodely.net/HodelyDrive" title="Go to hodely.net/HodelyDrive">
+        <div class="left">
+          <span class="pill">/Drive</span>
+          <span class="link-label">HodelyDrive</span>
+        </div>
+        <span class="arrow">↗</span>
+      </a>
+
+      <a href="https://hodely.net/screenshot" title="Go to hodely.net/screenshot">
+        <div class="left">
+          <span class="pill">/shot</span>
+          <span class="link-label">Screenshot</span>
+        </div>
+        <span class="arrow">↗</span>
+      </a>
+
+      <a href="https://hodely.net/schedule" title="Go to hodely.net/schedule">
+        <div class="left">
+          <span class="pill">/schedule</span>
+          <span class="link-label">Schedule</span>
+        </div>
+        <span class="arrow">↗</span>
+      </a>
+
+      <a href="https://hodely.net/periodictable" title="Go to hodely.net/periodictable">
+        <div class="left">
+          <span class="pill">/table</span>
+          <span class="link-label">Periodic Table</span>
+        </div>
+        <span class="arrow">↗</span>
+      </a>
+
+      <a href="https://hodely.net/HodelyOS" title="Go to hodely.net/HodelyOS">
+        <div class="left">
+          <span class="pill">/OS</span>
+          <span class="link-label">HodelyOS</span>
+        </div>
+        <span class="arrow">↗</span>
+      </a>
+
+      <a href="https://hodely.net/Classifactsmuseum/" title="Go to hodely.net/Classifactsmuseum/">
+        <div class="left">
+          <span class="pill">/Museum</span>
+          <span class="link-label">Classifacts</span>
+        </div>
+        <span class="arrow">↗</span>
+      </a>
+
+      <a href="https://hodely.net/HodelyGames" title="Go to hodely.net/HodelyGames">
+        <div class="left">
+          <span class="pill">/Games</span>
+          <span class="link-label">HodelyGames</span>
+        </div>
+        <span class="arrow">↗</span>
+      </a>
+    </nav>
+
+    <div class="hint">Press <b>ESC</b> to close.</div>
+  </aside>
+
   <div class="watermark"><span>Hodely</span></div>
   <div class="stage" id="stage"></div>
 
@@ -97,13 +402,10 @@
       "system-ui"
     ];
 
-    // Cantidad de A (ajusta si quieres más/menos)
     const COUNT = 10;
-
-    // Base speed (px/s) y variación
-    const BASE = 260;        // velocidad media
-    const AMP  = 220;        // cuánto puede subir/bajar
-    const WAVE = 0.55;       // velocidad de cambio (más alto = cambia más rápido)
+    const BASE = 260;
+    const AMP  = 220;
+    const WAVE = 0.55;
 
     const letters = [];
 
@@ -115,22 +417,18 @@
       el.textContent = "A";
       el.style.fontFamily = fonts[i % fonts.length];
 
-      // ligeras diferencias verticales para que no queden todas calcadas
       const y = 50 + rand(-18, 18);
       el.style.top = y + "%";
 
       stage.appendChild(el);
 
-      // empezamos fuera a la derecha con separaciones
       const startX = window.innerWidth + i * (window.innerWidth * 0.22);
 
       letters.push({
         el,
         x: startX,
-        // cada una cambia a su ritmo
         phase: rand(0, Math.PI * 2),
         mult: rand(0.75, 1.35),
-        // pequeña separación extra
         gap: rand(0.12, 0.30)
       });
     }
@@ -150,12 +448,10 @@
       const dt = (now - last) / 1000;
       last = now;
 
-      // velocidad global que “late” (cambia suave)
       const t = now / 1000;
       const globalSpeed = BASE + AMP * Math.sin(t * WAVE);
 
       for(const obj of letters){
-        // cada A tiene su mini variación para que no vayan “en fila militar”
         const local = 1 + 0.35 * Math.sin(t * (WAVE * 1.7) + obj.phase);
         const speed = globalSpeed * obj.mult * local;
 
@@ -178,6 +474,35 @@
 
     rebuild();
     requestAnimationFrame(tick);
+
+    const menuBtn = document.getElementById('menuBtn');
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('overlay');
+
+    function openMenu(){
+      sidebar.classList.add('open');
+      overlay.classList.add('show');
+      menuBtn.classList.add('active');
+      menuBtn.setAttribute('aria-label', 'Close menu');
+    }
+
+    function closeMenu(){
+      sidebar.classList.remove('open');
+      overlay.classList.remove('show');
+      menuBtn.classList.remove('active');
+      menuBtn.setAttribute('aria-label', 'Open menu');
+    }
+
+    function toggleMenu(){
+      sidebar.classList.contains('open') ? closeMenu() : openMenu();
+    }
+
+    menuBtn.addEventListener('click', toggleMenu);
+    overlay.addEventListener('click', closeMenu);
+
+    document.addEventListener('keydown', (e) => {
+      if(e.key === 'Escape') closeMenu();
+    });
   </script>
 </body>
 </html>
