@@ -17,7 +17,7 @@
 
     body{
       font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-      background:#fff;
+      background:#000;
       overflow:hidden;
     }
 
@@ -39,15 +39,18 @@
       font-size:0.8rem;
       letter-spacing:1px;
       border-radius:10px;
-      border:1px solid rgba(0,0,0,0.15);
-      background:rgba(255,255,255,0.7);
-      backdrop-filter:blur(6px);
+      border:1px solid rgba(255,255,255,0.12);
+      background:rgba(0,0,0,0.58);
+      color:#fff;
+      backdrop-filter:blur(8px);
+      -webkit-backdrop-filter:blur(8px);
       cursor:pointer;
       z-index:60;
       transition:all .2s ease;
     }
     .back-btn:hover{
-      background:#000;
+      background:rgba(255,255,255,0.12);
+      border-color:rgba(255,255,255,0.20);
       color:#fff;
     }
 
@@ -58,21 +61,23 @@
       left: 14px;
       width: 38px;
       height: 34px;
-      border: 1px solid rgba(0,0,0,0.12);
-      background: rgba(255,255,255,0.55);
-      backdrop-filter: blur(6px);
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(0,0,0,0.55);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
       border-radius: 10px;
       cursor: pointer;
       display: grid;
       place-items: center;
       z-index: 60;
-      transition: opacity .2s ease, transform .2s ease, background .2s ease;
-      opacity: 0.75;
+      transition: opacity .2s ease, transform .2s ease, background .2s ease, border .2s ease;
+      opacity: 0.82;
     }
     .menu-btn:hover{
       opacity: 1;
       transform: translateY(-1px);
-      background: rgba(255,255,255,0.75);
+      background: rgba(255,255,255,0.10);
+      border-color: rgba(255,255,255,0.18);
     }
 
     .burger{
@@ -85,16 +90,16 @@
     .burger span{
       display:block;
       height:2px;
-      background:#000;
+      background:#fff;
       border-radius:2px;
-      opacity:0.85;
+      opacity:0.9;
     }
 
     /* OVERLAY */
     .overlay{
       position: fixed;
       inset: 0;
-      background: rgba(0,0,0,0.18);
+      background: rgba(0,0,0,0.34);
       opacity: 0;
       pointer-events: none;
       transition: opacity .22s ease;
@@ -112,9 +117,10 @@
       left: 0;
       height: 100vh;
       width: 280px;
-      background: rgba(255,255,255,0.92);
-      backdrop-filter: blur(10px);
-      border-right: 1px solid rgba(0,0,0,0.10);
+      background: rgba(0,0,0,0.88);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-right: 1px solid rgba(255,255,255,0.08);
       transform: translateX(-105%);
       transition: transform .24s ease;
       z-index: 55;
@@ -123,6 +129,7 @@
       flex-direction: column;
       gap: 14px;
       overflow-y:auto;
+      box-shadow: 18px 0 50px rgba(0,0,0,0.28);
     }
     .sidebar.open{
       transform: translateX(0);
@@ -133,17 +140,20 @@
       align-items: baseline;
       justify-content: space-between;
       padding: 6px 6px 10px 6px;
+      border-bottom:1px solid rgba(255,255,255,0.08);
     }
     .side-title .brand{
       font-weight: 800;
       letter-spacing: -0.8px;
       font-size: 1.05rem;
+      color:#fff;
     }
     .side-title .mini{
       font-size: 0.75rem;
       letter-spacing: 2px;
       opacity: 0.55;
       text-transform: uppercase;
+      color:#fff;
     }
 
     .nav{
@@ -155,9 +165,9 @@
 
     .nav a{
       text-decoration:none;
-      color:#000;
-      border:1px solid rgba(0,0,0,0.10);
-      background:rgba(255,255,255,0.6);
+      color:#fff;
+      border:1px solid rgba(255,255,255,0.10);
+      background:rgba(255,255,255,0.04);
       border-radius:12px;
       padding:12px 12px;
       display:flex;
@@ -167,8 +177,8 @@
     }
     .nav a:hover{
       transform: translateX(2px);
-      background: rgba(0,0,0,0.03);
-      border-color: rgba(0,0,0,0.18);
+      background: rgba(255,255,255,0.08);
+      border-color: rgba(255,255,255,0.18);
     }
 
     .nav a .left{
@@ -182,21 +192,25 @@
       font-size: 0.78rem;
       padding: 3px 8px;
       border-radius: 999px;
-      border: 1px solid rgba(0,0,0,0.12);
-      opacity: 0.85;
+      border: 1px solid rgba(255,255,255,0.12);
+      background:rgba(255,255,255,0.04);
+      color:#fff;
+      opacity: 0.9;
       white-space: nowrap;
     }
 
     .arrow{
-      opacity:0.45;
+      opacity:0.5;
       flex-shrink:0;
+      color:#fff;
     }
 
     .hint{
       margin-top:auto;
       padding:10px 8px;
       font-size:0.8rem;
-      opacity:0.55;
+      opacity:0.58;
+      color:#fff;
     }
 
     @media (max-width: 640px){
