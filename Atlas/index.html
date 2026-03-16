@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <title>Atlas</title>
+  <title>Hodely Atlas</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <meta name="theme-color" content="#0b1613" />
   <link rel="icon" href="/favicon.png" type="image/png" />
@@ -11,11 +11,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
-  <link
-    rel="stylesheet"
-    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-    crossorigin=""
-  />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
 
   <style>
     :root{
@@ -24,25 +20,18 @@
       --card:rgba(16,28,23,.9);
       --card-2:rgba(11,20,16,.85);
       --line:rgba(178,255,214,.10);
-      --line-2:rgba(178,255,214,.18);
       --text:#ecfff5;
       --muted:#9ab9ab;
-      --soft:#74c99d;
       --accent:#7cffab;
       --accent-2:#48d183;
       --danger:#ff7c8c;
       --shadow:0 24px 70px rgba(0,0,0,.35);
-      --radius:24px;
       --safe-top: env(safe-area-inset-top, 0px);
       --safe-bottom: env(safe-area-inset-bottom, 0px);
       --mobile-width: 430px;
     }
 
-    *{
-      box-sizing:border-box;
-      margin:0;
-      padding:0;
-    }
+    *{ box-sizing:border-box; margin:0; padding:0; }
 
     html,body{
       width:100%;
@@ -108,11 +97,7 @@
       left:0;
       right:0;
       z-index:20;
-      padding:
-        calc(12px + var(--safe-top))
-        14px
-        0
-        14px;
+      padding:calc(12px + var(--safe-top)) 14px 0 14px;
       pointer-events:none;
     }
 
@@ -123,10 +108,7 @@
       justify-content:space-between;
     }
 
-    .brand,
-    .top-actions{
-      pointer-events:auto;
-    }
+    .brand,.top-actions{ pointer-events:auto; }
 
     .brand{
       display:flex;
@@ -153,31 +135,13 @@
       flex-shrink:0;
     }
 
-    .brand-text{
-      display:flex;
-      flex-direction:column;
-      line-height:1.05;
-    }
+    .brand-text{ display:flex; flex-direction:column; line-height:1.05; }
+    .brand-text strong{ font-size:.92rem; letter-spacing:-.02em; }
+    .brand-text span{ font-size:.68rem; color:var(--muted); }
 
-    .brand-text strong{
-      font-size:.92rem;
-      letter-spacing:-.02em;
-    }
+    .top-actions{ display:flex; gap:8px; }
 
-    .brand-text span{
-      font-size:.68rem;
-      color:var(--muted);
-    }
-
-    .top-actions{
-      display:flex;
-      gap:8px;
-    }
-
-    .icon-btn,
-    .primary-btn,
-    .ghost-btn,
-    .danger-btn{
+    .icon-btn,.primary-btn,.ghost-btn,.danger-btn{
       border:none;
       outline:none;
       cursor:pointer;
@@ -197,10 +161,7 @@
       box-shadow:var(--shadow);
     }
 
-    .icon-btn:hover,
-    .primary-btn:hover,
-    .ghost-btn:hover,
-    .danger-btn:hover{
+    .icon-btn:hover,.primary-btn:hover,.ghost-btn:hover,.danger-btn:hover{
       transform:translateY(-1px);
       filter:brightness(1.03);
     }
@@ -247,9 +208,7 @@
       user-select:none;
     }
 
-    .drag-handle:active{
-      cursor:grabbing;
-    }
+    .drag-handle:active{ cursor:grabbing; }
 
     .drag{
       width:56px;
@@ -267,21 +226,10 @@
       -webkit-overflow-scrolling:touch;
     }
 
-    .bottom-sheet.sheet-open .sheet{
-      height:72vh;
-    }
-
-    .bottom-sheet.sheet-mid .sheet{
-      height:44vh;
-    }
-
-    .bottom-sheet.sheet-closed .sheet{
-      height:92px;
-    }
-
-    .bottom-sheet.sheet-closed .sheet-content{
-      overflow:hidden;
-    }
+    .bottom-sheet.sheet-open .sheet{ height:72vh; }
+    .bottom-sheet.sheet-mid .sheet{ height:46vh; }
+    .bottom-sheet.sheet-closed .sheet{ height:92px; }
+    .bottom-sheet.sheet-closed .sheet-content{ overflow:hidden; }
 
     .bottom-sheet.sheet-closed .hero-card,
     .bottom-sheet.sheet-closed .segmented,
@@ -317,7 +265,7 @@
     }
 
     .hero-left h1{
-      font-size:1.12rem;
+      font-size:1.06rem;
       font-weight:800;
       letter-spacing:-.03em;
     }
@@ -325,7 +273,7 @@
     .hero-left p{
       margin-top:4px;
       color:var(--muted);
-      font-size:.85rem;
+      font-size:.84rem;
       line-height:1.35;
     }
 
@@ -426,15 +374,8 @@
       gap:12px;
     }
 
-    .range-wrap{
-      display:grid;
-      gap:6px;
-    }
-
-    input[type="range"]{
-      width:100%;
-      accent-color: var(--accent);
-    }
+    .range-wrap{ display:grid; gap:6px; }
+    input[type="range"]{ width:100%; accent-color: var(--accent); }
 
     .toggle{
       position:relative;
@@ -477,9 +418,7 @@
       gap:10px;
     }
 
-    .primary-btn,
-    .ghost-btn,
-    .danger-btn{
+    .primary-btn,.ghost-btn,.danger-btn{
       padding:13px 14px;
       border-radius:16px;
       font-weight:800;
@@ -542,10 +481,7 @@
       flex-shrink:0;
     }
 
-    .person .meta{
-      min-width:0;
-    }
-
+    .person .meta{ min-width:0; }
     .person .meta strong{
       display:block;
       font-size:.9rem;
@@ -572,8 +508,7 @@
       box-shadow:0 0 14px rgba(124,255,171,.45);
     }
 
-    .auth-overlay,
-    .profile-overlay{
+    .auth-overlay,.profile-overlay{
       position:absolute;
       inset:0;
       z-index:60;
@@ -585,8 +520,7 @@
       padding:18px 12px calc(18px + var(--safe-bottom));
     }
 
-    .auth-card,
-    .profile-card{
+    .auth-card,.profile-card{
       width:100%;
       border-radius:30px;
       background:linear-gradient(180deg, rgba(17,31,25,.98), rgba(8,14,11,.98));
@@ -597,36 +531,27 @@
       overflow:auto;
     }
 
-    .auth-head,
-    .profile-head{
-      padding:18px 18px 8px;
-    }
+    .auth-head,.profile-head{ padding:18px 18px 8px; }
 
-    .auth-head h2,
-    .profile-head h2{
+    .auth-head h2,.profile-head h2{
       font-size:1.24rem;
       letter-spacing:-.03em;
       margin-bottom:6px;
     }
 
-    .auth-head p,
-    .profile-head p{
+    .auth-head p,.profile-head p{
       color:var(--muted);
       line-height:1.4;
       font-size:.88rem;
     }
 
-    .auth-body,
-    .profile-body{
+    .auth-body,.profile-body{
       padding:10px 18px 18px;
       display:grid;
       gap:12px;
     }
 
-    .field{
-      display:grid;
-      gap:6px;
-    }
+    .field{ display:grid; gap:6px; }
 
     .field label{
       font-size:.78rem;
@@ -646,9 +571,7 @@
       font:inherit;
     }
 
-    .field input::placeholder{
-      color:#75907f;
-    }
+    .field input::placeholder{ color:#75907f; }
 
     .muted-box{
       background:rgba(124,255,171,.05);
@@ -685,15 +608,7 @@
       font-weight:800;
     }
 
-    .linkish{
-      color:var(--accent);
-      cursor:pointer;
-      font-weight:700;
-    }
-
-    .hidden{
-      display:none !important;
-    }
+    .hidden{ display:none !important; }
 
     .leaflet-control-zoom{
       border:none !important;
@@ -725,9 +640,7 @@
       font:700 12px Inter, sans-serif;
     }
 
-    .desktop-caption{
-      display:none;
-    }
+    .desktop-caption{ display:none; }
 
     @media (min-width: 860px){
       .desktop-caption{
@@ -955,9 +868,7 @@
       getDoc,
       collection,
       onSnapshot,
-      serverTimestamp,
-      query,
-      where
+      serverTimestamp
     } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
     const firebaseConfig = {
@@ -1042,6 +953,8 @@
     let meRealCoords = null;
     let myCountry = null;
     let usersCache = [];
+    let visitedZoneRects = [];
+    let visitedCountryCircles = [];
 
     let sheetState = "mid";
     let dragStartY = 0;
@@ -1078,6 +991,22 @@
         lat: (cell.latIndex + 0.5) * cell.latDeg,
         lng: (cell.lngIndex + 0.5) * cell.lngDeg
       };
+    }
+
+    function getZoneBoundsFromKey(key){
+      const [latIndexRaw, lngIndexRaw] = key.split("_");
+      const latIndex = Number(latIndexRaw);
+      const lngIndex = Number(lngIndexRaw);
+
+      const latForSizing = (latIndex + 0.5) * kmToLatDeg(zoneSideKm);
+      const { latDeg, lngDeg } = getZoneSizeDegrees(latForSizing);
+
+      const south = latIndex * latDeg;
+      const north = (latIndex + 1) * latDeg;
+      const west = lngIndex * lngDeg;
+      const east = (lngIndex + 1) * lngDeg;
+
+      return [[south, west], [north, east]];
     }
 
     function getSafePublicZone(lat, lng, privacyZones = 3){
@@ -1171,7 +1100,7 @@
       const vh = window.innerHeight;
       return {
         open: Math.min(vh * 0.72, vh - 24),
-        mid: Math.min(vh * 0.44, vh - 24),
+        mid: Math.min(vh * 0.46, vh - 24),
         closed: 92
       };
     }
@@ -1188,9 +1117,7 @@
         });
       }
 
-      setTimeout(() => {
-        map.invalidateSize();
-      }, 320);
+      setTimeout(() => map.invalidateSize(), 320);
     }
 
     function snapSheetByHeight(height){
@@ -1207,7 +1134,6 @@
           closest = p;
         }
       }
-
       applySheetState(closest.name);
     }
 
@@ -1221,13 +1147,10 @@
 
     function moveSheetDrag(clientY){
       if(!draggingSheet) return;
-
       const delta = dragStartY - clientY;
       const heights = getSheetHeights();
-
       let nextHeight = dragStartHeight + delta;
       nextHeight = Math.max(heights.closed, Math.min(heights.open, nextHeight));
-
       els.sheet.style.height = `${nextHeight}px`;
     }
 
@@ -1235,11 +1158,74 @@
       if(!draggingSheet) return;
       draggingSheet = false;
       document.body.style.userSelect = "";
-
       const currentHeight = els.sheet.getBoundingClientRect().height;
       els.sheet.style.transition = "";
       els.sheet.style.height = "";
       snapSheetByHeight(currentHeight);
+    }
+
+    function clearVisitedOverlays(){
+      visitedZoneRects.forEach(layer => map.removeLayer(layer));
+      visitedCountryCircles.forEach(layer => map.removeLayer(layer));
+      visitedZoneRects = [];
+      visitedCountryCircles = [];
+    }
+
+    function drawVisitedZones(zoneKeys = []){
+      zoneKeys.forEach(key => {
+        try{
+          const bounds = getZoneBoundsFromKey(key);
+          const rect = L.rectangle(bounds, {
+            color: "#7cffab",
+            weight: 1,
+            fillColor: "#7cffab",
+            fillOpacity: 0.16
+          }).addTo(map);
+          visitedZoneRects.push(rect);
+        }catch{}
+      });
+    }
+
+    function drawVisitedCountries(countryNames = []){
+      const points = {
+        "España":[40.4168,-3.7038],
+        "France":[46.2276,2.2137],
+        "Francia":[46.2276,2.2137],
+        "Portugal":[39.3999,-8.2245],
+        "Italia":[41.8719,12.5674],
+        "Germany":[51.1657,10.4515],
+        "Alemania":[51.1657,10.4515],
+        "United Kingdom":[55.3781,-3.4360],
+        "Reino Unido":[55.3781,-3.4360],
+        "Andorra":[42.5063,1.5218],
+        "Belgium":[50.5039,4.4699],
+        "Bélgica":[50.5039,4.4699],
+        "Netherlands":[52.1326,5.2913],
+        "Países Bajos":[52.1326,5.2913],
+        "Morocco":[31.7917,-7.0926],
+        "Marruecos":[31.7917,-7.0926]
+      };
+
+      countryNames.forEach(name => {
+        const point = points[name];
+        if(point){
+          const circle = L.circle(point, {
+            radius: 160000,
+            color: "#48d183",
+            weight: 1,
+            fillColor: "#48d183",
+            fillOpacity: 0.08
+          }).addTo(map);
+          visitedCountryCircles.push(circle);
+        }
+      });
+    }
+
+    function renderMyExploration(){
+      clearVisitedOverlays();
+      if(!currentUserData) return;
+      drawVisitedZones(currentUserData.visitedZones || []);
+      drawVisitedCountries(currentUserData.visitedCountries || []);
     }
 
     function renderPeopleList(users){
@@ -1350,6 +1336,58 @@
       });
     }
 
+    async function updateVisitedDataForCurrentLocation(lat, lng){
+      const zoneKey = getVisitZoneKey(lat, lng);
+      const country = await reverseCountry(lat, lng);
+      myCountry = country;
+
+      const visitedZones = Array.from(new Set([...(currentUserData?.visitedZones || []), zoneKey]));
+      const visitedCountries = Array.from(new Set([...(currentUserData?.visitedCountries || []), country]));
+
+      currentUserData = {
+        ...currentUserData,
+        visitedZones,
+        visitedCountries
+      };
+
+      setStatsFromUser(currentUserData);
+      renderMyExploration();
+
+      if(auth.currentUser){
+        await updateDoc(doc(db, "users", auth.currentUser.uid), {
+          visitedZones,
+          visitedCountries,
+          lastActive: serverTimestamp()
+        });
+      }
+    }
+
+    async function publishCurrentPublicZone(){
+      if(!auth.currentUser || !currentUserData || !meRealCoords) return;
+
+      const privacyZones = Number(currentUserData.privacyZones || 3);
+      const safe = getSafePublicZone(meRealCoords.lat, meRealCoords.lng, privacyZones);
+      const country = myCountry || await reverseCountry(meRealCoords.lat, meRealCoords.lng);
+
+      currentUserData = {
+        ...currentUserData,
+        publicLat: safe.lat,
+        publicLng: safe.lng,
+        publicRadiusKm: safe.radiusKm,
+        publicCountry: country
+      };
+
+      drawMyPublicZone(safe.lat, safe.lng, safe.radiusKm);
+
+      await updateDoc(doc(db, "users", auth.currentUser.uid), {
+        publicLat: safe.lat,
+        publicLng: safe.lng,
+        publicRadiusKm: safe.radiusKm,
+        publicCountry: country,
+        lastActive: serverTimestamp()
+      });
+    }
+
     async function captureMyLocation(saveToDb = false){
       try{
         const pos = await getCurrentPositionPromise();
@@ -1361,40 +1399,13 @@
         map.setView([lat, lng], 11);
 
         if(currentUserData){
-          const privacy = Number(currentUserData.privacyZones || 3);
-          const safe = getSafePublicZone(lat, lng, privacy);
-          drawMyPublicZone(safe.lat, safe.lng, safe.radiusKm);
+          await updateVisitedDataForCurrentLocation(lat, lng);
 
-          if(saveToDb && auth.currentUser && currentUserData.visibleOnMap){
-            const country = await reverseCountry(lat, lng);
-            myCountry = country;
-
-            const zoneKey = getVisitZoneKey(lat, lng);
-            const visitedZones = Array.from(new Set([...(currentUserData.visitedZones || []), zoneKey]));
-            const visitedCountries = Array.from(new Set([...(currentUserData.visitedCountries || []), country]));
-
-            currentUserData = {
-              ...currentUserData,
-              publicLat: safe.lat,
-              publicLng: safe.lng,
-              publicRadiusKm: safe.radiusKm,
-              publicCountry: country,
-              visitedZones,
-              visitedCountries
-            };
-
-            await updateDoc(doc(db, "users", auth.currentUser.uid), {
-              publicLat: safe.lat,
-              publicLng: safe.lng,
-              publicRadiusKm: safe.radiusKm,
-              publicCountry: country,
-              lastActive: serverTimestamp(),
-              visitedZones,
-              visitedCountries
-            });
-
-            setStatsFromUser(currentUserData);
+          if(currentUserData.visibleOnMap){
+            await publishCurrentPublicZone();
             els.shareStatus.textContent = "Visible";
+          }else{
+            els.shareStatus.textContent = "Privado";
           }
         }
       }catch(err){
@@ -1420,20 +1431,45 @@
         lastActive: serverTimestamp()
       };
 
-      if(meRealCoords && isVisible){
-        const country = myCountry || await reverseCountry(meRealCoords.lat, meRealCoords.lng);
-        const safe = getSafePublicZone(meRealCoords.lat, meRealCoords.lng, privacyZones);
-        payload.publicLat = safe.lat;
-        payload.publicLng = safe.lng;
-        payload.publicRadiusKm = safe.radiusKm;
-        payload.publicCountry = country;
-        drawMyPublicZone(safe.lat, safe.lng, safe.radiusKm);
+      if(!meRealCoords){
+        try{
+          const pos = await getCurrentPositionPromise();
+          meRealCoords = {
+            lat: pos.coords.latitude,
+            lng: pos.coords.longitude
+          };
+          drawMe(meRealCoords.lat, meRealCoords.lng);
+        }catch{}
+      }
+
+      if(meRealCoords){
+        await updateVisitedDataForCurrentLocation(meRealCoords.lat, meRealCoords.lng);
+
+        if(isVisible){
+          const country = myCountry || await reverseCountry(meRealCoords.lat, meRealCoords.lng);
+          const safe = getSafePublicZone(meRealCoords.lat, meRealCoords.lng, privacyZones);
+          payload.publicLat = safe.lat;
+          payload.publicLng = safe.lng;
+          payload.publicRadiusKm = safe.radiusKm;
+          payload.publicCountry = country;
+          drawMyPublicZone(safe.lat, safe.lng, safe.radiusKm);
+        }else{
+          payload.publicLat = null;
+          payload.publicLng = null;
+          payload.publicRadiusKm = null;
+          payload.publicCountry = null;
+          if(mePublicCircle){
+            map.removeLayer(mePublicCircle);
+            mePublicCircle = null;
+          }
+        }
       }
 
       await updateDoc(doc(db, "users", auth.currentUser.uid), payload);
 
       currentUserData = { ...currentUserData, ...payload };
       els.shareStatus.textContent = isVisible ? "Visible" : "Privado";
+      loadUserIntoUI(currentUserData);
       alert("Ajustes guardados.");
     }
 
@@ -1476,6 +1512,11 @@
       updatePrivacyText(data.privacyZones || 3);
       els.shareStatus.textContent = data.visibleOnMap ? "Visible" : "Privado";
       setStatsFromUser(data);
+      renderMyExploration();
+
+      if(data.visibleOnMap && data.publicLat != null && data.publicLng != null){
+        drawMyPublicZone(data.publicLat, data.publicLng, data.publicRadiusKm || 8);
+      }
     }
 
     function openUserProfile(user, isSelf = false){
@@ -1497,6 +1538,7 @@
         ? `Este explorador ha recorrido ${user.visitedCountries?.length || 0} países y ${user.visitedZones?.length || 0} zonas.`
         : "Este usuario no ha activado estadísticas públicas.";
 
+      els.focusUserBtn.style.display = user.publicLat != null && user.publicLng != null ? "block" : "none";
       els.logoutBtn.classList.toggle("hidden", !isSelf);
     }
 
@@ -1575,8 +1617,7 @@
     }
 
     function setupUsersRealtime(){
-      const q = query(collection(db, "users"), where("visibleOnMap", "in", [true, false]));
-      onSnapshot(q, (snapshot) => {
+      onSnapshot(collection(db, "users"), (snapshot) => {
         usersCache = snapshot.docs.map(d => d.data());
         const visibleUsers = usersCache.filter(u => u.visibleOnMap);
         renderUsersOnMap(visibleUsers);
@@ -1592,6 +1633,15 @@
         const isCountries = btn.dataset.mode === "countries";
         document.getElementById("zonesCount").parentElement.style.opacity = isCountries ? ".55" : "1";
         document.getElementById("countriesCount").parentElement.style.opacity = isCountries ? "1" : ".85";
+
+        clearVisitedOverlays();
+        if(!currentUserData) return;
+
+        if(isCountries){
+          drawVisitedCountries(currentUserData.visitedCountries || []);
+        }else{
+          drawVisitedZones(currentUserData.visitedZones || []);
+        }
       });
     });
 
@@ -1700,6 +1750,7 @@
         els.shareStatus.textContent = "Privado";
         els.zonesCount.textContent = "0";
         els.countriesCount.textContent = "0";
+        clearVisitedOverlays();
       }
     });
 
