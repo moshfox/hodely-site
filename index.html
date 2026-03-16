@@ -1,704 +1,1716 @@
-<!DOCTYPE html> 
-<html lang="en">
+<!DOCTYPE html>
+<html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <title>Hodely.net</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hodely Atlas</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#0b1613" />
+  <link rel="icon" href="/favicon.png" type="image/png" />
 
-  <!-- Favicon (solo pestaña navegador) -->
-  <link rel="icon" href="/favicon.png" type="image/png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
-  <!-- Manifest (para app instalada) -->
-  <link rel="manifest" href="/manifest.webmanifest?v=999">
- 
-  <!-- Color barra superior app -->
-  <meta name="theme-color" content="#000000">
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    crossorigin=""
+  />
 
-  <!-- Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=JetBrains+Mono:wght@400;700&family=DM+Serif+Display&family=Space+Grotesk:wght@400;700&display=swap" rel="stylesheet">
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root{
+      --bg:#07110e;
+      --bg-2:#0c1814;
+      --card:rgba(16,28,23,.9);
+      --card-2:rgba(11,20,16,.85);
+      --line:rgba(178,255,214,.10);
+      --line-2:rgba(178,255,214,.18);
+      --text:#ecfff5;
+      --muted:#9ab9ab;
+      --soft:#74c99d;
+      --accent:#7cffab;
+      --accent-2:#48d183;
+      --danger:#ff7c8c;
+      --shadow:0 24px 70px rgba(0,0,0,.35);
+      --radius:24px;
+      --safe-top: env(safe-area-inset-top, 0px);
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+      --mobile-width: 430px;
+    }
 
-    html{
+    *{
+      box-sizing:border-box;
+      margin:0;
+      padding:0;
+    }
+
+    html,body{
+      width:100%;
       height:100%;
+      overflow:hidden;
+      font-family:Inter,system-ui,sans-serif;
+      background:
+        radial-gradient(circle at top, rgba(75,185,122,.14), transparent 32%),
+        linear-gradient(180deg, #09120f 0%, #07110e 100%);
+      color:var(--text);
     }
 
     body{
-      background:#fff;
-      color:#000;
-      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-      min-height:100vh;
       display:flex;
-      align-items:center;
       justify-content:center;
-      overflow:hidden;
+      align-items:stretch;
     }
 
-    .container{
+    .app-shell{
       width:100%;
-      max-width:1100px;
-      padding: 28px 18px;
-      text-align:center;
-      opacity:0;
-      transform: translateY(18px) scale(0.99);
-      animation: hero-in 1s cubic-bezier(.2,.8,.2,1) forwards;
-      will-change: transform, opacity;
-    }
-
-    h1{
-      font-size:4rem;
-      font-weight:800;
-      letter-spacing:-2px;
-      line-height:1;
-      opacity:0;
-      transform: translateY(14px);
-      animation:
-        rise-fade .9s cubic-bezier(.2,.8,.2,1) .18s forwards,
-        float-title 5.2s ease-in-out 1.2s infinite;
-      will-change: transform, opacity;
-    }
-
-    .line{
-      width:90px;
-      height:2px;
-      background:#000;
-      margin:18px auto;
-      opacity:0;
-      transform: scaleX(.6);
-      transform-origin:center;
-      animation:
-        line-in .9s cubic-bezier(.2,.8,.2,1) .34s forwards,
-        pulse-line 3.5s ease-in-out 1.4s infinite;
-      will-change: transform, opacity;
-    }
-
-    h2{
-      font-size:1rem;
-      font-weight:400;
-      letter-spacing:4px;
-      text-transform:uppercase;
-      opacity:0;
-      transform: translateY(12px);
-      animation: rise-fade .9s cubic-bezier(.2,.8,.2,1) .48s forwards;
-      will-change: transform, opacity;
-    }
-
-    /* Marquee */
-    .marquee{
-      width:100%;
+      height:100%;
+      position:relative;
       overflow:hidden;
-      user-select:none;
-      -webkit-user-select:none;
-      margin: 22px 0;
-      opacity:0;
-      animation: fade-only .9s ease .55s forwards;
-      mask-image: linear-gradient(to right, transparent 0%, black 12%, black 88%, transparent 100%);
-      -webkit-mask-image: linear-gradient(to right, transparent 0%, black 12%, black 88%, transparent 100%);
+      background:linear-gradient(180deg, #0b1512 0%, #08100d 100%);
     }
 
-    .track{
-      display:flex;
-      width:max-content;
-      gap: 0px;
-      animation: scroll-left 18s linear infinite;
-      will-change: transform;
-    }
+    @media (min-width: 860px){
+      body{
+        padding:24px;
+        background:
+          radial-gradient(circle at top, rgba(75,185,122,.14), transparent 32%),
+          linear-gradient(180deg, #06100d 0%, #08120f 100%);
+      }
 
-    .marquee.top{
-      transform: translateY(-10px);
-      animation:
-        fade-only .9s ease .12s forwards,
-        settle-top 1s cubic-bezier(.2,.8,.2,1) .12s forwards;
-    }
+      .app-shell{
+        max-width:var(--mobile-width);
+        border-radius:34px;
+        box-shadow:
+          0 0 0 1px rgba(124,255,171,.08),
+          0 35px 90px rgba(0,0,0,.45);
+      }
 
-    .marquee.bottom{
-      transform: translateY(10px);
-      animation:
-        fade-only .9s ease .22s forwards,
-        settle-bottom 1s cubic-bezier(.2,.8,.2,1) .22s forwards;
-    }
-
-    .marquee.bottom .track{
-      animation: scroll-right 18s linear infinite;
-    }
-
-    /* duplicate blocks so it never "runs out" */
-    .block{
-      display:flex;
-      align-items:center;
-      white-space:nowrap;
-      padding-right: 60px;
-      font-size: 1.8rem;
-      line-height:1;
-    }
-
-    /* different font segments */
-    .f1{ font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
-    .f2{ font-family: "DM Serif Display", Georgia, "Times New Roman", serif; }
-    .f3{ font-family: "Space Grotesk", Inter, system-ui, sans-serif; }
-    .f4{ font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; }
-
-    .seg{
-      opacity:0.92;
-      transition: opacity .25s ease, transform .25s ease;
-    }
-
-    .dot{
-      opacity:0.35;
-      padding: 0 18px;
-      transition: opacity .25s ease;
-    }
-
-    .marquee:hover .seg{
-      opacity:1;
-    }
-    .marquee:hover .dot{
-      opacity:0.5;
-    }
-
-    @keyframes scroll-left{
-      0%   { transform: translateX(0); }
-      100% { transform: translateX(-50%); }
-    }
-    @keyframes scroll-right{
-      0%   { transform: translateX(-50%); }
-      100% { transform: translateX(0); }
-    }
-
-    @keyframes hero-in{
-      to{
-        opacity:1;
-        transform: translateY(0) scale(1);
+      .desktop-side-glow{
+        position:fixed;
+        inset:0;
+        pointer-events:none;
+        background:
+          radial-gradient(circle at 20% 20%, rgba(124,255,171,.06), transparent 20%),
+          radial-gradient(circle at 80% 80%, rgba(124,255,171,.04), transparent 20%);
       }
     }
 
-    @keyframes rise-fade{
-      to{
-        opacity:1;
-        transform: translateY(0);
-      }
+    #map{
+      position:absolute;
+      inset:0;
+      z-index:1;
+      background:#0b1713;
     }
 
-    @keyframes fade-only{
-      to{ opacity:1; }
+    .topbar{
+      position:absolute;
+      top:0;
+      left:0;
+      right:0;
+      z-index:20;
+      padding:
+        calc(12px + var(--safe-top))
+        14px
+        0
+        14px;
+      pointer-events:none;
     }
 
-    @keyframes line-in{
-      0%{
-        opacity:0;
-        transform: scaleX(.55);
-      }
-      100%{
-        opacity:.95;
-        transform: scaleX(1);
-      }
-    }
-
-    @keyframes pulse-line{
-      0%,100%{ transform: scaleX(1); }
-      50%{ transform: scaleX(1.06); }
-    }
-
-    @keyframes float-title{
-      0%,100%{ transform: translateY(0); }
-      50%{ transform: translateY(-3px); }
-    }
-
-    @keyframes settle-top{
-      to{ transform: translateY(0); }
-    }
-
-    @keyframes settle-bottom{
-      to{ transform: translateY(0); }
-    }
-
-    @media (max-width: 650px){
-      h1{ font-size:2.6rem; }
-      .block{ font-size:1.35rem; }
-      h2{ font-size:0.95rem; letter-spacing:3px; }
-    }
-
-    /* =========================
-       MENU BUTTON + SIDEBAR
-       ========================= */
-
-    .menu-btn{
-      position: fixed;
-      top: 14px;
-      left: 14px;
-      width: 38px;
-      height: 34px;
-      border: 1px solid rgba(0,0,0,0.12);
-      background: rgba(255,255,255,0.55);
-      backdrop-filter: blur(6px);
-      border-radius: 10px;
-      cursor: pointer;
-      display: grid;
-      place-items: center;
-      z-index: 50;
-      transition:
-        opacity .2s ease,
-        transform .2s ease,
-        background .2s ease,
-        box-shadow .25s ease;
-      opacity: 0;
-      animation: menu-appear .7s cubic-bezier(.2,.8,.2,1) .65s forwards;
-    }
-
-    .menu-btn:hover{
-      opacity: 1;
-      transform: translateY(-1px) scale(1.03);
-      background: rgba(255,255,255,0.75);
-      box-shadow: 0 10px 24px rgba(0,0,0,0.08);
-    }
-
-    .menu-btn:active{
-      transform: scale(0.97);
-    }
-
-    .burger{
-      width: 18px;
-      height: 12px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-    }
-
-    .burger span{
-      display:block;
-      height: 2px;
-      background:#000;
-      border-radius: 2px;
-      opacity:0.85;
-      transform-origin:center;
-      transition: transform .28s cubic-bezier(.2,.8,.2,1), opacity .22s ease;
-    }
-
-    .menu-btn.active .burger span:nth-child(1){
-      transform: translateY(5px) rotate(45deg);
-    }
-    .menu-btn.active .burger span:nth-child(2){
-      opacity:0;
-      transform: scaleX(.2);
-    }
-    .menu-btn.active .burger span:nth-child(3){
-      transform: translateY(-5px) rotate(-45deg);
-    }
-
-    .overlay{
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.18);
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity .28s ease;
-      z-index: 40;
-    }
-
-    .overlay.show{
-      opacity: 1;
-      pointer-events: auto;
-    }
-
-    .sidebar{
-      position: fixed;
-      top: 0;
-      left: 0;
-      height: 100vh;
-      width: 280px;
-      background: rgba(255,255,255,0.92);
-      backdrop-filter: blur(10px);
-      border-right: 1px solid rgba(0,0,0,0.10);
-      transform: translateX(-105%);
-      transition: transform .34s cubic-bezier(.2,.8,.2,1);
-      z-index: 45;
-      padding: 18px 16px;
-      display:flex;
-      flex-direction: column;
-      gap: 14px;
-      box-shadow: 16px 0 40px rgba(0,0,0,0.06);
-    }
-
-    .sidebar.open{
-      transform: translateX(0);
-    }
-
-    .side-title{
-      display:flex;
-      align-items: baseline;
-      justify-content: space-between;
-      padding: 6px 6px 10px 6px;
-      opacity:0;
-      transform: translateY(10px);
-      transition: opacity .32s ease .07s, transform .32s ease .07s;
-    }
-
-    .sidebar.open .side-title{
-      opacity:1;
-      transform: translateY(0);
-    }
-
-    .side-title .brand{
-      font-weight: 800;
-      letter-spacing: -0.8px;
-      font-size: 1.05rem;
-    }
-
-    .side-title .mini{
-      font-size: 0.75rem;
-      letter-spacing: 2px;
-      opacity: 0.55;
-      text-transform: uppercase;
-    }
-
-    .nav{
-      display:flex;
-      flex-direction: column;
-      gap: 10px;
-      padding: 6px;
-    }
-
-    .nav a{
-      text-decoration: none;
-      color:#000;
-      border: 1px solid rgba(0,0,0,0.10);
-      background: rgba(255,255,255,0.6);
-      border-radius: 12px;
-      padding: 12px 12px;
-      display:flex;
-      align-items:center;
-      justify-content: space-between;
-      transition:
-        transform .18s ease,
-        background .18s ease,
-        border .18s ease,
-        box-shadow .22s ease,
-        opacity .24s ease;
-      opacity: 0;
-      transform: translateX(-12px);
-    }
-
-    .sidebar.open .nav a{
-      opacity:1;
-      transform: translateX(0);
-    }
-
-    .sidebar.open .nav a:nth-child(1){ transition-delay: .05s; }
-    .sidebar.open .nav a:nth-child(2){ transition-delay: .08s; }
-    .sidebar.open .nav a:nth-child(3){ transition-delay: .11s; }
-    .sidebar.open .nav a:nth-child(4){ transition-delay: .14s; }
-    .sidebar.open .nav a:nth-child(5){ transition-delay: .17s; }
-    .sidebar.open .nav a:nth-child(6){ transition-delay: .20s; }
-    .sidebar.open .nav a:nth-child(7){ transition-delay: .23s; }
-    .sidebar.open .nav a:nth-child(8){ transition-delay: .26s; }
-    .sidebar.open .nav a:nth-child(9){ transition-delay: .29s; }
-    .sidebar.open .nav a:nth-child(10){ transition-delay: .32s; }
-
-    .nav a:hover{
-      transform: translateX(2px);
-      background: rgba(0,0,0,0.03);
-      border-color: rgba(0,0,0,0.18);
-      box-shadow: 0 8px 20px rgba(0,0,0,0.05);
-    }
-
-    .nav a .left{
+    .topbar-inner{
       display:flex;
       gap:10px;
       align-items:center;
+      justify-content:space-between;
     }
 
-    .pill{
-      font-family: "JetBrains Mono", ui-monospace, monospace;
-      font-size: 0.78rem;
-      padding: 3px 8px;
-      border-radius: 999px;
-      border: 1px solid rgba(0,0,0,0.12);
-      opacity: 0.85;
-      transition: transform .18s ease, background .18s ease;
+    .brand,
+    .top-actions{
+      pointer-events:auto;
     }
 
-    .nav a:hover .pill{
-      transform: translateX(1px);
-      background: rgba(0,0,0,0.02);
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      padding:10px 12px;
+      border:1px solid var(--line);
+      background:rgba(10,18,15,.72);
+      backdrop-filter:blur(16px);
+      border-radius:999px;
+      box-shadow:var(--shadow);
     }
 
-    .arrow{
-      opacity:0.45;
-      transition: transform .18s ease, opacity .18s ease;
+    .brand-logo{
+      width:30px;
+      height:30px;
+      border-radius:50%;
+      display:grid;
+      place-items:center;
+      color:#07110e;
+      font-weight:800;
+      background:linear-gradient(135deg, var(--accent), var(--accent-2));
+      box-shadow:0 0 20px rgba(124,255,171,.25);
+      flex-shrink:0;
     }
 
-    .nav a:hover .arrow{
-      opacity:0.72;
-      transform: translateX(2px);
+    .brand-text{
+      display:flex;
+      flex-direction:column;
+      line-height:1.05;
     }
 
-    .hint{
-      margin-top: auto;
-      padding: 10px 8px;
-      font-size: 0.8rem;
-      opacity: 0;
-      transform: translateY(10px);
-      transition: opacity .3s ease .18s, transform .3s ease .18s;
+    .brand-text strong{
+      font-size:.92rem;
+      letter-spacing:-.02em;
     }
 
-    .sidebar.open .hint{
-      opacity:0.55;
-      transform: translateY(0);
+    .brand-text span{
+      font-size:.68rem;
+      color:var(--muted);
     }
 
-    @keyframes menu-appear{
-      to{
-        opacity:0.75;
-      }
+    .top-actions{
+      display:flex;
+      gap:8px;
     }
 
-    /* Reduced motion */
-    @media (prefers-reduced-motion: reduce){
-      *,
-      *::before,
-      *::after{
-        animation: none !important;
-        transition: none !important;
-        scroll-behavior: auto !important;
-      }
+    .icon-btn,
+    .primary-btn,
+    .ghost-btn,
+    .danger-btn{
+      border:none;
+      outline:none;
+      cursor:pointer;
+      transition:.2s ease;
+      font-family:inherit;
+    }
 
-      .container,
-      h1,
-      h2,
-      .line,
-      .marquee,
-      .menu-btn,
-      .side-title,
-      .nav a,
-      .hint{
-        opacity:1 !important;
-        transform:none !important;
-      }
+    .icon-btn{
+      width:42px;
+      height:42px;
+      border-radius:14px;
+      border:1px solid var(--line);
+      background:rgba(10,18,15,.72);
+      color:var(--text);
+      backdrop-filter:blur(16px);
+      font-size:1rem;
+      box-shadow:var(--shadow);
+    }
 
-      .track{
-        animation: scroll-left 18s linear infinite !important;
-      }
+    .icon-btn:hover,
+    .primary-btn:hover,
+    .ghost-btn:hover,
+    .danger-btn:hover{
+      transform:translateY(-1px);
+      filter:brightness(1.03);
+    }
 
-      .marquee.bottom .track{
-        animation: scroll-right 18s linear infinite !important;
+    .bottom-sheet{
+      position:absolute;
+      left:0;
+      right:0;
+      bottom:0;
+      z-index:30;
+      padding:0 12px calc(12px + var(--safe-bottom));
+      pointer-events:none;
+      display:flex;
+      align-items:flex-end;
+      height:100%;
+    }
+
+    .sheet{
+      pointer-events:auto;
+      border-radius:28px;
+      background:linear-gradient(180deg, rgba(15,26,22,.96), rgba(10,17,14,.97));
+      border:1px solid var(--line);
+      box-shadow:var(--shadow);
+      backdrop-filter:blur(24px);
+      overflow:hidden;
+      width:100%;
+      display:flex;
+      flex-direction:column;
+      height:70vh;
+      max-height:82vh;
+      min-height:92px;
+      transition:height .28s ease;
+      will-change:height;
+    }
+
+    .drag-handle{
+      width:100%;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      padding:10px 0 8px;
+      cursor:grab;
+      touch-action:none;
+      user-select:none;
+    }
+
+    .drag-handle:active{
+      cursor:grabbing;
+    }
+
+    .drag{
+      width:56px;
+      height:5px;
+      border-radius:999px;
+      background:rgba(236,255,245,.18);
+    }
+
+    .sheet-content{
+      padding:14px 14px 16px;
+      display:grid;
+      gap:14px;
+      overflow-y:auto;
+      min-height:0;
+      -webkit-overflow-scrolling:touch;
+    }
+
+    .bottom-sheet.sheet-open .sheet{
+      height:72vh;
+    }
+
+    .bottom-sheet.sheet-mid .sheet{
+      height:44vh;
+    }
+
+    .bottom-sheet.sheet-closed .sheet{
+      height:92px;
+    }
+
+    .bottom-sheet.sheet-closed .sheet-content{
+      overflow:hidden;
+    }
+
+    .bottom-sheet.sheet-closed .hero-card,
+    .bottom-sheet.sheet-closed .segmented,
+    .bottom-sheet.sheet-closed .stats,
+    .bottom-sheet.sheet-closed .panel{
+      opacity:0;
+      pointer-events:none;
+      transition:opacity .16s ease;
+    }
+
+    .bottom-sheet.sheet-open .hero-card,
+    .bottom-sheet.sheet-open .segmented,
+    .bottom-sheet.sheet-open .stats,
+    .bottom-sheet.sheet-open .panel,
+    .bottom-sheet.sheet-mid .hero-card,
+    .bottom-sheet.sheet-mid .segmented,
+    .bottom-sheet.sheet-mid .stats,
+    .bottom-sheet.sheet-mid .panel{
+      opacity:1;
+      pointer-events:auto;
+      transition:opacity .2s ease .04s;
+    }
+
+    .hero-card{
+      display:grid;
+      grid-template-columns:1fr auto;
+      gap:10px;
+      align-items:center;
+      border:1px solid var(--line);
+      background:linear-gradient(180deg, rgba(18,32,26,.9), rgba(11,20,16,.9));
+      border-radius:22px;
+      padding:14px;
+    }
+
+    .hero-left h1{
+      font-size:1.12rem;
+      font-weight:800;
+      letter-spacing:-.03em;
+    }
+
+    .hero-left p{
+      margin-top:4px;
+      color:var(--muted);
+      font-size:.85rem;
+      line-height:1.35;
+    }
+
+    .status-pill{
+      padding:9px 12px;
+      border-radius:999px;
+      font-size:.78rem;
+      font-weight:700;
+      background:rgba(124,255,171,.09);
+      color:var(--accent);
+      border:1px solid rgba(124,255,171,.16);
+      white-space:nowrap;
+    }
+
+    .segmented{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:8px;
+      padding:6px;
+      background:rgba(255,255,255,.03);
+      border:1px solid var(--line);
+      border-radius:18px;
+    }
+
+    .segmented button{
+      border:none;
+      border-radius:14px;
+      padding:11px 12px;
+      background:transparent;
+      color:var(--muted);
+      font-weight:700;
+      cursor:pointer;
+      transition:.2s ease;
+    }
+
+    .segmented button.active{
+      background:linear-gradient(135deg, rgba(124,255,171,.14), rgba(72,209,131,.10));
+      color:var(--text);
+      border:1px solid rgba(124,255,171,.14);
+    }
+
+    .stats{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:10px;
+    }
+
+    .stat{
+      border:1px solid var(--line);
+      background:var(--card-2);
+      border-radius:20px;
+      padding:12px;
+    }
+
+    .stat span{
+      display:block;
+      color:var(--muted);
+      font-size:.73rem;
+      margin-bottom:6px;
+    }
+
+    .stat strong{
+      font-size:1.1rem;
+      font-weight:800;
+      letter-spacing:-.03em;
+    }
+
+    .panel{
+      border:1px solid var(--line);
+      background:var(--card-2);
+      border-radius:22px;
+      padding:14px;
+      display:grid;
+      gap:12px;
+    }
+
+    .panel-head{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+    }
+
+    .panel-head h2{
+      font-size:.95rem;
+      letter-spacing:-.02em;
+    }
+
+    .tiny{
+      font-size:.76rem;
+      color:var(--muted);
+    }
+
+    .row{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+    }
+
+    .range-wrap{
+      display:grid;
+      gap:6px;
+    }
+
+    input[type="range"]{
+      width:100%;
+      accent-color: var(--accent);
+    }
+
+    .toggle{
+      position:relative;
+      width:54px;
+      height:32px;
+      border-radius:999px;
+      background:rgba(255,255,255,.08);
+      border:1px solid var(--line);
+      cursor:pointer;
+      transition:.2s ease;
+      flex-shrink:0;
+    }
+
+    .toggle::after{
+      content:"";
+      position:absolute;
+      top:3px;
+      left:3px;
+      width:24px;
+      height:24px;
+      border-radius:50%;
+      background:#fff;
+      transition:.2s ease;
+      box-shadow:0 6px 18px rgba(0,0,0,.25);
+    }
+
+    .toggle.active{
+      background:rgba(124,255,171,.18);
+      border-color:rgba(124,255,171,.26);
+    }
+
+    .toggle.active::after{
+      transform:translateX(22px);
+      background:var(--accent);
+    }
+
+    .btn-row{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:10px;
+    }
+
+    .primary-btn,
+    .ghost-btn,
+    .danger-btn{
+      padding:13px 14px;
+      border-radius:16px;
+      font-weight:800;
+      letter-spacing:-.02em;
+      font-size:.92rem;
+    }
+
+    .primary-btn{
+      background:linear-gradient(135deg, var(--accent), var(--accent-2));
+      color:#07110e;
+    }
+
+    .ghost-btn{
+      background:rgba(255,255,255,.03);
+      color:var(--text);
+      border:1px solid var(--line);
+    }
+
+    .danger-btn{
+      background:rgba(255,124,140,.08);
+      color:#ffc6ce;
+      border:1px solid rgba(255,124,140,.16);
+    }
+
+    .people-list{
+      display:grid;
+      gap:10px;
+      max-height:190px;
+      overflow:auto;
+      padding-right:2px;
+    }
+
+    .person{
+      display:grid;
+      grid-template-columns:auto 1fr auto;
+      align-items:center;
+      gap:12px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.02);
+      border-radius:18px;
+      padding:10px;
+      cursor:pointer;
+      transition:.18s ease;
+    }
+
+    .person:hover{
+      background:rgba(124,255,171,.05);
+    }
+
+    .avatar{
+      width:42px;
+      height:42px;
+      border-radius:50%;
+      background:linear-gradient(135deg, #1c3229, #0f1b17);
+      border:1px solid rgba(124,255,171,.16);
+      display:grid;
+      place-items:center;
+      font-weight:800;
+      color:var(--accent);
+      flex-shrink:0;
+    }
+
+    .person .meta{
+      min-width:0;
+    }
+
+    .person .meta strong{
+      display:block;
+      font-size:.9rem;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+
+    .person .meta span{
+      display:block;
+      margin-top:2px;
+      font-size:.74rem;
+      color:var(--muted);
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+
+    .dot{
+      width:10px;
+      height:10px;
+      border-radius:50%;
+      background:var(--accent);
+      box-shadow:0 0 14px rgba(124,255,171,.45);
+    }
+
+    .auth-overlay,
+    .profile-overlay{
+      position:absolute;
+      inset:0;
+      z-index:60;
+      display:flex;
+      align-items:flex-end;
+      justify-content:center;
+      background:rgba(4,10,8,.66);
+      backdrop-filter:blur(16px);
+      padding:18px 12px calc(18px + var(--safe-bottom));
+    }
+
+    .auth-card,
+    .profile-card{
+      width:100%;
+      border-radius:30px;
+      background:linear-gradient(180deg, rgba(17,31,25,.98), rgba(8,14,11,.98));
+      border:1px solid var(--line);
+      box-shadow:var(--shadow);
+      overflow:hidden;
+      max-height:90vh;
+      overflow:auto;
+    }
+
+    .auth-head,
+    .profile-head{
+      padding:18px 18px 8px;
+    }
+
+    .auth-head h2,
+    .profile-head h2{
+      font-size:1.24rem;
+      letter-spacing:-.03em;
+      margin-bottom:6px;
+    }
+
+    .auth-head p,
+    .profile-head p{
+      color:var(--muted);
+      line-height:1.4;
+      font-size:.88rem;
+    }
+
+    .auth-body,
+    .profile-body{
+      padding:10px 18px 18px;
+      display:grid;
+      gap:12px;
+    }
+
+    .field{
+      display:grid;
+      gap:6px;
+    }
+
+    .field label{
+      font-size:.78rem;
+      color:var(--muted);
+      font-weight:700;
+    }
+
+    .field input{
+      width:100%;
+      border:none;
+      outline:none;
+      border-radius:16px;
+      padding:14px 14px;
+      background:rgba(255,255,255,.04);
+      color:var(--text);
+      border:1px solid var(--line);
+      font:inherit;
+    }
+
+    .field input::placeholder{
+      color:#75907f;
+    }
+
+    .muted-box{
+      background:rgba(124,255,171,.05);
+      border:1px solid rgba(124,255,171,.12);
+      color:#bdd8c9;
+      border-radius:18px;
+      padding:12px;
+      font-size:.84rem;
+      line-height:1.4;
+    }
+
+    .profile-grid{
+      display:grid;
+      grid-template-columns:repeat(2,1fr);
+      gap:10px;
+    }
+
+    .profile-stat{
+      border-radius:18px;
+      padding:12px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.03);
+    }
+
+    .profile-stat span{
+      display:block;
+      color:var(--muted);
+      font-size:.73rem;
+      margin-bottom:6px;
+    }
+
+    .profile-stat strong{
+      font-size:1.02rem;
+      font-weight:800;
+    }
+
+    .linkish{
+      color:var(--accent);
+      cursor:pointer;
+      font-weight:700;
+    }
+
+    .hidden{
+      display:none !important;
+    }
+
+    .leaflet-control-zoom{
+      border:none !important;
+      box-shadow:0 12px 25px rgba(0,0,0,.3) !important;
+    }
+
+    .leaflet-control-zoom a{
+      background:rgba(13,21,18,.92) !important;
+      color:var(--text) !important;
+      border:none !important;
+    }
+
+    .me-marker{
+      width:18px;
+      height:18px;
+      border-radius:50%;
+      background:var(--accent);
+      border:3px solid rgba(7,17,14,.9);
+      box-shadow:0 0 0 8px rgba(124,255,171,.16), 0 0 25px rgba(124,255,171,.35);
+    }
+
+    .user-zone-label{
+      background:rgba(8,14,11,.9);
+      color:var(--text);
+      border:1px solid rgba(124,255,171,.15);
+      padding:8px 10px;
+      border-radius:14px;
+      box-shadow:var(--shadow);
+      font:700 12px Inter, sans-serif;
+    }
+
+    .desktop-caption{
+      display:none;
+    }
+
+    @media (min-width: 860px){
+      .desktop-caption{
+        display:block;
+        position:fixed;
+        left:28px;
+        bottom:24px;
+        color:#86a392;
+        font-size:.85rem;
+        letter-spacing:.02em;
       }
     }
   </style>
 </head>
-
 <body>
+  <div class="desktop-side-glow"></div>
+  <div class="desktop-caption">Hodely Atlas — app móvil dentro de escritorio.</div>
 
-  <!-- Menu Button -->
-  <button class="menu-btn" id="menuBtn" aria-label="Open menu">
-    <div class="burger" aria-hidden="true">
-      <span></span><span></span><span></span>
-    </div>
-  </button>
+  <div class="app-shell">
+    <div id="map"></div>
 
-  <!-- Overlay -->
-  <div class="overlay" id="overlay"></div>
-
-  <!-- Sidebar -->
-  <aside class="sidebar" id="sidebar" aria-label="Navigation menu">
-    <div class="side-title">
-      <div class="brand">Hodely</div>
-      <div class="mini">menu</div>
-    </div>
-
-    <nav class="nav">
-      <a href="https://hodely.net" title="Go to hodely.net">
-        <div class="left">
-          <span class="pill">/</span>
-          <span>Home</span>
+    <div class="topbar">
+      <div class="topbar-inner">
+        <div class="brand">
+          <div class="brand-logo">A</div>
+          <div class="brand-text">
+            <strong>Hodely Atlas</strong>
+            <span>zonas, países y gente en movimiento</span>
+          </div>
         </div>
-        <span class="arrow">↗</span>
-      </a>
 
-      <a href="https://hodely.net/a" title="Go to hodely.net/a">
-        <div class="left">
-          <span class="pill">/a</span>
-          <span>A</span>
-        </div>
-        <span class="arrow">↗</span>
-      </a>
-
-      <a href="https://hodely.net/VerdaNet" title="Go to hodely.net/VerdaNet">
-        <div class="left">
-          <span class="pill">/VerdaNet</span>
-          <span>VerdaNet</span>
-        </div>
-        <span class="arrow">↗</span>
-      </a>
-
-      <a href="https://hodely.net/HodelyDrive" title="Go to hodely.net/HodelyDrive">
-        <div class="left">
-          <span class="pill">/Drive</span>
-          <span>HodelyDrive</span>
-        </div>
-        <span class="arrow">↗</span>
-      </a>
-
-      <a href="https://hodely.net/screenshot" title="Go to hodely.net/screenshot">
-        <div class="left">
-          <span class="pill">/screenshot</span>
-          <span>Screenshot</span>
-        </div>
-        <span class="arrow">↗</span>
-      </a>
-
-      <a href="https://www.hodely.net/schedule" title="Go to hodely.net/schedule">
-        <div class="left">
-          <span class="pill">/schedule</span>
-          <span>Schedule</span>
-        </div>
-        <span class="arrow">↗</span>
-      </a>
-
-      <a href="https://hodely.net/periodictable" title="Go to hodely.net/periodictable">
-        <div class="left">
-          <span class="pill">/table</span>
-          <span>Periodic Table</span>
-        </div>
-        <span class="arrow">↗</span>
-      </a>
-
-      <a href="https://hodely.net/HodelyOS" title="Go to hodely.net/HodelyOS">
-        <div class="left">
-          <span class="pill">/OS</span>
-          <span>HodelyOS</span>
-        </div>
-        <span class="arrow">↗</span>
-      </a>
-
-      <a href="https://hodely.net/atlas/" title="Go to hodely.net/atlas/">
-        <div class="left">
-          <span class="pill">/atlas</span>
-          <span>Atlas</span>
-        </div>
-        <span class="arrow">↗</span>
-      </a>
-      
-      <a href="https://hodely.net/Classifactsmuseum/" title="Go to hodely.net/Classifactsmuseum/">
-        <div class="left">
-          <span class="pill">/Museum</span>
-          <span>Classifacts</span>
-        </div>
-        <span class="arrow">↗</span>
-      </a>
-
-      <a href="https://hodely.net/HodelyGames" title="Go to hodely.net/HodelyGames">
-        <div class="left">
-          <span class="pill">/Games</span>
-          <span>HodelyGames</span>
-        </div>
-        <span class="arrow">↗</span>
-      </a>
-    </nav>
-
-    <div class="hint">Tip: press <b>ESC</b> to close.</div>
-  </aside>
-
-  <div class="container" id="hero">
-
-    <!-- TOP MARQUEE (right -> left) -->
-    <div class="marquee top" aria-hidden="true">
-      <div class="track">
-        <div class="block">
-          <span class="seg f1">⌘ ⟁ ∆ Ø Ξ Λ ⌬</span><span class="dot">•</span>
-          <span class="seg f2">✦ ✧ † ꙮ ⊕</span><span class="dot">•</span>
-          <span class="seg f3">ᚠ ⌁ ⚑ ⟡</span><span class="dot">•</span>
-          <span class="seg f4">H O D E L Y</span><span class="dot">•</span>
-          <span class="seg f1">⧉ ⌂ ⊗ ⊘</span><span class="dot">•</span>
-          <span class="seg f2">✶ ✷ ✸ ✹</span><span class="dot">•</span>
-          <span class="seg f3">⟟ ⟠ ⟐ ⟑</span>
-        </div>
-        <div class="block">
-          <span class="seg f1">⌘ ⟁ ∆ Ø Ξ Λ ⌬</span><span class="dot">•</span>
-          <span class="seg f2">✦ ✧ † ꙮ ⊕</span><span class="dot">•</span>
-          <span class="seg f3">ᚠ ⌁ ⚑ ⟡</span><span class="dot">•</span>
-          <span class="seg f4">H O D E L Y</span><span class="dot">•</span>
-          <span class="seg f1">⧉ ⌂ ⊗ ⊘</span><span class="dot">•</span>
-          <span class="seg f2">✶ ✷ ✸ ✹</span><span class="dot">•</span>
-          <span class="seg f3">⟟ ⟠ ⟐ ⟑</span>
+        <div class="top-actions">
+          <button class="icon-btn" id="locateBtn" title="Ir a mi zona">◎</button>
+          <button class="icon-btn" id="openProfileBtn" title="Mi perfil">☻</button>
         </div>
       </div>
     </div>
 
-    <!-- TITLE -->
-    <h1 id="title">Hodely</h1>
-    <div class="line"></div>
-    <h2>Hodely.net</h2>
-
-    <!-- BOTTOM MARQUEE (left -> right) -->
-    <div class="marquee bottom" aria-hidden="true">
-      <div class="track">
-        <div class="block">
-          <span class="seg f3">⟑ ⟐ ⟠ ⟟</span><span class="dot">•</span>
-          <span class="seg f2">✹ ✸ ✷ ✶</span><span class="dot">•</span>
-          <span class="seg f1">⊘ ⊗ ⌂ ⧉</span><span class="dot">•</span>
-          <span class="seg f4">H O D E L Y . N E T</span><span class="dot">•</span>
-          <span class="seg f3">⟡ ⚑ ⌁ ᚠ</span><span class="dot">•</span>
-          <span class="seg f2">⊕ ꙮ † ✧ ✦</span><span class="dot">•</span>
-          <span class="seg f1">⌬ Λ Ξ Ø ∆ ⟁ ⌘</span>
+    <div class="bottom-sheet sheet-mid" id="bottomSheet">
+      <div class="sheet" id="sheet">
+        <div class="drag-handle" id="dragHandle">
+          <div class="drag"></div>
         </div>
-        <div class="block">
-          <span class="seg f3">⟑ ⟐ ⟠ ⟟</span><span class="dot">•</span>
-          <span class="seg f2">✹ ✸ ✷ ✶</span><span class="dot">•</span>
-          <span class="seg f1">⊘ ⊗ ⌂ ⧉</span><span class="dot">•</span>
-          <span class="seg f4">H O D E L Y . N E T</span><span class="dot">•</span>
-          <span class="seg f3">⟡ ⚑ ⌁ ᚠ</span><span class="dot">•</span>
-          <span class="seg f2">⊕ ꙮ † ✧ ✦</span><span class="dot">•</span>
-          <span class="seg f1">⌬ Λ Ξ Ø ∆ ⟁ ⌘</span>
+
+        <div class="sheet-content" id="sheetContent">
+          <div class="hero-card">
+            <div class="hero-left">
+              <h1>Comparte dónde estás sin regalar tu ubicación exacta</h1>
+              <p>Tu zona pública se redondea y se amplía. Más atlas, menos stalker simulator.</p>
+            </div>
+            <div class="status-pill" id="shareStatus">Privado</div>
+          </div>
+
+          <div class="segmented">
+            <button class="active" data-mode="zones">Zonas</button>
+            <button data-mode="countries">Países</button>
+          </div>
+
+          <div class="stats">
+            <div class="stat">
+              <span>Zonas visitadas</span>
+              <strong id="zonesCount">0</strong>
+            </div>
+            <div class="stat">
+              <span>Países</span>
+              <strong id="countriesCount">0</strong>
+            </div>
+            <div class="stat">
+              <span>Personas visibles</span>
+              <strong id="peopleCount">0</strong>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-head">
+              <h2>Privacidad de ubicación</h2>
+              <span class="tiny" id="privacySummary">3 zonas</span>
+            </div>
+
+            <div class="range-wrap">
+              <div class="row">
+                <span class="tiny">Rango compartido</span>
+                <strong id="rangeValue">3 zonas</strong>
+              </div>
+              <input type="range" min="1" max="8" step="1" value="3" id="privacyRange">
+              <div class="tiny">1 = más preciso · 8 = más difuso</div>
+            </div>
+
+            <div class="row">
+              <div>
+                <strong style="display:block;font-size:.95rem;">Perfil público</strong>
+                <span class="tiny">Permite que otros vean tus países y zonas recorridas</span>
+              </div>
+              <button class="toggle active" id="publicProfileToggle" aria-label="Perfil público"></button>
+            </div>
+
+            <div class="row">
+              <div>
+                <strong style="display:block;font-size:.95rem;">Mostrarme en el mapa</strong>
+                <span class="tiny">Publica una zona segura, no tu punto exacto</span>
+              </div>
+              <button class="toggle" id="visibleToggle" aria-label="Visible en mapa"></button>
+            </div>
+
+            <div class="btn-row">
+              <button class="ghost-btn" id="refreshLocationBtn">Actualizar zona</button>
+              <button class="primary-btn" id="savePrivacyBtn">Guardar ajustes</button>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-head">
+              <h2>Exploradores cerca</h2>
+              <span class="tiny">perfiles visibles</span>
+            </div>
+            <div class="people-list" id="peopleList">
+              <div class="tiny">Aún no hay perfiles cargados.</div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
 
+    <div class="auth-overlay" id="authOverlay">
+      <div class="auth-card">
+        <div class="auth-head">
+          <h2>Entrar en Hodely Atlas</h2>
+          <p>Crea cuenta para aparecer en el mapa con una zona segura, guardar países y compartir tu perfil si quieres.</p>
+        </div>
+
+        <div class="auth-body">
+          <div class="segmented" id="authModeSegment">
+            <button class="active" data-auth="login">Iniciar sesión</button>
+            <button data-auth="signup">Crear cuenta</button>
+          </div>
+
+          <div class="field" id="nameField" style="display:none;">
+            <label>Nombre público</label>
+            <input id="displayNameInput" type="text" maxlength="28" placeholder="Ej. Hodely" />
+          </div>
+
+          <div class="field">
+            <label>Correo</label>
+            <input id="emailInput" type="email" placeholder="tuemail@ejemplo.com" />
+          </div>
+
+          <div class="field">
+            <label>Contraseña</label>
+            <input id="passwordInput" type="password" placeholder="mínimo 6 caracteres" />
+          </div>
+
+          <div class="muted-box">
+            Tu ubicación exacta no se enseña públicamente. Se convierte en una zona amplia. Porque la gracia es explorar, no hacer de GPS humano.
+          </div>
+
+          <div class="btn-row">
+            <button class="ghost-btn" id="continueAnonBtn">Ver mapa</button>
+            <button class="primary-btn" id="authSubmitBtn">Entrar</button>
+          </div>
+
+          <div class="tiny" id="authMessage">Puedes entrar o crear cuenta para usar todas las funciones.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="profile-overlay hidden" id="profileOverlay">
+      <div class="profile-card">
+        <div class="profile-head">
+          <h2 id="profileTitle">Perfil</h2>
+          <p id="profileSubtitle">Información pública del explorador.</p>
+        </div>
+        <div class="profile-body">
+          <div class="profile-grid">
+            <div class="profile-stat">
+              <span>Países</span>
+              <strong id="profileCountries">0</strong>
+            </div>
+            <div class="profile-stat">
+              <span>Zonas</span>
+              <strong id="profileZones">0</strong>
+            </div>
+            <div class="profile-stat">
+              <span>Visible</span>
+              <strong id="profileVisible">No</strong>
+            </div>
+            <div class="profile-stat">
+              <span>Privacidad</span>
+              <strong id="profilePrivacy">3 zonas</strong>
+            </div>
+          </div>
+
+          <div class="muted-box" id="profileMessage">
+            Este usuario no ha activado más datos públicos.
+          </div>
+
+          <div class="btn-row">
+            <button class="ghost-btn" id="focusUserBtn">Ver en mapa</button>
+            <button class="primary-btn" id="closeProfileBtn">Cerrar</button>
+          </div>
+
+          <button class="danger-btn hidden" id="logoutBtn">Cerrar sesión</button>
+        </div>
+      </div>
+    </div>
   </div>
 
-  <script>
-    const menuBtn = document.getElementById('menuBtn');
-    const sidebar = document.getElementById('sidebar');
-    const overlay = document.getElementById('overlay');
-    const hero = document.getElementById('hero');
-    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
 
-    function openMenu(){
-      sidebar.classList.add('open');
-      overlay.classList.add('show');
-      menuBtn.classList.add('active');
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
+    import { getAnalytics, isSupported as analyticsSupported } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-analytics.js";
+    import {
+      getAuth,
+      onAuthStateChanged,
+      createUserWithEmailAndPassword,
+      signInWithEmailAndPassword,
+      signOut,
+      updateProfile
+    } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
+    import {
+      getFirestore,
+      doc,
+      setDoc,
+      updateDoc,
+      getDoc,
+      collection,
+      onSnapshot,
+      serverTimestamp,
+      query,
+      where
+    } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCgDXs_Q8lgjd3FNajKwuh6Xe3k5uddVnc",
+      authDomain: "atlas-496ff.firebaseapp.com",
+      projectId: "atlas-496ff",
+      storageBucket: "atlas-496ff.firebasestorage.app",
+      messagingSenderId: "534977636069",
+      appId: "1:534977636069:web:2e3990a52078a33fa9160c",
+      measurementId: "G-RMTZ4Z9RCS"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    analyticsSupported().then((ok) => {
+      if (ok) getAnalytics(app);
+    }).catch(() => {});
+
+    const map = L.map("map", {
+      zoomControl: false,
+      worldCopyJump: true
+    }).setView([20, 0], 2);
+
+    L.control.zoom({ position: "bottomright" }).addTo(map);
+
+    L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
+      attribution: '&copy; OpenStreetMap &copy; CARTO',
+      subdomains: "abcd",
+      maxZoom: 19
+    }).addTo(map);
+
+    const els = {
+      shareStatus: document.getElementById("shareStatus"),
+      privacyRange: document.getElementById("privacyRange"),
+      rangeValue: document.getElementById("rangeValue"),
+      privacySummary: document.getElementById("privacySummary"),
+      publicProfileToggle: document.getElementById("publicProfileToggle"),
+      visibleToggle: document.getElementById("visibleToggle"),
+      refreshLocationBtn: document.getElementById("refreshLocationBtn"),
+      savePrivacyBtn: document.getElementById("savePrivacyBtn"),
+      peopleList: document.getElementById("peopleList"),
+      zonesCount: document.getElementById("zonesCount"),
+      countriesCount: document.getElementById("countriesCount"),
+      peopleCount: document.getElementById("peopleCount"),
+      authOverlay: document.getElementById("authOverlay"),
+      authSubmitBtn: document.getElementById("authSubmitBtn"),
+      continueAnonBtn: document.getElementById("continueAnonBtn"),
+      authMessage: document.getElementById("authMessage"),
+      emailInput: document.getElementById("emailInput"),
+      passwordInput: document.getElementById("passwordInput"),
+      displayNameInput: document.getElementById("displayNameInput"),
+      nameField: document.getElementById("nameField"),
+      authModeSegment: document.getElementById("authModeSegment"),
+      locateBtn: document.getElementById("locateBtn"),
+      openProfileBtn: document.getElementById("openProfileBtn"),
+      profileOverlay: document.getElementById("profileOverlay"),
+      profileTitle: document.getElementById("profileTitle"),
+      profileSubtitle: document.getElementById("profileSubtitle"),
+      profileCountries: document.getElementById("profileCountries"),
+      profileZones: document.getElementById("profileZones"),
+      profileVisible: document.getElementById("profileVisible"),
+      profilePrivacy: document.getElementById("profilePrivacy"),
+      profileMessage: document.getElementById("profileMessage"),
+      focusUserBtn: document.getElementById("focusUserBtn"),
+      closeProfileBtn: document.getElementById("closeProfileBtn"),
+      logoutBtn: document.getElementById("logoutBtn"),
+      bottomSheet: document.getElementById("bottomSheet"),
+      sheet: document.getElementById("sheet"),
+      dragHandle: document.getElementById("dragHandle"),
+      sheetContent: document.getElementById("sheetContent")
+    };
+
+    let authMode = "login";
+    let currentUserData = null;
+    let currentPublicTarget = null;
+    let peopleMarkers = [];
+    let peopleCircles = [];
+    let meMarker = null;
+    let mePublicCircle = null;
+    let meRealCoords = null;
+    let myCountry = null;
+    let usersCache = [];
+
+    let sheetState = "mid";
+    let dragStartY = 0;
+    let dragStartHeight = 0;
+    let draggingSheet = false;
+
+    const zoneAreaKm2 = 19;
+    const zoneSideKm = Math.sqrt(zoneAreaKm2);
+
+    function kmToLatDeg(km){
+      return km / 111.32;
     }
 
-    function closeMenu(){
-      sidebar.classList.remove('open');
-      overlay.classList.remove('show');
-      menuBtn.classList.remove('active');
+    function kmToLngDeg(km, lat){
+      return km / (111.32 * Math.cos((lat * Math.PI) / 180) || 0.0001);
     }
 
-    function toggleMenu(){
-      if(sidebar.classList.contains('open')) closeMenu();
-      else openMenu();
+    function getZoneSizeDegrees(lat){
+      return {
+        latDeg: kmToLatDeg(zoneSideKm),
+        lngDeg: kmToLngDeg(zoneSideKm, lat)
+      };
     }
 
-    menuBtn.addEventListener('click', toggleMenu);
-    overlay.addEventListener('click', closeMenu);
+    function getZoneCell(lat, lng){
+      const { latDeg, lngDeg } = getZoneSizeDegrees(lat);
+      const latIndex = Math.floor(lat / latDeg);
+      const lngIndex = Math.floor(lng / lngDeg);
+      return { latIndex, lngIndex, latDeg, lngDeg };
+    }
 
-    document.addEventListener('keydown', (e) => {
-      if(e.key === 'Escape') closeMenu();
+    function getZoneCenterFromCell(cell){
+      return {
+        lat: (cell.latIndex + 0.5) * cell.latDeg,
+        lng: (cell.lngIndex + 0.5) * cell.lngDeg
+      };
+    }
+
+    function getSafePublicZone(lat, lng, privacyZones = 3){
+      const base = getZoneCell(lat, lng);
+      const offset = Math.max(1, Math.round(privacyZones / 2));
+
+      const pseudoShiftX = ((base.latIndex * 17 + base.lngIndex * 13) % (offset * 2 + 1)) - offset;
+      const pseudoShiftY = ((base.latIndex * 11 + base.lngIndex * 19) % (offset * 2 + 1)) - offset;
+
+      const safeCell = {
+        ...base,
+        latIndex: base.latIndex + pseudoShiftX,
+        lngIndex: base.lngIndex + pseudoShiftY
+      };
+
+      const center = getZoneCenterFromCell(safeCell);
+      const radiusKm = Math.max(zoneSideKm * privacyZones * 0.75, 3.4);
+
+      return {
+        ...center,
+        radiusKm,
+        zoneKey: `${safeCell.latIndex}_${safeCell.lngIndex}`,
+        display: `~${privacyZones} zonas`
+      };
+    }
+
+    function getVisitZoneKey(lat, lng){
+      const cell = getZoneCell(lat, lng);
+      return `${cell.latIndex}_${cell.lngIndex}`;
+    }
+
+    async function reverseCountry(lat, lng){
+      try{
+        const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}&zoom=3&addressdetails=1`, {
+          headers: { "Accept-Language": "es" }
+        });
+        const data = await res.json();
+        return data?.address?.country || data?.address?.country_code?.toUpperCase() || "Desconocido";
+      }catch{
+        return "Desconocido";
+      }
+    }
+
+    function setToggleState(el, active){
+      el.classList.toggle("active", !!active);
+    }
+
+    function setAuthMessage(message, isError = false){
+      els.authMessage.textContent = message;
+      els.authMessage.style.color = isError ? "#ff9cab" : "";
+    }
+
+    function setAuthMode(mode){
+      authMode = mode;
+      [...els.authModeSegment.querySelectorAll("button")].forEach(btn => {
+        btn.classList.toggle("active", btn.dataset.auth === mode);
+      });
+      els.nameField.style.display = mode === "signup" ? "grid" : "none";
+      els.authSubmitBtn.textContent = mode === "signup" ? "Crear cuenta" : "Entrar";
+      setAuthMessage(
+        mode === "signup"
+          ? "Tu nombre será el que verá la gente en el mapa."
+          : "Entra para compartir zona y guardar progreso."
+      );
+    }
+
+    function updatePrivacyText(val){
+      const text = `${val} ${val === 1 ? "zona" : "zonas"}`;
+      els.rangeValue.textContent = text;
+      els.privacySummary.textContent = text;
+    }
+
+    function initials(name = "?"){
+      return name.trim().slice(0,2).toUpperCase();
+    }
+
+    function escapeHtml(str = ""){
+      return str
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;");
+    }
+
+    function setStatsFromUser(data){
+      els.zonesCount.textContent = (data?.visitedZones?.length || 0).toString();
+      els.countriesCount.textContent = (data?.visitedCountries?.length || 0).toString();
+    }
+
+    function getSheetHeights(){
+      const vh = window.innerHeight;
+      return {
+        open: Math.min(vh * 0.72, vh - 24),
+        mid: Math.min(vh * 0.44, vh - 24),
+        closed: 92
+      };
+    }
+
+    function applySheetState(state, animate = true){
+      sheetState = state;
+      els.bottomSheet.classList.remove("sheet-open", "sheet-mid", "sheet-closed");
+      els.bottomSheet.classList.add(`sheet-${state}`);
+
+      if(!animate){
+        els.sheet.style.transition = "none";
+        requestAnimationFrame(() => {
+          els.sheet.style.transition = "";
+        });
+      }
+
+      setTimeout(() => {
+        map.invalidateSize();
+      }, 320);
+    }
+
+    function snapSheetByHeight(height){
+      const heights = getSheetHeights();
+      const points = [
+        { name: "open", value: heights.open },
+        { name: "mid", value: heights.mid },
+        { name: "closed", value: heights.closed }
+      ];
+
+      let closest = points[0];
+      for(const p of points){
+        if(Math.abs(p.value - height) < Math.abs(closest.value - height)){
+          closest = p;
+        }
+      }
+
+      applySheetState(closest.name);
+    }
+
+    function startSheetDrag(clientY){
+      draggingSheet = true;
+      dragStartY = clientY;
+      dragStartHeight = els.sheet.getBoundingClientRect().height;
+      els.sheet.style.transition = "none";
+      document.body.style.userSelect = "none";
+    }
+
+    function moveSheetDrag(clientY){
+      if(!draggingSheet) return;
+
+      const delta = dragStartY - clientY;
+      const heights = getSheetHeights();
+
+      let nextHeight = dragStartHeight + delta;
+      nextHeight = Math.max(heights.closed, Math.min(heights.open, nextHeight));
+
+      els.sheet.style.height = `${nextHeight}px`;
+    }
+
+    function endSheetDrag(){
+      if(!draggingSheet) return;
+      draggingSheet = false;
+      document.body.style.userSelect = "";
+
+      const currentHeight = els.sheet.getBoundingClientRect().height;
+      els.sheet.style.transition = "";
+      els.sheet.style.height = "";
+      snapSheetByHeight(currentHeight);
+    }
+
+    function renderPeopleList(users){
+      const visible = users.filter(u => u.visibleOnMap);
+      els.peopleCount.textContent = visible.length.toString();
+
+      if(!visible.length){
+        els.peopleList.innerHTML = `<div class="tiny">No hay exploradores visibles todavía.</div>`;
+        return;
+      }
+
+      els.peopleList.innerHTML = visible.map(user => `
+        <div class="person" data-uid="${user.uid}">
+          <div class="avatar">${escapeHtml(initials(user.displayName || "A"))}</div>
+          <div class="meta">
+            <strong>${escapeHtml(user.displayName || "Explorador")}</strong>
+            <span>${escapeHtml(user.publicCountry || "Ubicación difusa")} · ${(user.visitedCountries?.length || 0)} países</span>
+          </div>
+          <div class="dot"></div>
+        </div>
+      `).join("");
+
+      [...els.peopleList.querySelectorAll(".person")].forEach(card => {
+        card.addEventListener("click", () => {
+          const user = users.find(u => u.uid === card.dataset.uid);
+          if(user) openUserProfile(user, false);
+        });
+      });
+    }
+
+    function clearPeopleLayers(){
+      peopleMarkers.forEach(m => map.removeLayer(m));
+      peopleCircles.forEach(c => map.removeLayer(c));
+      peopleMarkers = [];
+      peopleCircles = [];
+    }
+
+    function renderUsersOnMap(users){
+      clearPeopleLayers();
+
+      users
+        .filter(u => u.visibleOnMap && u.publicLat != null && u.publicLng != null)
+        .forEach(user => {
+          const circle = L.circle([user.publicLat, user.publicLng], {
+            radius: (user.publicRadiusKm || 10) * 1000,
+            color: "#7cffab",
+            weight: 1,
+            fillColor: "#7cffab",
+            fillOpacity: 0.08
+          }).addTo(map);
+
+          const marker = L.marker([user.publicLat, user.publicLng], {
+            title: user.displayName || "Explorador"
+          }).addTo(map);
+
+          marker.bindPopup(`
+            <div class="user-zone-label">
+              ${escapeHtml(user.displayName || "Explorador")}<br>
+              ${escapeHtml(user.publicCountry || "Zona pública")} · ${(user.privacyZones || 3)} zonas
+            </div>
+          `);
+
+          marker.on("click", () => openUserProfile(user, false));
+
+          peopleCircles.push(circle);
+          peopleMarkers.push(marker);
+        });
+    }
+
+    function drawMe(lat, lng){
+      if(meMarker) map.removeLayer(meMarker);
+
+      const icon = L.divIcon({
+        className: "",
+        html: `<div class="me-marker"></div>`,
+        iconSize: [18,18],
+        iconAnchor: [9,9]
+      });
+
+      meMarker = L.marker([lat, lng], { icon, zIndexOffset: 1000 }).addTo(map);
+    }
+
+    function drawMyPublicZone(publicLat, publicLng, radiusKm){
+      if(mePublicCircle) map.removeLayer(mePublicCircle);
+
+      mePublicCircle = L.circle([publicLat, publicLng], {
+        radius: radiusKm * 1000,
+        color: "#48d183",
+        weight: 2,
+        fillColor: "#7cffab",
+        fillOpacity: 0.08,
+        dashArray: "6 10"
+      }).addTo(map);
+    }
+
+    async function getCurrentPositionPromise(){
+      return new Promise((resolve, reject) => {
+        if(!navigator.geolocation){
+          reject(new Error("Geolocalización no soportada"));
+          return;
+        }
+
+        navigator.geolocation.getCurrentPosition(resolve, reject, {
+          enableHighAccuracy: true,
+          timeout: 15000,
+          maximumAge: 30000
+        });
+      });
+    }
+
+    async function captureMyLocation(saveToDb = false){
+      try{
+        const pos = await getCurrentPositionPromise();
+        const lat = pos.coords.latitude;
+        const lng = pos.coords.longitude;
+        meRealCoords = { lat, lng };
+
+        drawMe(lat, lng);
+        map.setView([lat, lng], 11);
+
+        if(currentUserData){
+          const privacy = Number(currentUserData.privacyZones || 3);
+          const safe = getSafePublicZone(lat, lng, privacy);
+          drawMyPublicZone(safe.lat, safe.lng, safe.radiusKm);
+
+          if(saveToDb && auth.currentUser && currentUserData.visibleOnMap){
+            const country = await reverseCountry(lat, lng);
+            myCountry = country;
+
+            const zoneKey = getVisitZoneKey(lat, lng);
+            const visitedZones = Array.from(new Set([...(currentUserData.visitedZones || []), zoneKey]));
+            const visitedCountries = Array.from(new Set([...(currentUserData.visitedCountries || []), country]));
+
+            currentUserData = {
+              ...currentUserData,
+              publicLat: safe.lat,
+              publicLng: safe.lng,
+              publicRadiusKm: safe.radiusKm,
+              publicCountry: country,
+              visitedZones,
+              visitedCountries
+            };
+
+            await updateDoc(doc(db, "users", auth.currentUser.uid), {
+              publicLat: safe.lat,
+              publicLng: safe.lng,
+              publicRadiusKm: safe.radiusKm,
+              publicCountry: country,
+              lastActive: serverTimestamp(),
+              visitedZones,
+              visitedCountries
+            });
+
+            setStatsFromUser(currentUserData);
+            els.shareStatus.textContent = "Visible";
+          }
+        }
+      }catch(err){
+        console.error(err);
+        alert("No se pudo obtener tu ubicación. Revisa permisos de localización.");
+      }
+    }
+
+    async function savePrivacySettings(){
+      if(!auth.currentUser) {
+        alert("Primero inicia sesión.");
+        return;
+      }
+
+      const privacyZones = Number(els.privacyRange.value);
+      const isPublicProfile = els.publicProfileToggle.classList.contains("active");
+      const isVisible = els.visibleToggle.classList.contains("active");
+
+      const payload = {
+        privacyZones,
+        publicProfile: isPublicProfile,
+        visibleOnMap: isVisible,
+        lastActive: serverTimestamp()
+      };
+
+      if(meRealCoords && isVisible){
+        const country = myCountry || await reverseCountry(meRealCoords.lat, meRealCoords.lng);
+        const safe = getSafePublicZone(meRealCoords.lat, meRealCoords.lng, privacyZones);
+        payload.publicLat = safe.lat;
+        payload.publicLng = safe.lng;
+        payload.publicRadiusKm = safe.radiusKm;
+        payload.publicCountry = country;
+        drawMyPublicZone(safe.lat, safe.lng, safe.radiusKm);
+      }
+
+      await updateDoc(doc(db, "users", auth.currentUser.uid), payload);
+
+      currentUserData = { ...currentUserData, ...payload };
+      els.shareStatus.textContent = isVisible ? "Visible" : "Privado";
+      alert("Ajustes guardados.");
+    }
+
+    async function createUserDoc(user, displayName){
+      const existing = await getDoc(doc(db, "users", user.uid));
+      if(existing.exists()){
+        currentUserData = { uid: user.uid, ...existing.data() };
+        loadUserIntoUI(currentUserData);
+        return;
+      }
+
+      const cleanName = displayName?.trim() || user.displayName || "Explorador";
+      const payload = {
+        uid: user.uid,
+        displayName: cleanName,
+        email: user.email,
+        publicProfile: true,
+        visibleOnMap: false,
+        privacyZones: 3,
+        publicLat: null,
+        publicLng: null,
+        publicRadiusKm: null,
+        publicCountry: null,
+        visitedZones: [],
+        visitedCountries: [],
+        createdAt: serverTimestamp(),
+        lastActive: serverTimestamp()
+      };
+
+      await setDoc(doc(db, "users", user.uid), payload);
+      currentUserData = payload;
+      loadUserIntoUI(payload);
+    }
+
+    function loadUserIntoUI(data){
+      currentUserData = data;
+      setToggleState(els.publicProfileToggle, !!data.publicProfile);
+      setToggleState(els.visibleToggle, !!data.visibleOnMap);
+      els.privacyRange.value = data.privacyZones || 3;
+      updatePrivacyText(data.privacyZones || 3);
+      els.shareStatus.textContent = data.visibleOnMap ? "Visible" : "Privado";
+      setStatsFromUser(data);
+    }
+
+    function openUserProfile(user, isSelf = false){
+      currentPublicTarget = user;
+      els.profileOverlay.classList.remove("hidden");
+      els.profileTitle.textContent = user.displayName || "Explorador";
+      els.profileSubtitle.textContent = user.publicCountry
+        ? `Zona pública: ${user.publicCountry}`
+        : "Perfil atlas";
+
+      const profileAllowed = !!user.publicProfile || isSelf;
+
+      els.profileCountries.textContent = profileAllowed ? String(user.visitedCountries?.length || 0) : "—";
+      els.profileZones.textContent = profileAllowed ? String(user.visitedZones?.length || 0) : "—";
+      els.profileVisible.textContent = user.visibleOnMap ? "Sí" : "No";
+      els.profilePrivacy.textContent = `${user.privacyZones || 3} ${(user.privacyZones || 3) === 1 ? "zona" : "zonas"}`;
+
+      els.profileMessage.textContent = profileAllowed
+        ? `Este explorador ha recorrido ${user.visitedCountries?.length || 0} países y ${user.visitedZones?.length || 0} zonas.`
+        : "Este usuario no ha activado estadísticas públicas.";
+
+      els.logoutBtn.classList.toggle("hidden", !isSelf);
+    }
+
+    function closeProfile(){
+      els.profileOverlay.classList.add("hidden");
+      currentPublicTarget = null;
+    }
+
+    async function loginOrSignup(){
+      const email = els.emailInput.value.trim();
+      const password = els.passwordInput.value.trim();
+      const displayName = els.displayNameInput.value.trim();
+
+      if(!email || !password){
+        setAuthMessage("Pon correo y contraseña.", true);
+        return;
+      }
+
+      try{
+        if(authMode === "signup"){
+          if(!displayName){
+            setAuthMessage("Pon un nombre público.", true);
+            return;
+          }
+
+          const cred = await createUserWithEmailAndPassword(auth, email, password);
+          await updateProfile(cred.user, { displayName });
+          await createUserDoc(cred.user, displayName);
+          els.authOverlay.classList.add("hidden");
+          setTimeout(() => map.invalidateSize(), 250);
+          await captureMyLocation(false);
+        }else{
+          const cred = await signInWithEmailAndPassword(auth, email, password);
+          const snap = await getDoc(doc(db, "users", cred.user.uid));
+
+          if(snap.exists()){
+            loadUserIntoUI({ uid: cred.user.uid, ...snap.data() });
+          }else{
+            await createUserDoc(cred.user, cred.user.displayName || "Explorador");
+          }
+
+          els.authOverlay.classList.add("hidden");
+          setTimeout(() => map.invalidateSize(), 250);
+          await captureMyLocation(false);
+        }
+
+        setAuthMessage("Todo correcto.");
+      }catch(err){
+        console.error(err);
+
+        switch(err.code){
+          case "auth/email-already-in-use":
+            setAuthMessage("Ese correo ya tiene cuenta. Inicia sesión.", true);
+            setAuthMode("login");
+            break;
+          case "auth/invalid-email":
+            setAuthMessage("El correo no es válido.", true);
+            break;
+          case "auth/weak-password":
+            setAuthMessage("La contraseña es demasiado débil. Usa al menos 6 caracteres.", true);
+            break;
+          case "auth/user-not-found":
+            setAuthMessage("No existe ninguna cuenta con ese correo.", true);
+            break;
+          case "auth/wrong-password":
+          case "auth/invalid-credential":
+            setAuthMessage("Correo o contraseña incorrectos.", true);
+            break;
+          case "auth/too-many-requests":
+            setAuthMessage("Demasiados intentos. Espera un poco y vuelve a probar.", true);
+            break;
+          default:
+            setAuthMessage("Ha ocurrido un error. Vuelve a intentarlo.", true);
+        }
+      }
+    }
+
+    function setupUsersRealtime(){
+      const q = query(collection(db, "users"), where("visibleOnMap", "in", [true, false]));
+      onSnapshot(q, (snapshot) => {
+        usersCache = snapshot.docs.map(d => d.data());
+        const visibleUsers = usersCache.filter(u => u.visibleOnMap);
+        renderUsersOnMap(visibleUsers);
+        renderPeopleList(visibleUsers);
+      });
+    }
+
+    [...document.querySelectorAll(".segmented button[data-mode]")].forEach(btn => {
+      btn.addEventListener("click", () => {
+        [...document.querySelectorAll(".segmented button[data-mode]")].forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+
+        const isCountries = btn.dataset.mode === "countries";
+        document.getElementById("zonesCount").parentElement.style.opacity = isCountries ? ".55" : "1";
+        document.getElementById("countriesCount").parentElement.style.opacity = isCountries ? "1" : ".85";
+      });
     });
 
-    // Parallax muy sutil, sin romper la estética
-    if(!prefersReducedMotion){
-      window.addEventListener('mousemove', (e) => {
-        const x = (e.clientX / window.innerWidth - 0.5) * 8;
-        const y = (e.clientY / window.innerHeight - 0.5) * 8;
-        hero.style.transform = `translate(${x * 0.35}px, ${y * 0.35}px)`;
-      });
+    [...els.authModeSegment.querySelectorAll("button")].forEach(btn => {
+      btn.addEventListener("click", () => setAuthMode(btn.dataset.auth));
+    });
 
-      window.addEventListener('mouseleave', () => {
-        hero.style.transform = `translate(0px, 0px)`;
-      });
-    }
+    els.publicProfileToggle.addEventListener("click", () => {
+      els.publicProfileToggle.classList.toggle("active");
+    });
+
+    els.visibleToggle.addEventListener("click", () => {
+      els.visibleToggle.classList.toggle("active");
+      els.shareStatus.textContent = els.visibleToggle.classList.contains("active") ? "Visible" : "Privado";
+    });
+
+    els.privacyRange.addEventListener("input", (e) => {
+      updatePrivacyText(Number(e.target.value));
+    });
+
+    els.authSubmitBtn.addEventListener("click", loginOrSignup);
+
+    els.continueAnonBtn.addEventListener("click", () => {
+      els.authOverlay.classList.add("hidden");
+      setTimeout(() => map.invalidateSize(), 250);
+    });
+
+    els.refreshLocationBtn.addEventListener("click", async () => {
+      await captureMyLocation(true);
+    });
+
+    els.savePrivacyBtn.addEventListener("click", savePrivacySettings);
+
+    els.locateBtn.addEventListener("click", async () => {
+      if(meRealCoords){
+        map.setView([meRealCoords.lat, meRealCoords.lng], 11);
+      }else{
+        await captureMyLocation(false);
+      }
+    });
+
+    els.openProfileBtn.addEventListener("click", () => {
+      if(auth.currentUser && currentUserData){
+        openUserProfile(currentUserData, true);
+      }else{
+        els.authOverlay.classList.remove("hidden");
+      }
+    });
+
+    els.closeProfileBtn.addEventListener("click", closeProfile);
+
+    els.focusUserBtn.addEventListener("click", () => {
+      if(currentPublicTarget?.publicLat != null && currentPublicTarget?.publicLng != null){
+        map.setView([currentPublicTarget.publicLat, currentPublicTarget.publicLng], 8);
+        closeProfile();
+      }
+    });
+
+    els.logoutBtn.addEventListener("click", async () => {
+      await signOut(auth);
+      closeProfile();
+    });
+
+    els.dragHandle.addEventListener("click", () => {
+      if(sheetState === "open") applySheetState("mid");
+      else if(sheetState === "mid") applySheetState("closed");
+      else applySheetState("open");
+    });
+
+    els.dragHandle.addEventListener("pointerdown", (e) => {
+      startSheetDrag(e.clientY);
+    });
+
+    window.addEventListener("pointermove", (e) => {
+      moveSheetDrag(e.clientY);
+    });
+
+    window.addEventListener("pointerup", () => {
+      endSheetDrag();
+    });
+
+    window.addEventListener("pointercancel", () => {
+      endSheetDrag();
+    });
+
+    window.addEventListener("resize", () => {
+      applySheetState(sheetState, false);
+      setTimeout(() => map.invalidateSize(), 150);
+    });
+
+    onAuthStateChanged(auth, async (user) => {
+      if(user){
+        const snap = await getDoc(doc(db, "users", user.uid));
+        if(snap.exists()){
+          loadUserIntoUI({ uid: user.uid, ...snap.data() });
+        }else{
+          await createUserDoc(user, user.displayName || "Explorador");
+        }
+
+        els.authOverlay.classList.add("hidden");
+        setTimeout(() => map.invalidateSize(), 250);
+        await captureMyLocation(false);
+      }else{
+        currentUserData = null;
+        els.authOverlay.classList.remove("hidden");
+        els.shareStatus.textContent = "Privado";
+        els.zonesCount.textContent = "0";
+        els.countriesCount.textContent = "0";
+      }
+    });
+
+    setAuthMode("login");
+    updatePrivacyText(3);
+    setupUsersRealtime();
+    applySheetState("mid", false);
+
+    setTimeout(() => {
+      map.invalidateSize();
+    }, 300);
   </script>
-
 </body>
 </html>
