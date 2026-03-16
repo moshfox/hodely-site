@@ -630,6 +630,15 @@
       box-shadow:0 0 0 8px rgba(124,255,171,.16), 0 0 25px rgba(124,255,171,.35);
     }
 
+    .person-pin{
+      width:16px;
+      height:16px;
+      border-radius:50%;
+      background:#7cffab;
+      border:2px solid rgba(7,17,14,.92);
+      box-shadow:0 0 0 6px rgba(124,255,171,.12), 0 0 16px rgba(124,255,171,.28);
+    }
+
     .user-zone-label{
       background:rgba(8,14,11,.9);
       color:var(--text);
@@ -946,15 +955,18 @@
     let authMode = "login";
     let currentUserData = null;
     let currentPublicTarget = null;
-    let peopleMarkers = [];
-    let peopleCircles = [];
     let meMarker = null;
-    let mePublicCircle = null;
     let meRealCoords = null;
     let myCountry = null;
     let usersCache = [];
-    let visitedZoneRects = [];
-    let visitedCountryCircles = [];
+    let viewMode = "zones";
+
+    let worldCountriesLayer = null;
+    let peopleLayerGroup = L.layerGroup().addTo(map);
+    let myPublicLayerGroup = L.layerGroup().addTo(map);
+    let myExploreLayerGroup = L.layerGroup().addTo(map);
+
+    let countryBoundaryCache = new Map();
 
     let sheetState = "mid";
     let dragStartY = 0;
@@ -969,7 +981,8 @@
     }
 
     function kmToLngDeg(km, lat){
-      return km / (111.32 * Math.cos((lat * Math.PI) / 180) || 0.0001);
+      const cos = Math.cos((lat * Math.PI) / 180);
+      return km / (111.32 * (Math.abs(cos) < 0.0001 ? 0.0001 : cos));
     }
 
     function getZoneSizeDegrees(lat){
@@ -993,6 +1006,10 @@
       };
     }
 
+    function getZoneKeyFromCell(cell){
+      return `${cell.latIndex}_${cell.lngIndex}`;
+    }
+
     function getZoneBoundsFromKey(key){
       const [latIndexRaw, lngIndexRaw] = key.split("_");
       const latIndex = Number(latIndexRaw);
@@ -1007,6 +1024,147 @@
       const east = (lngIndex + 1) * lngDeg;
 
       return [[south, west], [north, east]];
+    }
+
+    function getVisitZoneObject(lat, lng){
+      const cell = getZoneCell(lat, lng);
+      const center = getZoneCenterFromCell(cell);
+      return {
+        key: getZoneKeyFromCell(cell),
+        latIndex: cell.latIndex,
+        lngIndex: cell.lngIndex,
+        centerLat: Number(center.lat.toFixed(6)),
+        centerLng: Number(center.lng.toFixed(6)),
+        visits: 1,
+        lastVisitedAt: new Date().toISOString()
+      };
+    }
+
+    function normalizeCountryName(name = ""){
+      return name
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/\s+/g, " ")
+        .trim()
+        .toLowerCase();
+    }
+
+    function normalizeUserData(raw = {}){
+      const visitedZonesRaw = Array.isArray(raw.visitedZones) ? raw.visitedZones : [];
+      const visitedCountriesRaw = Array.isArray(raw.visitedCountries) ? raw.visitedCountries : [];
+
+      const visitedZones = visitedZonesRaw.map(item => {
+        if(typeof item === "string"){
+          return {
+            key: item,
+            visits: 1,
+            lastVisitedAt: null
+          };
+        }
+        return {
+          key: item.key,
+          latIndex: item.latIndex ?? null,
+          lngIndex: item.lngIndex ?? null,
+          centerLat: item.centerLat ?? null,
+          centerLng: item.centerLng ?? null,
+          visits: item.visits ?? 1,
+          lastVisitedAt: item.lastVisitedAt ?? null
+        };
+      }).filter(Boolean);
+
+      const visitedCountries = visitedCountriesRaw.map(item => {
+        if(typeof item === "string"){
+          return {
+            code: null,
+            name: item,
+            visits: 1,
+            lastVisitedAt: null
+          };
+        }
+        return {
+          code: item.code ?? null,
+          name: item.name ?? "Desconocido",
+          visits: item.visits ?? 1,
+          lastVisitedAt: item.lastVisitedAt ?? null
+        };
+      }).filter(Boolean);
+
+      return {
+        uid: raw.uid ?? null,
+        displayName: raw.displayName ?? "Explorador",
+        email: raw.email ?? null,
+        publicProfile: raw.publicProfile ?? true,
+        visibleOnMap: raw.visibleOnMap ?? false,
+        privacyZones: Number(raw.privacyZones ?? 3),
+        publicLat: raw.publicLat ?? null,
+        publicLng: raw.publicLng ?? null,
+        publicRadiusKm: raw.publicRadiusKm ?? null,
+        publicCountry: raw.publicCountry ?? null,
+        publicCountryCode: raw.publicCountryCode ?? null,
+        visitedZones,
+        visitedCountries,
+        createdAt: raw.createdAt ?? null,
+        lastActive: raw.lastActive ?? null
+      };
+    }
+
+    function mergeZoneVisit(existingZones = [], zoneObj){
+      const next = [...existingZones];
+      const index = next.findIndex(z => z.key === zoneObj.key);
+
+      if(index >= 0){
+        next[index] = {
+          ...next[index],
+          latIndex: zoneObj.latIndex ?? next[index].latIndex ?? null,
+          lngIndex: zoneObj.lngIndex ?? next[index].lngIndex ?? null,
+          centerLat: zoneObj.centerLat ?? next[index].centerLat ?? null,
+          centerLng: zoneObj.centerLng ?? next[index].centerLng ?? null,
+          visits: (next[index].visits ?? 1) + 1,
+          lastVisitedAt: zoneObj.lastVisitedAt
+        };
+      }else{
+        next.push(zoneObj);
+      }
+
+      return next;
+    }
+
+    function mergeCountryVisit(existingCountries = [], countryObj){
+      const next = [...existingCountries];
+      const index = next.findIndex(c => {
+        if(countryObj.code && c.code) return c.code === countryObj.code;
+        return normalizeCountryName(c.name) === normalizeCountryName(countryObj.name);
+      });
+
+      if(index >= 0){
+        next[index] = {
+          ...next[index],
+          code: countryObj.code ?? next[index].code ?? null,
+          name: countryObj.name ?? next[index].name,
+          visits: (next[index].visits ?? 1) + 1,
+          lastVisitedAt: countryObj.lastVisitedAt
+        };
+      }else{
+        next.push(countryObj);
+      }
+
+      return next;
+    }
+
+    function getVisitedZoneCount(data){
+      return Array.isArray(data?.visitedZones) ? data.visitedZones.length : 0;
+    }
+
+    function getVisitedCountryCount(data){
+      return Array.isArray(data?.visitedCountries) ? data.visitedCountries.length : 0;
+    }
+
+    function getVisitedCountryNames(data){
+      return (data?.visitedCountries || []).map(c => c?.name).filter(Boolean);
+    }
+
+    function getVisitedCountryCodes(data){
+      return (data?.visitedCountries || []).map(c => c?.code).filter(Boolean);
     }
 
     function getSafePublicZone(lat, lng, privacyZones = 3){
@@ -1027,26 +1185,51 @@
 
       return {
         ...center,
+        latIndex: safeCell.latIndex,
+        lngIndex: safeCell.lngIndex,
         radiusKm,
         zoneKey: `${safeCell.latIndex}_${safeCell.lngIndex}`,
         display: `~${privacyZones} zonas`
       };
     }
 
-    function getVisitZoneKey(lat, lng){
-      const cell = getZoneCell(lat, lng);
-      return `${cell.latIndex}_${cell.lngIndex}`;
+    function buildPrivacyCells(centerCell, count = 8){
+      const cells = [];
+      const candidates = [];
+
+      for(let y = -3; y <= 3; y++){
+        for(let x = -3; x <= 3; x++){
+          if(x === 0 && y === 0) continue;
+          const dist = Math.sqrt(x*x + y*y);
+          candidates.push({
+            latIndex: centerCell.latIndex + y,
+            lngIndex: centerCell.lngIndex + x,
+            dist
+          });
+        }
+      }
+
+      candidates
+        .sort((a,b) => a.dist - b.dist)
+        .slice(0, count)
+        .forEach(c => cells.push(c));
+
+      return cells;
     }
 
     async function reverseCountry(lat, lng){
       try{
-        const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}&zoom=3&addressdetails=1`, {
+        const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}&zoom=4&addressdetails=1`, {
           headers: { "Accept-Language": "es" }
         });
         const data = await res.json();
-        return data?.address?.country || data?.address?.country_code?.toUpperCase() || "Desconocido";
+
+        const code = data?.address?.country_code?.toUpperCase?.() || null;
+        const name = data?.address?.country || "Desconocido";
+
+        return { name, code };
       }catch{
-        return "Desconocido";
+        return { name: "Desconocido", code: null };
       }
     }
 
@@ -1084,7 +1267,7 @@
     }
 
     function escapeHtml(str = ""){
-      return str
+      return String(str)
         .replaceAll("&", "&amp;")
         .replaceAll("<", "&lt;")
         .replaceAll(">", "&gt;")
@@ -1092,8 +1275,8 @@
     }
 
     function setStatsFromUser(data){
-      els.zonesCount.textContent = (data?.visitedZones?.length || 0).toString();
-      els.countriesCount.textContent = (data?.visitedCountries?.length || 0).toString();
+      els.zonesCount.textContent = String(getVisitedZoneCount(data));
+      els.countriesCount.textContent = String(getVisitedCountryCount(data));
     }
 
     function getSheetHeights(){
@@ -1164,73 +1347,108 @@
       snapSheetByHeight(currentHeight);
     }
 
-    function clearVisitedOverlays(){
-      visitedZoneRects.forEach(layer => map.removeLayer(layer));
-      visitedCountryCircles.forEach(layer => map.removeLayer(layer));
-      visitedZoneRects = [];
-      visitedCountryCircles = [];
+    async function loadWorldCountriesOverlay(){
+      try{
+        const res = await fetch("https://raw.githubusercontent.com/datasets/geo-countries/master/data/countries.geojson");
+        const geojson = await res.json();
+
+        worldCountriesLayer = L.geoJSON(geojson, {
+          style: () => ({
+            color: "rgba(170,255,214,.22)",
+            weight: 1,
+            fillOpacity: 0
+          }),
+          interactive: false
+        }).addTo(map);
+      }catch(err){
+        console.warn("No se pudo cargar la capa base de países", err);
+      }
     }
 
-    function drawVisitedZones(zoneKeys = []){
-      zoneKeys.forEach(key => {
+    async function getCountryBoundary(countryName, countryCode = null){
+      const cacheKey = `${countryCode || ""}__${countryName}`;
+      if(countryBoundaryCache.has(cacheKey)){
+        return countryBoundaryCache.get(cacheKey);
+      }
+
+      const query = countryCode
+        ? `countrycodes=${encodeURIComponent(countryCode)}`
+        : `country=${encodeURIComponent(countryName)}`;
+
+      try{
+        const res = await fetch(`https://nominatim.openstreetmap.org/search?format=jsonv2&polygon_geojson=1&limit=1&${query}`, {
+          headers: { "Accept-Language": "es" }
+        });
+        const data = await res.json();
+        const geo = data?.[0]?.geojson || null;
+        countryBoundaryCache.set(cacheKey, geo);
+        return geo;
+      }catch(err){
+        console.warn("No se pudo cargar el país", countryName, err);
+        countryBoundaryCache.set(cacheKey, null);
+        return null;
+      }
+    }
+
+    function clearExploreLayers(){
+      myExploreLayerGroup.clearLayers();
+    }
+
+    function clearMyPublicLayers(){
+      myPublicLayerGroup.clearLayers();
+    }
+
+    function drawVisitedZones(visitedZones = []){
+      visitedZones.forEach(zone => {
+        if(!zone?.key) return;
         try{
-          const bounds = getZoneBoundsFromKey(key);
+          const bounds = getZoneBoundsFromKey(zone.key);
           const rect = L.rectangle(bounds, {
-            color: "#7cffab",
-            weight: 1,
-            fillColor: "#7cffab",
-            fillOpacity: 0.16
-          }).addTo(map);
-          visitedZoneRects.push(rect);
+            color: "#86ffd2",
+            weight: 1.2,
+            fillColor: "#49f0b0",
+            fillOpacity: 0.18
+          });
+          rect.addTo(myExploreLayerGroup);
         }catch{}
       });
     }
 
-    function drawVisitedCountries(countryNames = []){
-      const points = {
-        "España":[40.4168,-3.7038],
-        "France":[46.2276,2.2137],
-        "Francia":[46.2276,2.2137],
-        "Portugal":[39.3999,-8.2245],
-        "Italia":[41.8719,12.5674],
-        "Germany":[51.1657,10.4515],
-        "Alemania":[51.1657,10.4515],
-        "United Kingdom":[55.3781,-3.4360],
-        "Reino Unido":[55.3781,-3.4360],
-        "Andorra":[42.5063,1.5218],
-        "Belgium":[50.5039,4.4699],
-        "Bélgica":[50.5039,4.4699],
-        "Netherlands":[52.1326,5.2913],
-        "Países Bajos":[52.1326,5.2913],
-        "Morocco":[31.7917,-7.0926],
-        "Marruecos":[31.7917,-7.0926]
-      };
+    async function drawVisitedCountries(visitedCountries = []){
+      for(const country of visitedCountries){
+        if(!country?.name) continue;
+        const geo = await getCountryBoundary(country.name, country.code);
+        if(!geo) continue;
 
-      countryNames.forEach(name => {
-        const point = points[name];
-        if(point){
-          const circle = L.circle(point, {
-            radius: 160000,
-            color: "#48d183",
-            weight: 1,
-            fillColor: "#48d183",
-            fillOpacity: 0.08
-          }).addTo(map);
-          visitedCountryCircles.push(circle);
-        }
-      });
+        L.geoJSON(geo, {
+          style: () => ({
+            color: "#6cffb3",
+            weight: 2,
+            fillColor: "#4de09a",
+            fillOpacity: 0.18
+          }),
+          interactive: false
+        }).addTo(myExploreLayerGroup);
+      }
     }
 
-    function renderMyExploration(){
-      clearVisitedOverlays();
+    async function renderMyExploration(){
+      clearExploreLayers();
       if(!currentUserData) return;
-      drawVisitedZones(currentUserData.visitedZones || []);
-      drawVisitedCountries(currentUserData.visitedCountries || []);
+
+      if(viewMode === "countries"){
+        await drawVisitedCountries(currentUserData.visitedCountries || []);
+      }else{
+        drawVisitedZones(currentUserData.visitedZones || []);
+        if(getVisitedCountryCount(currentUserData)){
+          await drawVisitedCountries((currentUserData.visitedCountries || []).slice(0, 12));
+        }
+      }
     }
 
     function renderPeopleList(users){
       const visible = users.filter(u => u.visibleOnMap);
-      els.peopleCount.textContent = visible.length.toString();
+      els.peopleCount.textContent = String(visible.length);
 
       if(!visible.length){
         els.peopleList.innerHTML = `<div class="tiny">No hay exploradores visibles todavía.</div>`;
@@ -1242,7 +1460,7 @@
           <div class="avatar">${escapeHtml(initials(user.displayName || "A"))}</div>
           <div class="meta">
             <strong>${escapeHtml(user.displayName || "Explorador")}</strong>
-            <span>${escapeHtml(user.publicCountry || "Ubicación difusa")} · ${(user.visitedCountries?.length || 0)} países</span>
+            <span>${escapeHtml(user.publicCountry || "Ubicación difusa")} · ${getVisitedCountryCount(user)} países</span>
           </div>
           <div class="dot"></div>
         </div>
@@ -1256,30 +1474,69 @@
       });
     }
 
-    function clearPeopleLayers(){
-      peopleMarkers.forEach(m => map.removeLayer(m));
-      peopleCircles.forEach(c => map.removeLayer(c));
-      peopleMarkers = [];
-      peopleCircles = [];
+    function renderUserPrivacyCloud(lat, lng, privacyZones, layerGroup, isMe = false){
+      const safe = getSafePublicZone(lat, lng, privacyZones);
+      const centerCell = { latIndex: safe.latIndex, lngIndex: safe.lngIndex };
+      const around = buildPrivacyCells(centerCell, 8);
+
+      const centerRect = L.rectangle(getZoneBoundsFromKey(`${centerCell.latIndex}_${centerCell.lngIndex}`), {
+        color: isMe ? "#8fffd8" : "#7cffab",
+        weight: 1.6,
+        fillColor: isMe ? "#7cffab" : "#53da96",
+        fillOpacity: 0.22
+      });
+      centerRect.addTo(layerGroup);
+
+      around.forEach((cell, index) => {
+        const opacityBase = Math.max(0.06, 0.16 - index * 0.012);
+        const rect = L.rectangle(
+          getZoneBoundsFromKey(`${cell.latIndex}_${cell.lngIndex}`),
+          {
+            color: "rgba(124,255,171,.35)",
+            weight: 1,
+            fillColor: "#7cffab",
+            fillOpacity: opacityBase
+          }
+        );
+        rect.addTo(layerGroup);
+      });
+
+      const halo = L.circle([safe.lat, safe.lng], {
+        radius: (safe.radiusKm || 8) * 1000,
+        color: isMe ? "#87ffd0" : "#48d183",
+        weight: 1.5,
+        fillColor: "#7cffab",
+        fillOpacity: 0.05,
+        dashArray: "6 10"
+      });
+      halo.addTo(layerGroup);
     }
 
     function renderUsersOnMap(users){
-      clearPeopleLayers();
+      peopleLayerGroup.clearLayers();
 
       users
         .filter(u => u.visibleOnMap && u.publicLat != null && u.publicLng != null)
         .forEach(user => {
-          const circle = L.circle([user.publicLat, user.publicLng], {
-            radius: (user.publicRadiusKm || 10) * 1000,
-            color: "#7cffab",
-            weight: 1,
-            fillColor: "#7cffab",
-            fillOpacity: 0.08
-          }).addTo(map);
+          renderUserPrivacyCloud(
+            user.publicLat,
+            user.publicLng,
+            Number(user.privacyZones || 3),
+            peopleLayerGroup,
+            false
+          );
+
+          const icon = L.divIcon({
+            className: "",
+            html: `<div class="person-pin"></div>`,
+            iconSize: [16,16],
+            iconAnchor: [8,8]
+          });
 
           const marker = L.marker([user.publicLat, user.publicLng], {
+            icon,
             title: user.displayName || "Explorador"
-          }).addTo(map);
+          });
 
           marker.bindPopup(`
             <div class="user-zone-label">
@@ -1289,9 +1546,7 @@
           `);
 
           marker.on("click", () => openUserProfile(user, false));
-
-          peopleCircles.push(circle);
-          peopleMarkers.push(marker);
+          marker.addTo(peopleLayerGroup);
         });
     }
 
@@ -1308,17 +1563,9 @@
       meMarker = L.marker([lat, lng], { icon, zIndexOffset: 1000 }).addTo(map);
     }
 
-    function drawMyPublicZone(publicLat, publicLng, radiusKm){
-      if(mePublicCircle) map.removeLayer(mePublicCircle);
-
-      mePublicCircle = L.circle([publicLat, publicLng], {
-        radius: radiusKm * 1000,
-        color: "#48d183",
-        weight: 2,
-        fillColor: "#7cffab",
-        fillOpacity: 0.08,
-        dashArray: "6 10"
-      }).addTo(map);
+    function drawMyPublicZone(realLat, realLng, privacyZones){
+      clearMyPublicLayers();
+      renderUserPrivacyCloud(realLat, realLng, privacyZones, myPublicLayerGroup, true);
     }
 
     async function getCurrentPositionPromise(){
@@ -1330,28 +1577,45 @@
 
         navigator.geolocation.getCurrentPosition(resolve, reject, {
           enableHighAccuracy: true,
-          timeout: 15000,
-          maximumAge: 30000
+          timeout: 18000,
+          maximumAge: 20000
         });
       });
     }
 
+    async function ensureLocationReady(){
+      if(meRealCoords) return meRealCoords;
+
+      const pos = await getCurrentPositionPromise();
+      meRealCoords = {
+        lat: pos.coords.latitude,
+        lng: pos.coords.longitude
+      };
+      drawMe(meRealCoords.lat, meRealCoords.lng);
+      return meRealCoords;
+    }
+
     async function updateVisitedDataForCurrentLocation(lat, lng){
-      const zoneKey = getVisitZoneKey(lat, lng);
-      const country = await reverseCountry(lat, lng);
-      myCountry = country;
+      const zoneObj = getVisitZoneObject(lat, lng);
+      const countryInfo = await reverseCountry(lat, lng);
+      myCountry = countryInfo;
 
-      const visitedZones = Array.from(new Set([...(currentUserData?.visitedZones || []), zoneKey]));
-      const visitedCountries = Array.from(new Set([...(currentUserData?.visitedCountries || []), country]));
+      const visitedZones = mergeZoneVisit(currentUserData?.visitedZones || [], zoneObj);
+      const visitedCountries = mergeCountryVisit(currentUserData?.visitedCountries || [], {
+        code: countryInfo.code,
+        name: countryInfo.name,
+        visits: 1,
+        lastVisitedAt: new Date().toISOString()
+      });
 
-      currentUserData = {
+      currentUserData = normalizeUserData({
         ...currentUserData,
         visitedZones,
         visitedCountries
-      };
+      });
 
       setStatsFromUser(currentUserData);
-      renderMyExploration();
+      await renderMyExploration();
 
       if(auth.currentUser){
         await updateDoc(doc(db, "users", auth.currentUser.uid), {
@@ -1367,39 +1631,37 @@
 
       const privacyZones = Number(currentUserData.privacyZones || 3);
       const safe = getSafePublicZone(meRealCoords.lat, meRealCoords.lng, privacyZones);
-      const country = myCountry || await reverseCountry(meRealCoords.lat, meRealCoords.lng);
+      const countryInfo = myCountry || await reverseCountry(meRealCoords.lat, meRealCoords.lng);
 
-      currentUserData = {
+      currentUserData = normalizeUserData({
         ...currentUserData,
         publicLat: safe.lat,
         publicLng: safe.lng,
         publicRadiusKm: safe.radiusKm,
-        publicCountry: country
-      };
+        publicCountry: countryInfo.name,
+        publicCountryCode: countryInfo.code
+      });
 
-      drawMyPublicZone(safe.lat, safe.lng, safe.radiusKm);
+      drawMyPublicZone(meRealCoords.lat, meRealCoords.lng, privacyZones);
 
       await updateDoc(doc(db, "users", auth.currentUser.uid), {
         publicLat: safe.lat,
         publicLng: safe.lng,
         publicRadiusKm: safe.radiusKm,
-        publicCountry: country,
+        publicCountry: countryInfo.name,
+        publicCountryCode: countryInfo.code,
         lastActive: serverTimestamp()
       });
     }
 
-    async function captureMyLocation(saveToDb = false){
+    async function captureMyLocation(){
       try{
-        const pos = await getCurrentPositionPromise();
-        const lat = pos.coords.latitude;
-        const lng = pos.coords.longitude;
-        meRealCoords = { lat, lng };
+        const coords = await ensureLocationReady();
 
-        drawMe(lat, lng);
-        map.setView([lat, lng], 11);
+        map.setView([coords.lat, coords.lng], 11);
 
         if(currentUserData){
-          await updateVisitedDataForCurrentLocation(lat, lng);
+          await updateVisitedDataForCurrentLocation(coords.lat, coords.lng);
 
           if(currentUserData.visibleOnMap){
             await publishCurrentPublicZone();
@@ -1410,7 +1672,7 @@
         }
       }catch(err){
         console.error(err);
-        alert("No se pudo obtener tu ubicación. Revisa permisos de localización.");
+        alert("No se pudo obtener tu ubicación. En móvil asegúrate de estar en HTTPS y de permitir localización al navegador.");
       }
     }
 
@@ -1431,52 +1693,48 @@
         lastActive: serverTimestamp()
       };
 
-      if(!meRealCoords){
-        try{
-          const pos = await getCurrentPositionPromise();
-          meRealCoords = {
-            lat: pos.coords.latitude,
-            lng: pos.coords.longitude
-          };
-          drawMe(meRealCoords.lat, meRealCoords.lng);
-        }catch{}
-      }
+      try{
+        const coords = await ensureLocationReady();
 
-      if(meRealCoords){
-        await updateVisitedDataForCurrentLocation(meRealCoords.lat, meRealCoords.lng);
+        await updateVisitedDataForCurrentLocation(coords.lat, coords.lng);
 
         if(isVisible){
-          const country = myCountry || await reverseCountry(meRealCoords.lat, meRealCoords.lng);
-          const safe = getSafePublicZone(meRealCoords.lat, meRealCoords.lng, privacyZones);
+          const countryInfo = myCountry || await reverseCountry(coords.lat, coords.lng);
+          const safe = getSafePublicZone(coords.lat, coords.lng, privacyZones);
+
           payload.publicLat = safe.lat;
           payload.publicLng = safe.lng;
           payload.publicRadiusKm = safe.radiusKm;
-          payload.publicCountry = country;
-          drawMyPublicZone(safe.lat, safe.lng, safe.radiusKm);
+          payload.publicCountry = countryInfo.name;
+          payload.publicCountryCode = countryInfo.code;
+
+          drawMyPublicZone(coords.lat, coords.lng, privacyZones);
         }else{
           payload.publicLat = null;
           payload.publicLng = null;
           payload.publicRadiusKm = null;
           payload.publicCountry = null;
-          if(mePublicCircle){
-            map.removeLayer(mePublicCircle);
-            mePublicCircle = null;
-          }
+          payload.publicCountryCode = null;
+          clearMyPublicLayers();
         }
+
+        await updateDoc(doc(db, "users", auth.currentUser.uid), payload);
+
+        currentUserData = normalizeUserData({ ...currentUserData, ...payload });
+        els.shareStatus.textContent = isVisible ? "Visible" : "Privado";
+        loadUserIntoUI(currentUserData);
+
+        alert("Ajustes guardados.");
+      }catch(err){
+        console.error(err);
+        alert("No se pudo guardar la visibilidad. Revisa permisos de localización y que la web esté abierta en HTTPS.");
       }
-
-      await updateDoc(doc(db, "users", auth.currentUser.uid), payload);
-
-      currentUserData = { ...currentUserData, ...payload };
-      els.shareStatus.textContent = isVisible ? "Visible" : "Privado";
-      loadUserIntoUI(currentUserData);
-      alert("Ajustes guardados.");
     }
 
     async function createUserDoc(user, displayName){
       const existing = await getDoc(doc(db, "users", user.uid));
       if(existing.exists()){
-        currentUserData = { uid: user.uid, ...existing.data() };
+        currentUserData = normalizeUserData({ uid: user.uid, ...existing.data() });
         loadUserIntoUI(currentUserData);
         return;
       }
@@ -1493,6 +1751,7 @@
         publicLng: null,
         publicRadiusKm: null,
         publicCountry: null,
+        publicCountryCode: null,
         visitedZones: [],
         visitedCountries: [],
         createdAt: serverTimestamp(),
@@ -1500,22 +1759,23 @@
       };
 
       await setDoc(doc(db, "users", user.uid), payload);
-      currentUserData = payload;
-      loadUserIntoUI(payload);
+      currentUserData = normalizeUserData(payload);
+      loadUserIntoUI(currentUserData);
     }
 
     function loadUserIntoUI(data){
-      currentUserData = data;
-      setToggleState(els.publicProfileToggle, !!data.publicProfile);
-      setToggleState(els.visibleToggle, !!data.visibleOnMap);
-      els.privacyRange.value = data.privacyZones || 3;
-      updatePrivacyText(data.privacyZones || 3);
-      els.shareStatus.textContent = data.visibleOnMap ? "Visible" : "Privado";
-      setStatsFromUser(data);
+      currentUserData = normalizeUserData(data);
+      setToggleState(els.publicProfileToggle, !!currentUserData.publicProfile);
+      setToggleState(els.visibleToggle, !!currentUserData.visibleOnMap);
+      els.privacyRange.value = currentUserData.privacyZones || 3;
+      updatePrivacyText(currentUserData.privacyZones || 3);
+      els.shareStatus.textContent = currentUserData.visibleOnMap ? "Visible" : "Privado";
+      setStatsFromUser(currentUserData);
       renderMyExploration();
 
-      if(data.visibleOnMap && data.publicLat != null && data.publicLng != null){
-        drawMyPublicZone(data.publicLat, data.publicLng, data.publicRadiusKm || 8);
+      clearMyPublicLayers();
+      if(currentUserData.visibleOnMap && meRealCoords){
+        drawMyPublicZone(meRealCoords.lat, meRealCoords.lng, currentUserData.privacyZones || 3);
       }
     }
 
@@ -1529,13 +1789,13 @@
 
       const profileAllowed = !!user.publicProfile || isSelf;
 
-      els.profileCountries.textContent = profileAllowed ? String(user.visitedCountries?.length || 0) : "—";
-      els.profileZones.textContent = profileAllowed ? String(user.visitedZones?.length || 0) : "—";
+      els.profileCountries.textContent = profileAllowed ? String(getVisitedCountryCount(user)) : "—";
+      els.profileZones.textContent = profileAllowed ? String(getVisitedZoneCount(user)) : "—";
       els.profileVisible.textContent = user.visibleOnMap ? "Sí" : "No";
       els.profilePrivacy.textContent = `${user.privacyZones || 3} ${(user.privacyZones || 3) === 1 ? "zona" : "zonas"}`;
 
       els.profileMessage.textContent = profileAllowed
-        ? `Este explorador ha recorrido ${user.visitedCountries?.length || 0} países y ${user.visitedZones?.length || 0} zonas.`
+        ? `Este explorador ha recorrido ${getVisitedCountryCount(user)} países y ${getVisitedZoneCount(user)} zonas.`
         : "Este usuario no ha activado estadísticas públicas.";
 
       els.focusUserBtn.style.display = user.publicLat != null && user.publicLng != null ? "block" : "none";
@@ -1569,7 +1829,7 @@
           await createUserDoc(cred.user, displayName);
           els.authOverlay.classList.add("hidden");
           setTimeout(() => map.invalidateSize(), 250);
-          await captureMyLocation(false);
+          await captureMyLocation();
         }else{
           const cred = await signInWithEmailAndPassword(auth, email, password);
           const snap = await getDoc(doc(db, "users", cred.user.uid));
@@ -1582,7 +1842,7 @@
 
           els.authOverlay.classList.add("hidden");
           setTimeout(() => map.invalidateSize(), 250);
-          await captureMyLocation(false);
+          await captureMyLocation();
         }
 
         setAuthMessage("Todo correcto.");
@@ -1618,7 +1878,7 @@
 
     function setupUsersRealtime(){
       onSnapshot(collection(db, "users"), (snapshot) => {
-        usersCache = snapshot.docs.map(d => d.data());
+        usersCache = snapshot.docs.map(d => normalizeUserData({ uid: d.id, ...d.data() }));
         const visibleUsers = usersCache.filter(u => u.visibleOnMap);
         renderUsersOnMap(visibleUsers);
         renderPeopleList(visibleUsers);
@@ -1626,22 +1886,16 @@
     }
 
     [...document.querySelectorAll(".segmented button[data-mode]")].forEach(btn => {
-      btn.addEventListener("click", () => {
+      btn.addEventListener("click", async () => {
         [...document.querySelectorAll(".segmented button[data-mode]")].forEach(b => b.classList.remove("active"));
         btn.classList.add("active");
 
-        const isCountries = btn.dataset.mode === "countries";
-        document.getElementById("zonesCount").parentElement.style.opacity = isCountries ? ".55" : "1";
-        document.getElementById("countriesCount").parentElement.style.opacity = isCountries ? "1" : ".85";
+        viewMode = btn.dataset.mode;
 
-        clearVisitedOverlays();
-        if(!currentUserData) return;
+        document.getElementById("zonesCount").parentElement.style.opacity = viewMode === "countries" ? ".55" : "1";
+        document.getElementById("countriesCount").parentElement.style.opacity = viewMode === "countries" ? "1" : ".85";
 
-        if(isCountries){
-          drawVisitedCountries(currentUserData.visitedCountries || []);
-        }else{
-          drawVisitedZones(currentUserData.visitedZones || []);
-        }
+        await renderMyExploration();
       });
     });
 
@@ -1660,6 +1914,10 @@
 
     els.privacyRange.addEventListener("input", (e) => {
       updatePrivacyText(Number(e.target.value));
+
+      if(meRealCoords && els.visibleToggle.classList.contains("active")){
+        drawMyPublicZone(meRealCoords.lat, meRealCoords.lng, Number(e.target.value));
+      }
     });
 
     els.authSubmitBtn.addEventListener("click", loginOrSignup);
@@ -1670,7 +1928,8 @@
     });
 
     els.refreshLocationBtn.addEventListener("click", async () => {
-      await captureMyLocation(true);
+      meRealCoords = null;
+      await captureMyLocation();
     });
 
     els.savePrivacyBtn.addEventListener("click", savePrivacySettings);
@@ -1679,7 +1938,7 @@
       if(meRealCoords){
         map.setView([meRealCoords.lat, meRealCoords.lng], 11);
       }else{
-        await captureMyLocation(false);
+        await captureMyLocation();
       }
     });
 
@@ -1743,14 +2002,17 @@
 
         els.authOverlay.classList.add("hidden");
         setTimeout(() => map.invalidateSize(), 250);
-        await captureMyLocation(false);
+        await captureMyLocation();
       }else{
         currentUserData = null;
+        meRealCoords = null;
+        myCountry = null;
         els.authOverlay.classList.remove("hidden");
         els.shareStatus.textContent = "Privado";
         els.zonesCount.textContent = "0";
         els.countriesCount.textContent = "0";
-        clearVisitedOverlays();
+        clearExploreLayers();
+        clearMyPublicLayers();
       }
     });
 
@@ -1758,6 +2020,7 @@
     updatePrivacyText(3);
     setupUsersRealtime();
     applySheetState("mid", false);
+    loadWorldCountriesOverlay();
 
     setTimeout(() => {
       map.invalidateSize();
