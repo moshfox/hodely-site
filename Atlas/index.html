@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <title>Hodely Atlas</title>
@@ -9,23 +9,30 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
 
   <style>
     :root{
       --bg:#07110e;
-      --bg-2:#0c1814;
-      --card:rgba(16,28,23,.9);
-      --card-2:rgba(11,20,16,.85);
+      --bg-2:#0b1512;
+      --bg-3:#10201a;
+      --card:rgba(16,28,23,.92);
+      --card-2:rgba(11,20,16,.88);
+      --card-3:rgba(255,255,255,.03);
       --line:rgba(178,255,214,.10);
+      --line-strong:rgba(178,255,214,.16);
       --text:#ecfff5;
       --muted:#9ab9ab;
+      --muted-2:#7f9a8c;
       --accent:#7cffab;
       --accent-2:#48d183;
+      --blue:#6ab6ff;
+      --blue-2:#3e8dff;
       --danger:#ff7c8c;
+      --warning:#ffd76c;
       --shadow:0 24px 70px rgba(0,0,0,.35);
+      --shadow-soft:0 18px 40px rgba(0,0,0,.28);
       --safe-top: env(safe-area-inset-top, 0px);
       --safe-bottom: env(safe-area-inset-bottom, 0px);
       --mobile-width: 430px;
@@ -96,7 +103,7 @@
       top:0;
       left:0;
       right:0;
-      z-index:20;
+      z-index:30;
       padding:calc(12px + var(--safe-top)) 14px 0 14px;
       pointer-events:none;
     }
@@ -123,25 +130,40 @@
     }
 
     .brand-logo{
-      width:30px;
-      height:30px;
+      width:32px;
+      height:32px;
       border-radius:50%;
       display:grid;
       place-items:center;
       color:#07110e;
-      font-weight:800;
+      font-weight:900;
       background:linear-gradient(135deg, var(--accent), var(--accent-2));
       box-shadow:0 0 20px rgba(124,255,171,.25);
       flex-shrink:0;
     }
 
-    .brand-text{ display:flex; flex-direction:column; line-height:1.05; }
-    .brand-text strong{ font-size:.92rem; letter-spacing:-.02em; }
-    .brand-text span{ font-size:.68rem; color:var(--muted); }
+    .brand-text{
+      display:flex;
+      flex-direction:column;
+      line-height:1.05;
+    }
 
-    .top-actions{ display:flex; gap:8px; }
+    .brand-text strong{
+      font-size:.92rem;
+      letter-spacing:-.02em;
+    }
 
-    .icon-btn,.primary-btn,.ghost-btn,.danger-btn{
+    .brand-text span{
+      font-size:.68rem;
+      color:var(--muted);
+    }
+
+    .top-actions{
+      display:flex;
+      gap:8px;
+    }
+
+    .icon-btn,.primary-btn,.ghost-btn,.danger-btn,.soft-btn{
       border:none;
       outline:none;
       cursor:pointer;
@@ -161,7 +183,7 @@
       box-shadow:var(--shadow);
     }
 
-    .icon-btn:hover,.primary-btn:hover,.ghost-btn:hover,.danger-btn:hover{
+    .icon-btn:hover,.primary-btn:hover,.ghost-btn:hover,.danger-btn:hover,.soft-btn:hover{
       transform:translateY(-1px);
       filter:brightness(1.03);
     }
@@ -171,7 +193,7 @@
       left:0;
       right:0;
       bottom:0;
-      z-index:30;
+      z-index:40;
       padding:0 12px calc(12px + var(--safe-bottom));
       pointer-events:none;
       display:flex;
@@ -182,7 +204,7 @@
     .sheet{
       pointer-events:auto;
       border-radius:28px;
-      background:linear-gradient(180deg, rgba(15,26,22,.96), rgba(10,17,14,.97));
+      background:linear-gradient(180deg, rgba(15,26,22,.97), rgba(10,17,14,.98));
       border:1px solid var(--line);
       box-shadow:var(--shadow);
       backdrop-filter:blur(24px);
@@ -190,8 +212,8 @@
       width:100%;
       display:flex;
       flex-direction:column;
-      height:70vh;
-      max-height:82vh;
+      height:76vh;
+      max-height:84vh;
       min-height:92px;
       transition:height .28s ease;
       will-change:height;
@@ -218,7 +240,7 @@
     }
 
     .sheet-content{
-      padding:14px 14px 16px;
+      padding:14px 14px 18px;
       display:grid;
       gap:14px;
       overflow-y:auto;
@@ -226,15 +248,16 @@
       -webkit-overflow-scrolling:touch;
     }
 
-    .bottom-sheet.sheet-open .sheet{ height:72vh; }
-    .bottom-sheet.sheet-mid .sheet{ height:46vh; }
+    .bottom-sheet.sheet-open .sheet{ height:78vh; }
+    .bottom-sheet.sheet-mid .sheet{ height:50vh; }
     .bottom-sheet.sheet-closed .sheet{ height:92px; }
     .bottom-sheet.sheet-closed .sheet-content{ overflow:hidden; }
 
     .bottom-sheet.sheet-closed .hero-card,
     .bottom-sheet.sheet-closed .segmented,
     .bottom-sheet.sheet-closed .stats,
-    .bottom-sheet.sheet-closed .panel{
+    .bottom-sheet.sheet-closed .panel,
+    .bottom-sheet.sheet-closed .tabs{
       opacity:0;
       pointer-events:none;
       transition:opacity .16s ease;
@@ -244,10 +267,12 @@
     .bottom-sheet.sheet-open .segmented,
     .bottom-sheet.sheet-open .stats,
     .bottom-sheet.sheet-open .panel,
+    .bottom-sheet.sheet-open .tabs,
     .bottom-sheet.sheet-mid .hero-card,
     .bottom-sheet.sheet-mid .segmented,
     .bottom-sheet.sheet-mid .stats,
-    .bottom-sheet.sheet-mid .panel{
+    .bottom-sheet.sheet-mid .panel,
+    .bottom-sheet.sheet-mid .tabs{
       opacity:1;
       pointer-events:auto;
       transition:opacity .2s ease .04s;
@@ -259,14 +284,14 @@
       gap:10px;
       align-items:center;
       border:1px solid var(--line);
-      background:linear-gradient(180deg, rgba(18,32,26,.9), rgba(11,20,16,.9));
+      background:linear-gradient(180deg, rgba(18,32,26,.94), rgba(11,20,16,.94));
       border-radius:22px;
       padding:14px;
     }
 
     .hero-left h1{
-      font-size:1.06rem;
-      font-weight:800;
+      font-size:1.05rem;
+      font-weight:900;
       letter-spacing:-.03em;
     }
 
@@ -281,16 +306,15 @@
       padding:9px 12px;
       border-radius:999px;
       font-size:.78rem;
-      font-weight:700;
+      font-weight:800;
       background:rgba(124,255,171,.09);
       color:var(--accent);
       border:1px solid rgba(124,255,171,.16);
       white-space:nowrap;
     }
 
-    .segmented{
+    .segmented,.tabs{
       display:grid;
-      grid-template-columns:1fr 1fr;
       gap:8px;
       padding:6px;
       background:rgba(255,255,255,.03);
@@ -298,18 +322,27 @@
       border-radius:18px;
     }
 
-    .segmented button{
+    .segmented{
+      grid-template-columns:1fr 1fr;
+    }
+
+    .tabs{
+      grid-template-columns:repeat(4,1fr);
+    }
+
+    .segmented button,.tabs button{
       border:none;
       border-radius:14px;
       padding:11px 12px;
       background:transparent;
       color:var(--muted);
-      font-weight:700;
+      font-weight:800;
       cursor:pointer;
       transition:.2s ease;
+      font-size:.84rem;
     }
 
-    .segmented button.active{
+    .segmented button.active,.tabs button.active{
       background:linear-gradient(135deg, rgba(124,255,171,.14), rgba(72,209,131,.10));
       color:var(--text);
       border:1px solid rgba(124,255,171,.14);
@@ -317,7 +350,7 @@
 
     .stats{
       display:grid;
-      grid-template-columns:repeat(3,1fr);
+      grid-template-columns:repeat(4,1fr);
       gap:10px;
     }
 
@@ -326,19 +359,24 @@
       background:var(--card-2);
       border-radius:20px;
       padding:12px;
+      min-width:0;
     }
 
     .stat span{
       display:block;
       color:var(--muted);
-      font-size:.73rem;
+      font-size:.71rem;
       margin-bottom:6px;
     }
 
     .stat strong{
-      font-size:1.1rem;
-      font-weight:800;
+      font-size:1.04rem;
+      font-weight:900;
       letter-spacing:-.03em;
+      display:block;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
     }
 
     .panel{
@@ -365,6 +403,7 @@
     .tiny{
       font-size:.76rem;
       color:var(--muted);
+      line-height:1.35;
     }
 
     .row{
@@ -374,8 +413,15 @@
       gap:12px;
     }
 
-    .range-wrap{ display:grid; gap:6px; }
-    input[type="range"]{ width:100%; accent-color: var(--accent); }
+    .range-wrap{
+      display:grid;
+      gap:6px;
+    }
+
+    input[type="range"]{
+      width:100%;
+      accent-color: var(--accent);
+    }
 
     .toggle{
       position:relative;
@@ -418,12 +464,12 @@
       gap:10px;
     }
 
-    .primary-btn,.ghost-btn,.danger-btn{
+    .primary-btn,.ghost-btn,.danger-btn,.soft-btn{
       padding:13px 14px;
       border-radius:16px;
-      font-weight:800;
+      font-weight:900;
       letter-spacing:-.02em;
-      font-size:.92rem;
+      font-size:.9rem;
     }
 
     .primary-btn{
@@ -437,35 +483,67 @@
       border:1px solid var(--line);
     }
 
+    .soft-btn{
+      background:rgba(106,182,255,.10);
+      color:#ddecff;
+      border:1px solid rgba(106,182,255,.16);
+    }
+
     .danger-btn{
       background:rgba(255,124,140,.08);
       color:#ffc6ce;
       border:1px solid rgba(255,124,140,.16);
     }
 
-    .people-list{
+    .people-list,.table-list,.leaderboard-list{
       display:grid;
       gap:10px;
-      max-height:190px;
+      max-height:230px;
       overflow:auto;
       padding-right:2px;
     }
 
-    .person{
+    .person,.table-row,.leader-row{
       display:grid;
-      grid-template-columns:auto 1fr auto;
       align-items:center;
       gap:12px;
       border:1px solid var(--line);
       background:rgba(255,255,255,.02);
       border-radius:18px;
       padding:10px;
-      cursor:pointer;
       transition:.18s ease;
     }
 
-    .person:hover{
+    .person{
+      grid-template-columns:auto 1fr auto;
+      cursor:pointer;
+    }
+
+    .person:hover,.table-row:hover,.leader-row:hover{
       background:rgba(124,255,171,.05);
+    }
+
+    .table-row{
+      grid-template-columns:1fr auto auto;
+    }
+
+    .leader-row{
+      grid-template-columns:auto auto 1fr auto;
+      cursor:pointer;
+    }
+
+    .rank-badge{
+      min-width:34px;
+      height:34px;
+      padding:0 10px;
+      border-radius:999px;
+      display:grid;
+      place-items:center;
+      background:rgba(255,255,255,.04);
+      border:1px solid var(--line);
+      color:var(--text);
+      font-size:.8rem;
+      font-weight:900;
     }
 
     .avatar{
@@ -476,13 +554,16 @@
       border:1px solid rgba(124,255,171,.16);
       display:grid;
       place-items:center;
-      font-weight:800;
+      font-weight:900;
       color:var(--accent);
       flex-shrink:0;
     }
 
-    .person .meta{ min-width:0; }
-    .person .meta strong{
+    .meta{
+      min-width:0;
+    }
+
+    .meta strong{
       display:block;
       font-size:.9rem;
       white-space:nowrap;
@@ -490,7 +571,7 @@
       text-overflow:ellipsis;
     }
 
-    .person .meta span{
+    .meta span{
       display:block;
       margin-top:2px;
       font-size:.74rem;
@@ -498,6 +579,17 @@
       white-space:nowrap;
       overflow:hidden;
       text-overflow:ellipsis;
+    }
+
+    .pill{
+      padding:7px 10px;
+      border-radius:999px;
+      background:rgba(255,255,255,.04);
+      border:1px solid var(--line);
+      font-size:.72rem;
+      color:var(--muted);
+      font-weight:800;
+      white-space:nowrap;
     }
 
     .dot{
@@ -508,6 +600,11 @@
       box-shadow:0 0 14px rgba(124,255,171,.45);
     }
 
+    .blue-dot{
+      background:var(--blue);
+      box-shadow:0 0 14px rgba(106,182,255,.45);
+    }
+
     .auth-overlay,.profile-overlay{
       position:absolute;
       inset:0;
@@ -515,7 +612,9 @@
       display:flex;
       align-items:flex-end;
       justify-content:center;
-      background:rgba(4,10,8,.66);
+      background:
+        linear-gradient(180deg, rgba(3,8,6,.34), rgba(4,10,8,.82)),
+        radial-gradient(circle at top, rgba(124,255,171,.10), transparent 36%);
       backdrop-filter:blur(16px);
       padding:18px 12px calc(18px + var(--safe-bottom));
     }
@@ -523,40 +622,95 @@
     .auth-card,.profile-card{
       width:100%;
       border-radius:30px;
-      background:linear-gradient(180deg, rgba(17,31,25,.98), rgba(8,14,11,.98));
+      background:linear-gradient(180deg, rgba(17,31,25,.99), rgba(8,14,11,.99));
       border:1px solid var(--line);
       box-shadow:var(--shadow);
       overflow:hidden;
-      max-height:90vh;
+      max-height:92vh;
       overflow:auto;
     }
 
-    .auth-head,.profile-head{ padding:18px 18px 8px; }
-
-    .auth-head h2,.profile-head h2{
-      font-size:1.24rem;
-      letter-spacing:-.03em;
-      margin-bottom:6px;
+    .auth-hero{
+      padding:18px 18px 8px;
+      border-bottom:1px solid rgba(255,255,255,.03);
+      background:
+        radial-gradient(circle at top right, rgba(124,255,171,.12), transparent 40%),
+        linear-gradient(180deg, rgba(18,32,26,.9), rgba(12,20,17,.9));
     }
 
-    .auth-head p,.profile-head p{
+    .auth-badge{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      margin-bottom:12px;
+      padding:8px 12px;
+      border-radius:999px;
+      background:rgba(124,255,171,.08);
+      border:1px solid rgba(124,255,171,.12);
+      color:var(--accent);
+      font-size:.76rem;
+      font-weight:900;
+    }
+
+    .auth-hero h2,.profile-head h2{
+      font-size:1.32rem;
+      letter-spacing:-.04em;
+      margin-bottom:6px;
+      font-weight:900;
+    }
+
+    .auth-hero p,.profile-head p{
       color:var(--muted);
-      line-height:1.4;
-      font-size:.88rem;
+      line-height:1.45;
+      font-size:.9rem;
+    }
+
+    .auth-points{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:10px;
+      margin-top:14px;
+    }
+
+    .auth-point{
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.03);
+      border-radius:18px;
+      padding:12px;
+    }
+
+    .auth-point strong{
+      display:block;
+      font-size:.82rem;
+      margin-bottom:4px;
+    }
+
+    .auth-point span{
+      display:block;
+      font-size:.72rem;
+      color:var(--muted);
+      line-height:1.35;
     }
 
     .auth-body,.profile-body{
-      padding:10px 18px 18px;
+      padding:14px 18px 18px;
       display:grid;
       gap:12px;
     }
 
-    .field{ display:grid; gap:6px; }
+    .profile-head{
+      padding:18px 18px 8px;
+    }
+
+    .field{
+      display:grid;
+      gap:6px;
+    }
 
     .field label{
       font-size:.78rem;
       color:var(--muted);
-      font-weight:700;
+      font-weight:800;
     }
 
     .field input{
@@ -571,7 +725,9 @@
       font:inherit;
     }
 
-    .field input::placeholder{ color:#75907f; }
+    .field input::placeholder{
+      color:#75907f;
+    }
 
     .muted-box{
       background:rgba(124,255,171,.05);
@@ -580,7 +736,17 @@
       border-radius:18px;
       padding:12px;
       font-size:.84rem;
-      line-height:1.4;
+      line-height:1.45;
+    }
+
+    .warning-box{
+      background:rgba(255,215,108,.07);
+      border:1px solid rgba(255,215,108,.16);
+      color:#ffe7a0;
+      border-radius:18px;
+      padding:12px;
+      font-size:.82rem;
+      line-height:1.45;
     }
 
     .profile-grid{
@@ -605,7 +771,7 @@
 
     .profile-stat strong{
       font-size:1.02rem;
-      font-weight:800;
+      font-weight:900;
     }
 
     .hidden{ display:none !important; }
@@ -627,7 +793,9 @@
       border-radius:50%;
       background:var(--accent);
       border:3px solid rgba(7,17,14,.9);
-      box-shadow:0 0 0 8px rgba(124,255,171,.16), 0 0 25px rgba(124,255,171,.35);
+      box-shadow:
+        0 0 0 8px rgba(124,255,171,.18),
+        0 0 25px rgba(124,255,171,.35);
     }
 
     .person-pin{
@@ -636,11 +804,13 @@
       border-radius:50%;
       background:#7cffab;
       border:2px solid rgba(7,17,14,.92);
-      box-shadow:0 0 0 6px rgba(124,255,171,.12), 0 0 16px rgba(124,255,171,.28);
+      box-shadow:
+        0 0 0 6px rgba(124,255,171,.12),
+        0 0 16px rgba(124,255,171,.28);
     }
 
     .user-zone-label{
-      background:rgba(8,14,11,.9);
+      background:rgba(8,14,11,.92);
       color:var(--text);
       border:1px solid rgba(124,255,171,.15);
       padding:8px 10px;
@@ -649,7 +819,9 @@
       font:700 12px Inter, sans-serif;
     }
 
-    .desktop-caption{ display:none; }
+    .desktop-caption{
+      display:none;
+    }
 
     @media (min-width: 860px){
       .desktop-caption{
@@ -666,7 +838,7 @@
 </head>
 <body>
   <div class="desktop-side-glow"></div>
-  <div class="desktop-caption">Hodely Atlas — app móvil dentro de escritorio.</div>
+  <div class="desktop-caption">Hodely Atlas — mobile app framed inside desktop view.</div>
 
   <div class="app-shell">
     <div id="map"></div>
@@ -677,13 +849,13 @@
           <div class="brand-logo">A</div>
           <div class="brand-text">
             <strong>Hodely Atlas</strong>
-            <span>zonas, países y gente en movimiento</span>
+            <span>discover zones, countries and explorers</span>
           </div>
         </div>
 
         <div class="top-actions">
-          <button class="icon-btn" id="locateBtn" title="Ir a mi zona">◎</button>
-          <button class="icon-btn" id="openProfileBtn" title="Mi perfil">☻</button>
+          <button class="icon-btn" id="locateBtn" title="Go to my live zone">◎</button>
+          <button class="icon-btn" id="openProfileBtn" title="My profile">☻</button>
         </div>
       </div>
     </div>
@@ -697,76 +869,133 @@
         <div class="sheet-content" id="sheetContent">
           <div class="hero-card">
             <div class="hero-left">
-              <h1>Comparte dónde estás sin regalar tu ubicación exacta</h1>
-              <p>Tu zona pública se redondea y se amplía. Más atlas, menos stalker simulator.</p>
+              <h1>Explore the world without exposing your exact location</h1>
+              <p>Your real position stays private. Atlas only publishes a safe public zone, while your discoveries keep growing live.</p>
             </div>
-            <div class="status-pill" id="shareStatus">Privado</div>
+            <div class="status-pill" id="shareStatus">Private</div>
           </div>
 
-          <div class="segmented">
-            <button class="active" data-mode="zones">Zonas</button>
-            <button data-mode="countries">Países</button>
+          <div class="segmented" id="mapModeSegment">
+            <button class="active" data-mode="zones">Zones</button>
+            <button data-mode="countries">Countries</button>
           </div>
 
           <div class="stats">
             <div class="stat">
-              <span>Zonas visitadas</span>
+              <span>Zones</span>
               <strong id="zonesCount">0</strong>
             </div>
             <div class="stat">
-              <span>Países</span>
+              <span>Countries</span>
               <strong id="countriesCount">0</strong>
             </div>
             <div class="stat">
-              <span>Personas visibles</span>
+              <span>Visible explorers</span>
               <strong id="peopleCount">0</strong>
+            </div>
+            <div class="stat">
+              <span>Leaderboard rank</span>
+              <strong id="rankCount">—</strong>
             </div>
           </div>
 
-          <div class="panel">
+          <div class="tabs" id="panelTabs">
+            <button class="active" data-panel="privacy">Privacy</button>
+            <button data-panel="explorers">Explorers</button>
+            <button data-panel="collection">Collection</button>
+            <button data-panel="leaderboard">Leaderboard</button>
+          </div>
+
+          <div class="panel panel-view" data-panel-view="privacy">
             <div class="panel-head">
-              <h2>Privacidad de ubicación</h2>
-              <span class="tiny" id="privacySummary">3 zonas</span>
+              <h2>Location publishing</h2>
+              <span class="tiny" id="privacySummary">3 zones</span>
             </div>
 
             <div class="range-wrap">
               <div class="row">
-                <span class="tiny">Rango compartido</span>
-                <strong id="rangeValue">3 zonas</strong>
+                <span class="tiny">Shared blur radius</span>
+                <strong id="rangeValue">3 zones</strong>
               </div>
               <input type="range" min="1" max="8" step="1" value="3" id="privacyRange">
-              <div class="tiny">1 = más preciso · 8 = más difuso</div>
+              <div class="tiny">1 = more precise · 8 = more diffuse</div>
             </div>
 
             <div class="row">
               <div>
-                <strong style="display:block;font-size:.95rem;">Perfil público</strong>
-                <span class="tiny">Permite que otros vean tus países y zonas recorridas</span>
+                <strong style="display:block;font-size:.95rem;">Public profile</strong>
+                <span class="tiny">Let others see your discovery stats and collection</span>
               </div>
-              <button class="toggle active" id="publicProfileToggle" aria-label="Perfil público"></button>
+              <button class="toggle active" id="publicProfileToggle" aria-label="Public profile"></button>
             </div>
 
             <div class="row">
               <div>
-                <strong style="display:block;font-size:.95rem;">Mostrarme en el mapa</strong>
-                <span class="tiny">Publica una zona segura, no tu punto exacto</span>
+                <strong style="display:block;font-size:.95rem;">Show me on the map</strong>
+                <span class="tiny">Publish a safe zone instead of your exact point</span>
               </div>
-              <button class="toggle" id="visibleToggle" aria-label="Visible en mapa"></button>
+              <button class="toggle" id="visibleToggle" aria-label="Visible on map"></button>
+            </div>
+
+            <div class="row">
+              <div>
+                <strong style="display:block;font-size:.95rem;">Live explorer mode</strong>
+                <span class="tiny">Auto-detect movement and discover new zones as you move</span>
+              </div>
+              <button class="toggle active" id="liveTrackingToggle" aria-label="Live explorer mode"></button>
+            </div>
+
+            <div class="muted-box" id="liveZoneInfo">
+              Waiting for location… your next discovered zone will appear here.
             </div>
 
             <div class="btn-row">
-              <button class="ghost-btn" id="refreshLocationBtn">Actualizar zona</button>
-              <button class="primary-btn" id="savePrivacyBtn">Guardar ajustes</button>
+              <button class="ghost-btn" id="refreshLocationBtn">Refresh location</button>
+              <button class="primary-btn" id="savePrivacyBtn">Save settings</button>
+            </div>
+
+            <div class="warning-box">
+              For mobile devices this works best on HTTPS and with location permissions enabled in the browser. Otherwise Atlas becomes a very dramatic map with no explorer.
             </div>
           </div>
 
-          <div class="panel">
+          <div class="panel panel-view hidden" data-panel-view="explorers">
             <div class="panel-head">
-              <h2>Exploradores cerca</h2>
-              <span class="tiny">perfiles visibles</span>
+              <h2>Nearby explorers</h2>
+              <span class="tiny">visible public profiles</span>
             </div>
             <div class="people-list" id="peopleList">
-              <div class="tiny">Aún no hay perfiles cargados.</div>
+              <div class="tiny">No explorer profiles loaded yet.</div>
+            </div>
+          </div>
+
+          <div class="panel panel-view hidden" data-panel-view="collection">
+            <div class="panel-head">
+              <h2>Discovery collection</h2>
+              <span class="tiny">your known zones and countries</span>
+            </div>
+
+            <div class="segmented" id="collectionSegment">
+              <button class="active" data-collection="zones">Zones table</button>
+              <button data-collection="countries">Countries table</button>
+            </div>
+
+            <div class="table-list" id="zonesTable"></div>
+            <div class="table-list hidden" id="countriesTable"></div>
+          </div>
+
+          <div class="panel panel-view hidden" data-panel-view="leaderboard">
+            <div class="panel-head">
+              <h2>Global leaderboard</h2>
+              <span class="tiny">most discoveries overall</span>
+            </div>
+
+            <div class="muted-box">
+              Score = zones + (countries × 25). This makes countries matter, because crossing borders should feel bigger than walking to the bakery twice.
+            </div>
+
+            <div class="leaderboard-list" id="leaderboardList">
+              <div class="tiny">No leaderboard data yet.</div>
             </div>
           </div>
         </div>
@@ -775,42 +1004,58 @@
 
     <div class="auth-overlay" id="authOverlay">
       <div class="auth-card">
-        <div class="auth-head">
-          <h2>Entrar en Hodely Atlas</h2>
-          <p>Crea cuenta para aparecer en el mapa con una zona segura, guardar países y compartir tu perfil si quieres.</p>
+        <div class="auth-hero">
+          <div class="auth-badge">● LIVE WORLD DISCOVERY</div>
+          <h2>Enter Hodely Atlas</h2>
+          <p>Create your explorer account, unlock live discovery, build your world collection, and appear on the map with a safe public zone.</p>
+
+          <div class="auth-points">
+            <div class="auth-point">
+              <strong>Discover</strong>
+              <span>Zones are collected automatically from your movement.</span>
+            </div>
+            <div class="auth-point">
+              <strong>Stay safe</strong>
+              <span>Your exact position is never shown publicly.</span>
+            </div>
+            <div class="auth-point">
+              <strong>Compete</strong>
+              <span>Climb the global explorer leaderboard.</span>
+            </div>
+          </div>
         </div>
 
         <div class="auth-body">
           <div class="segmented" id="authModeSegment">
-            <button class="active" data-auth="login">Iniciar sesión</button>
-            <button data-auth="signup">Crear cuenta</button>
+            <button class="active" data-auth="login">Log in</button>
+            <button data-auth="signup">Create account</button>
           </div>
 
           <div class="field" id="nameField" style="display:none;">
-            <label>Nombre público</label>
-            <input id="displayNameInput" type="text" maxlength="28" placeholder="Ej. Hodely" />
+            <label>Public display name</label>
+            <input id="displayNameInput" type="text" maxlength="28" placeholder="Example: Hodely" />
           </div>
 
           <div class="field">
-            <label>Correo</label>
-            <input id="emailInput" type="email" placeholder="tuemail@ejemplo.com" />
+            <label>Email</label>
+            <input id="emailInput" type="email" placeholder="your@email.com" />
           </div>
 
           <div class="field">
-            <label>Contraseña</label>
-            <input id="passwordInput" type="password" placeholder="mínimo 6 caracteres" />
+            <label>Password</label>
+            <input id="passwordInput" type="password" placeholder="minimum 6 characters" />
           </div>
 
           <div class="muted-box">
-            Tu ubicación exacta no se enseña públicamente. Se convierte en una zona amplia. Porque la gracia es explorar, no hacer de GPS humano.
+            Atlas stores discovered zones, discovered countries, visibility settings and your public explorer profile. Exact live coordinates are not publicly displayed.
           </div>
 
           <div class="btn-row">
-            <button class="ghost-btn" id="continueAnonBtn">Ver mapa</button>
-            <button class="primary-btn" id="authSubmitBtn">Entrar</button>
+            <button class="ghost-btn" id="continueAnonBtn">Preview map</button>
+            <button class="primary-btn" id="authSubmitBtn">Log in</button>
           </div>
 
-          <div class="tiny" id="authMessage">Puedes entrar o crear cuenta para usar todas las funciones.</div>
+          <div class="tiny" id="authMessage">Log in or create an account to unlock the full explorer system.</div>
         </div>
       </div>
     </div>
@@ -818,17 +1063,17 @@
     <div class="profile-overlay hidden" id="profileOverlay">
       <div class="profile-card">
         <div class="profile-head">
-          <h2 id="profileTitle">Perfil</h2>
-          <p id="profileSubtitle">Información pública del explorador.</p>
+          <h2 id="profileTitle">Explorer Profile</h2>
+          <p id="profileSubtitle">Public atlas profile.</p>
         </div>
         <div class="profile-body">
           <div class="profile-grid">
             <div class="profile-stat">
-              <span>Países</span>
+              <span>Countries</span>
               <strong id="profileCountries">0</strong>
             </div>
             <div class="profile-stat">
-              <span>Zonas</span>
+              <span>Zones</span>
               <strong id="profileZones">0</strong>
             </div>
             <div class="profile-stat">
@@ -836,21 +1081,21 @@
               <strong id="profileVisible">No</strong>
             </div>
             <div class="profile-stat">
-              <span>Privacidad</span>
-              <strong id="profilePrivacy">3 zonas</strong>
+              <span>Privacy</span>
+              <strong id="profilePrivacy">3 zones</strong>
             </div>
           </div>
 
           <div class="muted-box" id="profileMessage">
-            Este usuario no ha activado más datos públicos.
+            This explorer has not enabled more public details yet.
           </div>
 
           <div class="btn-row">
-            <button class="ghost-btn" id="focusUserBtn">Ver en mapa</button>
-            <button class="primary-btn" id="closeProfileBtn">Cerrar</button>
+            <button class="ghost-btn" id="focusUserBtn">Focus on map</button>
+            <button class="primary-btn" id="closeProfileBtn">Close</button>
           </div>
 
-          <button class="danger-btn hidden" id="logoutBtn">Cerrar sesión</button>
+          <button class="danger-btn hidden" id="logoutBtn">Log out</button>
         </div>
       </div>
     </div>
@@ -918,12 +1163,16 @@
       privacySummary: document.getElementById("privacySummary"),
       publicProfileToggle: document.getElementById("publicProfileToggle"),
       visibleToggle: document.getElementById("visibleToggle"),
+      liveTrackingToggle: document.getElementById("liveTrackingToggle"),
+      liveZoneInfo: document.getElementById("liveZoneInfo"),
       refreshLocationBtn: document.getElementById("refreshLocationBtn"),
       savePrivacyBtn: document.getElementById("savePrivacyBtn"),
       peopleList: document.getElementById("peopleList"),
       zonesCount: document.getElementById("zonesCount"),
       countriesCount: document.getElementById("countriesCount"),
       peopleCount: document.getElementById("peopleCount"),
+      rankCount: document.getElementById("rankCount"),
+
       authOverlay: document.getElementById("authOverlay"),
       authSubmitBtn: document.getElementById("authSubmitBtn"),
       continueAnonBtn: document.getElementById("continueAnonBtn"),
@@ -933,8 +1182,10 @@
       displayNameInput: document.getElementById("displayNameInput"),
       nameField: document.getElementById("nameField"),
       authModeSegment: document.getElementById("authModeSegment"),
+
       locateBtn: document.getElementById("locateBtn"),
       openProfileBtn: document.getElementById("openProfileBtn"),
+
       profileOverlay: document.getElementById("profileOverlay"),
       profileTitle: document.getElementById("profileTitle"),
       profileSubtitle: document.getElementById("profileSubtitle"),
@@ -946,10 +1197,18 @@
       focusUserBtn: document.getElementById("focusUserBtn"),
       closeProfileBtn: document.getElementById("closeProfileBtn"),
       logoutBtn: document.getElementById("logoutBtn"),
+
       bottomSheet: document.getElementById("bottomSheet"),
       sheet: document.getElementById("sheet"),
       dragHandle: document.getElementById("dragHandle"),
-      sheetContent: document.getElementById("sheetContent")
+      sheetContent: document.getElementById("sheetContent"),
+
+      mapModeSegment: document.getElementById("mapModeSegment"),
+      panelTabs: document.getElementById("panelTabs"),
+      collectionSegment: document.getElementById("collectionSegment"),
+      zonesTable: document.getElementById("zonesTable"),
+      countriesTable: document.getElementById("countriesTable"),
+      leaderboardList: document.getElementById("leaderboardList")
     };
 
     let authMode = "login";
@@ -960,11 +1219,14 @@
     let myCountry = null;
     let usersCache = [];
     let viewMode = "zones";
+    let activePanel = "privacy";
+    let collectionMode = "zones";
 
     let worldCountriesLayer = null;
     let peopleLayerGroup = L.layerGroup().addTo(map);
     let myPublicLayerGroup = L.layerGroup().addTo(map);
     let myExploreLayerGroup = L.layerGroup().addTo(map);
+    let myLiveZoneLayerGroup = L.layerGroup().addTo(map);
 
     let countryBoundaryCache = new Map();
 
@@ -973,8 +1235,16 @@
     let dragStartHeight = 0;
     let draggingSheet = false;
 
+    let watchId = null;
+    let liveTrackingEnabled = true;
+    let lastSavedZoneKey = null;
+    let lastRank = null;
+
     const zoneAreaKm2 = 19;
     const zoneSideKm = Math.sqrt(zoneAreaKm2);
+    const ZONE_LNG_OFFSET = 1000000;
+    const ZONE_LAT_OFFSET = 1000000;
+    const ZONE_NUMBER_MULTIPLIER = 2000000;
 
     function kmToLatDeg(km){
       return km / 111.32;
@@ -1010,6 +1280,18 @@
       return `${cell.latIndex}_${cell.lngIndex}`;
     }
 
+    function getZoneNumberFromKey(key){
+      const [latIndexRaw, lngIndexRaw] = key.split("_");
+      const latIndex = Number(latIndexRaw);
+      const lngIndex = Number(lngIndexRaw);
+
+      const zoneNumber =
+        (latIndex + ZONE_LAT_OFFSET) * ZONE_NUMBER_MULTIPLIER +
+        (lngIndex + ZONE_LNG_OFFSET);
+
+      return Math.max(0, zoneNumber);
+    }
+
     function getZoneBoundsFromKey(key){
       const [latIndexRaw, lngIndexRaw] = key.split("_");
       const latIndex = Number(latIndexRaw);
@@ -1029,8 +1311,11 @@
     function getVisitZoneObject(lat, lng){
       const cell = getZoneCell(lat, lng);
       const center = getZoneCenterFromCell(cell);
+      const key = getZoneKeyFromCell(cell);
+
       return {
-        key: getZoneKeyFromCell(cell),
+        key,
+        zoneNumber: getZoneNumberFromKey(key),
         latIndex: cell.latIndex,
         lngIndex: cell.lngIndex,
         centerLat: Number(center.lat.toFixed(6)),
@@ -1057,12 +1342,14 @@
         if(typeof item === "string"){
           return {
             key: item,
+            zoneNumber: getZoneNumberFromKey(item),
             visits: 1,
             lastVisitedAt: null
           };
         }
         return {
           key: item.key,
+          zoneNumber: item.zoneNumber ?? (item.key ? getZoneNumberFromKey(item.key) : null),
           latIndex: item.latIndex ?? null,
           lngIndex: item.lngIndex ?? null,
           centerLat: item.centerLat ?? null,
@@ -1083,7 +1370,7 @@
         }
         return {
           code: item.code ?? null,
-          name: item.name ?? "Desconocido",
+          name: item.name ?? "Unknown",
           visits: item.visits ?? 1,
           lastVisitedAt: item.lastVisitedAt ?? null
         };
@@ -1091,10 +1378,11 @@
 
       return {
         uid: raw.uid ?? null,
-        displayName: raw.displayName ?? "Explorador",
+        displayName: raw.displayName ?? "Explorer",
         email: raw.email ?? null,
         publicProfile: raw.publicProfile ?? true,
         visibleOnMap: raw.visibleOnMap ?? false,
+        liveTracking: raw.liveTracking ?? true,
         privacyZones: Number(raw.privacyZones ?? 3),
         publicLat: raw.publicLat ?? null,
         publicLng: raw.publicLng ?? null,
@@ -1115,6 +1403,7 @@
       if(index >= 0){
         next[index] = {
           ...next[index],
+          zoneNumber: zoneObj.zoneNumber ?? next[index].zoneNumber ?? null,
           latIndex: zoneObj.latIndex ?? next[index].latIndex ?? null,
           lngIndex: zoneObj.lngIndex ?? next[index].lngIndex ?? null,
           centerLat: zoneObj.centerLat ?? next[index].centerLat ?? null,
@@ -1159,12 +1448,8 @@
       return Array.isArray(data?.visitedCountries) ? data.visitedCountries.length : 0;
     }
 
-    function getVisitedCountryNames(data){
-      return (data?.visitedCountries || []).map(c => c?.name).filter(Boolean);
-    }
-
-    function getVisitedCountryCodes(data){
-      return (data?.visitedCountries || []).map(c => c?.code).filter(Boolean);
+    function getExplorerScore(data){
+      return getVisitedZoneCount(data) + (getVisitedCountryCount(data) * 25);
     }
 
     function getSafePublicZone(lat, lng, privacyZones = 3){
@@ -1176,8 +1461,8 @@
 
       const safeCell = {
         ...base,
-        latIndex: base.latIndex + pseudoShiftX,
-        lngIndex: base.lngIndex + pseudoShiftY
+        latIndex: base.latIndex + pseudoShiftY,
+        lngIndex: base.lngIndex + pseudoShiftX
       };
 
       const center = getZoneCenterFromCell(safeCell);
@@ -1189,7 +1474,7 @@
         lngIndex: safeCell.lngIndex,
         radiusKm,
         zoneKey: `${safeCell.latIndex}_${safeCell.lngIndex}`,
-        display: `~${privacyZones} zonas`
+        display: `~${privacyZones} zones`
       };
     }
 
@@ -1197,8 +1482,8 @@
       const cells = [];
       const candidates = [];
 
-      for(let y = -3; y <= 3; y++){
-        for(let x = -3; x <= 3; x++){
+      for(let y = -4; y <= 4; y++){
+        for(let x = -4; x <= 4; x++){
           if(x === 0 && y === 0) continue;
           const dist = Math.sqrt(x*x + y*y);
           candidates.push({
@@ -1220,16 +1505,16 @@
     async function reverseCountry(lat, lng){
       try{
         const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}&zoom=4&addressdetails=1`, {
-          headers: { "Accept-Language": "es" }
+          headers: { "Accept-Language": "en" }
         });
         const data = await res.json();
 
         const code = data?.address?.country_code?.toUpperCase?.() || null;
-        const name = data?.address?.country || "Desconocido";
+        const name = data?.address?.country || "Unknown";
 
         return { name, code };
       }catch{
-        return { name: "Desconocido", code: null };
+        return { name: "Unknown", code: null };
       }
     }
 
@@ -1248,16 +1533,16 @@
         btn.classList.toggle("active", btn.dataset.auth === mode);
       });
       els.nameField.style.display = mode === "signup" ? "grid" : "none";
-      els.authSubmitBtn.textContent = mode === "signup" ? "Crear cuenta" : "Entrar";
+      els.authSubmitBtn.textContent = mode === "signup" ? "Create account" : "Log in";
       setAuthMessage(
         mode === "signup"
-          ? "Tu nombre será el que verá la gente en el mapa."
-          : "Entra para compartir zona y guardar progreso."
+          ? "Your public display name will be visible to other explorers."
+          : "Log in to save progress, publish safe zones and compete."
       );
     }
 
     function updatePrivacyText(val){
-      const text = `${val} ${val === 1 ? "zona" : "zonas"}`;
+      const text = `${val} ${val === 1 ? "zone" : "zones"}`;
       els.rangeValue.textContent = text;
       els.privacySummary.textContent = text;
     }
@@ -1274,16 +1559,39 @@
         .replaceAll('"', "&quot;");
     }
 
+    function formatDate(dateStr){
+      if(!dateStr) return "—";
+      const d = new Date(dateStr);
+      if(Number.isNaN(d.getTime())) return "—";
+      return d.toLocaleDateString("en-GB", {
+        day:"2-digit",
+        month:"short",
+        year:"numeric"
+      });
+    }
+
     function setStatsFromUser(data){
       els.zonesCount.textContent = String(getVisitedZoneCount(data));
       els.countriesCount.textContent = String(getVisitedCountryCount(data));
     }
 
+    function updateRankDisplay(){
+      if(!currentUserData || !currentUserData.uid){
+        els.rankCount.textContent = "—";
+        return;
+      }
+
+      const ranked = [...usersCache].sort((a,b) => getExplorerScore(b) - getExplorerScore(a));
+      const index = ranked.findIndex(u => u.uid === currentUserData.uid);
+      lastRank = index >= 0 ? index + 1 : null;
+      els.rankCount.textContent = lastRank ? `#${lastRank}` : "—";
+    }
+
     function getSheetHeights(){
       const vh = window.innerHeight;
       return {
-        open: Math.min(vh * 0.72, vh - 24),
-        mid: Math.min(vh * 0.46, vh - 24),
+        open: Math.min(vh * 0.78, vh - 24),
+        mid: Math.min(vh * 0.50, vh - 24),
         closed: 92
       };
     }
@@ -1354,14 +1662,14 @@
 
         worldCountriesLayer = L.geoJSON(geojson, {
           style: () => ({
-            color: "rgba(170,255,214,.22)",
+            color: "rgba(170,255,214,.18)",
             weight: 1,
             fillOpacity: 0
           }),
           interactive: false
         }).addTo(map);
       }catch(err){
-        console.warn("No se pudo cargar la capa base de países", err);
+        console.warn("Could not load base country layer", err);
       }
     }
 
@@ -1377,14 +1685,14 @@
 
       try{
         const res = await fetch(`https://nominatim.openstreetmap.org/search?format=jsonv2&polygon_geojson=1&limit=1&${query}`, {
-          headers: { "Accept-Language": "es" }
+          headers: { "Accept-Language": "en" }
         });
         const data = await res.json();
         const geo = data?.[0]?.geojson || null;
         countryBoundaryCache.set(cacheKey, geo);
         return geo;
       }catch(err){
-        console.warn("No se pudo cargar el país", countryName, err);
+        console.warn("Could not load country polygon", countryName, err);
         countryBoundaryCache.set(cacheKey, null);
         return null;
       }
@@ -1398,16 +1706,20 @@
       myPublicLayerGroup.clearLayers();
     }
 
+    function clearMyLiveLayers(){
+      myLiveZoneLayerGroup.clearLayers();
+    }
+
     function drawVisitedZones(visitedZones = []){
       visitedZones.forEach(zone => {
         if(!zone?.key) return;
         try{
           const bounds = getZoneBoundsFromKey(zone.key);
           const rect = L.rectangle(bounds, {
-            color: "#86ffd2",
+            color: "#6ab6ff",
             weight: 1.2,
-            fillColor: "#49f0b0",
-            fillOpacity: 0.18
+            fillColor: "#3e8dff",
+            fillOpacity: 0.22
           });
           rect.addTo(myExploreLayerGroup);
         }catch{}
@@ -1422,14 +1734,46 @@
 
         L.geoJSON(geo, {
           style: () => ({
-            color: "#6cffb3",
+            color: "#6ab6ff",
             weight: 2,
-            fillColor: "#4de09a",
-            fillOpacity: 0.18
+            fillColor: "#3e8dff",
+            fillOpacity: 0.16
           }),
           interactive: false
         }).addTo(myExploreLayerGroup);
       }
+    }
+
+    function drawCurrentZone(lat, lng){
+      clearMyLiveLayers();
+
+      const liveZone = getVisitZoneObject(lat, lng);
+      const centerCell = getZoneCell(lat, lng);
+      const nearby = buildPrivacyCells(centerCell, 8);
+
+      L.rectangle(getZoneBoundsFromKey(liveZone.key), {
+        color: "#7cffab",
+        weight: 1.8,
+        fillColor: "#48d183",
+        fillOpacity: 0.36
+      }).addTo(myLiveZoneLayerGroup);
+
+      nearby.forEach((cell, index) => {
+        const opacityBase = Math.max(0.05, 0.16 - index * 0.012);
+        L.rectangle(getZoneBoundsFromKey(`${cell.latIndex}_${cell.lngIndex}`), {
+          color: "rgba(124,255,171,.22)",
+          weight: 1,
+          fillColor: "#7cffab",
+          fillOpacity: opacityBase
+        }).addTo(myLiveZoneLayerGroup);
+      });
+
+      els.liveZoneInfo.innerHTML = `
+        <strong style="display:block;margin-bottom:6px;">Current live zone: #${liveZone.zoneNumber}</strong>
+        <span class="tiny" style="display:block;color:#bdd8c9;">
+          This zone is highlighted in green. The surrounding transparent green cells are nearby zones around your live position.
+        </span>
+      `;
     }
 
     async function renderMyExploration(){
@@ -1441,7 +1785,7 @@
       }else{
         drawVisitedZones(currentUserData.visitedZones || []);
         if(getVisitedCountryCount(currentUserData)){
-          await drawVisitedCountries((currentUserData.visitedCountries || []).slice(0, 12));
+          await drawVisitedCountries(currentUserData.visitedCountries || []);
         }
       }
     }
@@ -1451,16 +1795,16 @@
       els.peopleCount.textContent = String(visible.length);
 
       if(!visible.length){
-        els.peopleList.innerHTML = `<div class="tiny">No hay exploradores visibles todavía.</div>`;
+        els.peopleList.innerHTML = `<div class="tiny">No visible explorers yet.</div>`;
         return;
       }
 
       els.peopleList.innerHTML = visible.map(user => `
         <div class="person" data-uid="${user.uid}">
-          <div class="avatar">${escapeHtml(initials(user.displayName || "A"))}</div>
+          <div class="avatar">${escapeHtml(initials(user.displayName || "E"))}</div>
           <div class="meta">
-            <strong>${escapeHtml(user.displayName || "Explorador")}</strong>
-            <span>${escapeHtml(user.publicCountry || "Ubicación difusa")} · ${getVisitedCountryCount(user)} países</span>
+            <strong>${escapeHtml(user.displayName || "Explorer")}</strong>
+            <span>${escapeHtml(user.publicCountry || "Blurred public zone")} · ${getVisitedCountryCount(user)} countries · ${getVisitedZoneCount(user)} zones</span>
           </div>
           <div class="dot"></div>
         </div>
@@ -1472,6 +1816,84 @@
           if(user) openUserProfile(user, false);
         });
       });
+    }
+
+    function renderCollectionTables(){
+      if(!currentUserData){
+        els.zonesTable.innerHTML = `<div class="tiny">No user data loaded yet.</div>`;
+        els.countriesTable.innerHTML = `<div class="tiny">No user data loaded yet.</div>`;
+        return;
+      }
+
+      const zones = [...(currentUserData.visitedZones || [])]
+        .sort((a,b) => {
+          const da = a.lastVisitedAt ? new Date(a.lastVisitedAt).getTime() : 0;
+          const db = b.lastVisitedAt ? new Date(b.lastVisitedAt).getTime() : 0;
+          return db - da;
+        });
+
+      if(!zones.length){
+        els.zonesTable.innerHTML = `<div class="tiny">No discovered zones yet. Move once and Atlas will stop being shy.</div>`;
+      }else{
+        els.zonesTable.innerHTML = zones.map(zone => `
+          <div class="table-row">
+            <div class="meta">
+              <strong>Zone #${escapeHtml(String(zone.zoneNumber ?? "—"))}</strong>
+              <span>Key: ${escapeHtml(zone.key || "—")}</span>
+            </div>
+            <div class="pill">${escapeHtml(String(zone.visits || 1))} visit${(zone.visits || 1) === 1 ? "" : "s"}</div>
+            <div class="pill">${escapeHtml(formatDate(zone.lastVisitedAt))}</div>
+          </div>
+        `).join("");
+      }
+
+      const countries = [...(currentUserData.visitedCountries || [])]
+        .sort((a,b) => a.name.localeCompare(b.name));
+
+      if(!countries.length){
+        els.countriesTable.innerHTML = `<div class="tiny">No discovered countries yet.</div>`;
+      }else{
+        els.countriesTable.innerHTML = countries.map(country => `
+          <div class="table-row">
+            <div class="meta">
+              <strong>${escapeHtml(country.name || "Unknown")}</strong>
+              <span>${escapeHtml(country.code || "No country code")}</span>
+            </div>
+            <div class="pill">${escapeHtml(String(country.visits || 1))} visit${(country.visits || 1) === 1 ? "" : "s"}</div>
+            <div class="pill">${escapeHtml(formatDate(country.lastVisitedAt))}</div>
+          </div>
+        `).join("");
+      }
+    }
+
+    function renderLeaderboard(){
+      const ranked = [...usersCache].sort((a,b) => getExplorerScore(b) - getExplorerScore(a));
+
+      if(!ranked.length){
+        els.leaderboardList.innerHTML = `<div class="tiny">No leaderboard data yet.</div>`;
+        return;
+      }
+
+      els.leaderboardList.innerHTML = ranked.slice(0, 50).map((user, index) => `
+        <div class="leader-row" data-uid="${user.uid}">
+          <div class="rank-badge">#${index + 1}</div>
+          <div class="avatar">${escapeHtml(initials(user.displayName || "E"))}</div>
+          <div class="meta">
+            <strong>${escapeHtml(user.displayName || "Explorer")}</strong>
+            <span>${getVisitedZoneCount(user)} zones · ${getVisitedCountryCount(user)} countries · ${getExplorerScore(user)} score</span>
+          </div>
+          <div class="dot ${index < 3 ? "" : "blue-dot"}"></div>
+        </div>
+      `).join("");
+
+      [...els.leaderboardList.querySelectorAll(".leader-row")].forEach(card => {
+        card.addEventListener("click", () => {
+          const user = usersCache.find(u => u.uid === card.dataset.uid);
+          if(user) openUserProfile(user, user.uid === auth.currentUser?.uid);
+        });
+      });
+
+      updateRankDisplay();
     }
 
     function renderUserPrivacyCloud(lat, lng, privacyZones, layerGroup, isMe = false){
@@ -1488,11 +1910,11 @@
       centerRect.addTo(layerGroup);
 
       around.forEach((cell, index) => {
-        const opacityBase = Math.max(0.06, 0.16 - index * 0.012);
+        const opacityBase = Math.max(0.05, 0.16 - index * 0.012);
         const rect = L.rectangle(
           getZoneBoundsFromKey(`${cell.latIndex}_${cell.lngIndex}`),
           {
-            color: "rgba(124,255,171,.35)",
+            color: "rgba(124,255,171,.30)",
             weight: 1,
             fillColor: "#7cffab",
             fillOpacity: opacityBase
@@ -1535,13 +1957,13 @@
 
           const marker = L.marker([user.publicLat, user.publicLng], {
             icon,
-            title: user.displayName || "Explorador"
+            title: user.displayName || "Explorer"
           });
 
           marker.bindPopup(`
             <div class="user-zone-label">
-              ${escapeHtml(user.displayName || "Explorador")}<br>
-              ${escapeHtml(user.publicCountry || "Zona pública")} · ${(user.privacyZones || 3)} zonas
+              ${escapeHtml(user.displayName || "Explorer")}<br>
+              ${escapeHtml(user.publicCountry || "Public zone")} · ${user.privacyZones || 3} zones
             </div>
           `);
 
@@ -1571,14 +1993,14 @@
     async function getCurrentPositionPromise(){
       return new Promise((resolve, reject) => {
         if(!navigator.geolocation){
-          reject(new Error("Geolocalización no soportada"));
+          reject(new Error("Geolocation not supported"));
           return;
         }
 
         navigator.geolocation.getCurrentPosition(resolve, reject, {
           enableHighAccuracy: true,
           timeout: 18000,
-          maximumAge: 20000
+          maximumAge: 15000
         });
       });
     }
@@ -1592,6 +2014,7 @@
         lng: pos.coords.longitude
       };
       drawMe(meRealCoords.lat, meRealCoords.lng);
+      drawCurrentZone(meRealCoords.lat, meRealCoords.lng);
       return meRealCoords;
     }
 
@@ -1599,6 +2022,7 @@
       const zoneObj = getVisitZoneObject(lat, lng);
       const countryInfo = await reverseCountry(lat, lng);
       myCountry = countryInfo;
+      lastSavedZoneKey = zoneObj.key;
 
       const visitedZones = mergeZoneVisit(currentUserData?.visitedZones || [], zoneObj);
       const visitedCountries = mergeCountryVisit(currentUserData?.visitedCountries || [], {
@@ -1615,6 +2039,7 @@
       });
 
       setStatsFromUser(currentUserData);
+      renderCollectionTables();
       await renderMyExploration();
 
       if(auth.currentUser){
@@ -1654,48 +2079,102 @@
       });
     }
 
-    async function captureMyLocation(){
-      try{
-        const coords = await ensureLocationReady();
+    async function processLiveLocation(lat, lng, { recenter = false, persist = true } = {}){
+      meRealCoords = { lat, lng };
+      drawMe(lat, lng);
+      drawCurrentZone(lat, lng);
 
-        map.setView([coords.lat, coords.lng], 11);
+      const currentZone = getVisitZoneObject(lat, lng);
 
-        if(currentUserData){
-          await updateVisitedDataForCurrentLocation(coords.lat, coords.lng);
+      if(recenter){
+        map.setView([lat, lng], 11);
+      }
 
-          if(currentUserData.visibleOnMap){
-            await publishCurrentPublicZone();
-            els.shareStatus.textContent = "Visible";
-          }else{
-            els.shareStatus.textContent = "Privado";
-          }
+      if(currentUserData){
+        const known = (currentUserData.visitedZones || []).some(z => z.key === currentZone.key);
+
+        if(!known || currentZone.key !== lastSavedZoneKey){
+          await updateVisitedDataForCurrentLocation(lat, lng);
+        }else{
+          myCountry = myCountry || await reverseCountry(lat, lng);
         }
+
+        if(currentUserData.visibleOnMap){
+          await publishCurrentPublicZone();
+          els.shareStatus.textContent = "Visible";
+        }else{
+          els.shareStatus.textContent = "Private";
+          clearMyPublicLayers();
+        }
+
+        if(persist && auth.currentUser){
+          await updateDoc(doc(db, "users", auth.currentUser.uid), {
+            lastActive: serverTimestamp()
+          });
+        }
+      }
+    }
+
+    async function captureMyLocation(recenter = true){
+      try{
+        const pos = await getCurrentPositionPromise();
+        await processLiveLocation(pos.coords.latitude, pos.coords.longitude, { recenter, persist: true });
       }catch(err){
         console.error(err);
-        alert("No se pudo obtener tu ubicación. En móvil asegúrate de estar en HTTPS y de permitir localización al navegador.");
+        alert("Could not get your location. On mobile, make sure the website is on HTTPS and that your browser is allowed to use location.");
       }
+    }
+
+    function stopLocationWatcher(){
+      if(watchId != null && navigator.geolocation){
+        navigator.geolocation.clearWatch(watchId);
+        watchId = null;
+      }
+    }
+
+    function startLocationWatcher(){
+      stopLocationWatcher();
+
+      if(!navigator.geolocation || !liveTrackingEnabled) return;
+
+      watchId = navigator.geolocation.watchPosition(async (pos) => {
+        try{
+          await processLiveLocation(pos.coords.latitude, pos.coords.longitude, { recenter: false, persist: true });
+        }catch(err){
+          console.warn("Live tracking update failed", err);
+        }
+      }, (err) => {
+        console.warn("Live tracking error", err);
+      }, {
+        enableHighAccuracy: true,
+        timeout: 20000,
+        maximumAge: 8000
+      });
     }
 
     async function savePrivacySettings(){
       if(!auth.currentUser) {
-        alert("Primero inicia sesión.");
+        alert("Please log in first.");
         return;
       }
 
       const privacyZones = Number(els.privacyRange.value);
       const isPublicProfile = els.publicProfileToggle.classList.contains("active");
       const isVisible = els.visibleToggle.classList.contains("active");
+      const isLiveTracking = els.liveTrackingToggle.classList.contains("active");
+
+      liveTrackingEnabled = isLiveTracking;
 
       const payload = {
         privacyZones,
         publicProfile: isPublicProfile,
         visibleOnMap: isVisible,
+        liveTracking: isLiveTracking,
         lastActive: serverTimestamp()
       };
 
       try{
         const coords = await ensureLocationReady();
-
         await updateVisitedDataForCurrentLocation(coords.lat, coords.lng);
 
         if(isVisible){
@@ -1721,13 +2200,16 @@
         await updateDoc(doc(db, "users", auth.currentUser.uid), payload);
 
         currentUserData = normalizeUserData({ ...currentUserData, ...payload });
-        els.shareStatus.textContent = isVisible ? "Visible" : "Privado";
+        els.shareStatus.textContent = isVisible ? "Visible" : "Private";
         loadUserIntoUI(currentUserData);
 
-        alert("Ajustes guardados.");
+        if(liveTrackingEnabled) startLocationWatcher();
+        else stopLocationWatcher();
+
+        alert("Settings saved.");
       }catch(err){
         console.error(err);
-        alert("No se pudo guardar la visibilidad. Revisa permisos de localización y que la web esté abierta en HTTPS.");
+        alert("Could not save settings. Check location permissions and make sure the site is open in HTTPS.");
       }
     }
 
@@ -1739,13 +2221,14 @@
         return;
       }
 
-      const cleanName = displayName?.trim() || user.displayName || "Explorador";
+      const cleanName = displayName?.trim() || user.displayName || "Explorer";
       const payload = {
         uid: user.uid,
         displayName: cleanName,
         email: user.email,
         publicProfile: true,
         visibleOnMap: false,
+        liveTracking: true,
         privacyZones: 3,
         publicLat: null,
         publicLng: null,
@@ -1765,38 +2248,50 @@
 
     function loadUserIntoUI(data){
       currentUserData = normalizeUserData(data);
+
       setToggleState(els.publicProfileToggle, !!currentUserData.publicProfile);
       setToggleState(els.visibleToggle, !!currentUserData.visibleOnMap);
+      setToggleState(els.liveTrackingToggle, !!currentUserData.liveTracking);
+
+      liveTrackingEnabled = !!currentUserData.liveTracking;
+
       els.privacyRange.value = currentUserData.privacyZones || 3;
       updatePrivacyText(currentUserData.privacyZones || 3);
-      els.shareStatus.textContent = currentUserData.visibleOnMap ? "Visible" : "Privado";
+      els.shareStatus.textContent = currentUserData.visibleOnMap ? "Visible" : "Private";
+
       setStatsFromUser(currentUserData);
+      renderCollectionTables();
       renderMyExploration();
 
       clearMyPublicLayers();
       if(currentUserData.visibleOnMap && meRealCoords){
         drawMyPublicZone(meRealCoords.lat, meRealCoords.lng, currentUserData.privacyZones || 3);
       }
+
+      if(currentUserData.liveTracking) startLocationWatcher();
+      else stopLocationWatcher();
+
+      updateRankDisplay();
     }
 
     function openUserProfile(user, isSelf = false){
       currentPublicTarget = user;
       els.profileOverlay.classList.remove("hidden");
-      els.profileTitle.textContent = user.displayName || "Explorador";
+      els.profileTitle.textContent = user.displayName || "Explorer";
       els.profileSubtitle.textContent = user.publicCountry
-        ? `Zona pública: ${user.publicCountry}`
-        : "Perfil atlas";
+        ? `Public zone: ${user.publicCountry}`
+        : "Atlas explorer profile";
 
       const profileAllowed = !!user.publicProfile || isSelf;
 
       els.profileCountries.textContent = profileAllowed ? String(getVisitedCountryCount(user)) : "—";
       els.profileZones.textContent = profileAllowed ? String(getVisitedZoneCount(user)) : "—";
-      els.profileVisible.textContent = user.visibleOnMap ? "Sí" : "No";
-      els.profilePrivacy.textContent = `${user.privacyZones || 3} ${(user.privacyZones || 3) === 1 ? "zona" : "zonas"}`;
+      els.profileVisible.textContent = user.visibleOnMap ? "Yes" : "No";
+      els.profilePrivacy.textContent = `${user.privacyZones || 3} ${(user.privacyZones || 3) === 1 ? "zone" : "zones"}`;
 
       els.profileMessage.textContent = profileAllowed
-        ? `Este explorador ha recorrido ${getVisitedCountryCount(user)} países y ${getVisitedZoneCount(user)} zonas.`
-        : "Este usuario no ha activado estadísticas públicas.";
+        ? `${user.displayName || "This explorer"} has discovered ${getVisitedCountryCount(user)} countries and ${getVisitedZoneCount(user)} zones. Global score: ${getExplorerScore(user)}.`
+        : "This user has not enabled public statistics.";
 
       els.focusUserBtn.style.display = user.publicLat != null && user.publicLng != null ? "block" : "none";
       els.logoutBtn.classList.toggle("hidden", !isSelf);
@@ -1813,14 +2308,14 @@
       const displayName = els.displayNameInput.value.trim();
 
       if(!email || !password){
-        setAuthMessage("Pon correo y contraseña.", true);
+        setAuthMessage("Please enter email and password.", true);
         return;
       }
 
       try{
         if(authMode === "signup"){
           if(!displayName){
-            setAuthMessage("Pon un nombre público.", true);
+            setAuthMessage("Please choose a public display name.", true);
             return;
           }
 
@@ -1829,7 +2324,7 @@
           await createUserDoc(cred.user, displayName);
           els.authOverlay.classList.add("hidden");
           setTimeout(() => map.invalidateSize(), 250);
-          await captureMyLocation();
+          await captureMyLocation(true);
         }else{
           const cred = await signInWithEmailAndPassword(auth, email, password);
           const snap = await getDoc(doc(db, "users", cred.user.uid));
@@ -1837,41 +2332,41 @@
           if(snap.exists()){
             loadUserIntoUI({ uid: cred.user.uid, ...snap.data() });
           }else{
-            await createUserDoc(cred.user, cred.user.displayName || "Explorador");
+            await createUserDoc(cred.user, cred.user.displayName || "Explorer");
           }
 
           els.authOverlay.classList.add("hidden");
           setTimeout(() => map.invalidateSize(), 250);
-          await captureMyLocation();
+          await captureMyLocation(true);
         }
 
-        setAuthMessage("Todo correcto.");
+        setAuthMessage("Success.");
       }catch(err){
         console.error(err);
 
         switch(err.code){
           case "auth/email-already-in-use":
-            setAuthMessage("Ese correo ya tiene cuenta. Inicia sesión.", true);
+            setAuthMessage("That email already has an account. Try logging in.", true);
             setAuthMode("login");
             break;
           case "auth/invalid-email":
-            setAuthMessage("El correo no es válido.", true);
+            setAuthMessage("That email is not valid.", true);
             break;
           case "auth/weak-password":
-            setAuthMessage("La contraseña es demasiado débil. Usa al menos 6 caracteres.", true);
+            setAuthMessage("The password is too weak. Use at least 6 characters.", true);
             break;
           case "auth/user-not-found":
-            setAuthMessage("No existe ninguna cuenta con ese correo.", true);
+            setAuthMessage("No account exists with that email.", true);
             break;
           case "auth/wrong-password":
           case "auth/invalid-credential":
-            setAuthMessage("Correo o contraseña incorrectos.", true);
+            setAuthMessage("Incorrect email or password.", true);
             break;
           case "auth/too-many-requests":
-            setAuthMessage("Demasiados intentos. Espera un poco y vuelve a probar.", true);
+            setAuthMessage("Too many attempts. Wait a little and try again.", true);
             break;
           default:
-            setAuthMessage("Ha ocurrido un error. Vuelve a intentarlo.", true);
+            setAuthMessage("Something went wrong. Please try again.", true);
         }
       }
     }
@@ -1882,21 +2377,54 @@
         const visibleUsers = usersCache.filter(u => u.visibleOnMap);
         renderUsersOnMap(visibleUsers);
         renderPeopleList(visibleUsers);
+        renderLeaderboard();
+        updateRankDisplay();
       });
     }
 
-    [...document.querySelectorAll(".segmented button[data-mode]")].forEach(btn => {
-      btn.addEventListener("click", async () => {
-        [...document.querySelectorAll(".segmented button[data-mode]")].forEach(b => b.classList.remove("active"));
-        btn.classList.add("active");
+    function setMapMode(mode){
+      viewMode = mode;
 
-        viewMode = btn.dataset.mode;
-
-        document.getElementById("zonesCount").parentElement.style.opacity = viewMode === "countries" ? ".55" : "1";
-        document.getElementById("countriesCount").parentElement.style.opacity = viewMode === "countries" ? "1" : ".85";
-
-        await renderMyExploration();
+      [...els.mapModeSegment.querySelectorAll("button")].forEach(b => {
+        b.classList.toggle("active", b.dataset.mode === mode);
       });
+
+      renderMyExploration();
+    }
+
+    function setPanel(panel){
+      activePanel = panel;
+
+      [...els.panelTabs.querySelectorAll("button")].forEach(btn => {
+        btn.classList.toggle("active", btn.dataset.panel === panel);
+      });
+
+      [...document.querySelectorAll(".panel-view")].forEach(panelEl => {
+        panelEl.classList.toggle("hidden", panelEl.dataset.panelView !== panel);
+      });
+    }
+
+    function setCollectionMode(mode){
+      collectionMode = mode;
+
+      [...els.collectionSegment.querySelectorAll("button")].forEach(btn => {
+        btn.classList.toggle("active", btn.dataset.collection === mode);
+      });
+
+      els.zonesTable.classList.toggle("hidden", mode !== "zones");
+      els.countriesTable.classList.toggle("hidden", mode !== "countries");
+    }
+
+    [...els.mapModeSegment.querySelectorAll("button[data-mode]")].forEach(btn => {
+      btn.addEventListener("click", () => setMapMode(btn.dataset.mode));
+    });
+
+    [...els.panelTabs.querySelectorAll("button[data-panel]")].forEach(btn => {
+      btn.addEventListener("click", () => setPanel(btn.dataset.panel));
+    });
+
+    [...els.collectionSegment.querySelectorAll("button[data-collection]")].forEach(btn => {
+      btn.addEventListener("click", () => setCollectionMode(btn.dataset.collection));
     });
 
     [...els.authModeSegment.querySelectorAll("button")].forEach(btn => {
@@ -1907,9 +2435,24 @@
       els.publicProfileToggle.classList.toggle("active");
     });
 
-    els.visibleToggle.addEventListener("click", () => {
+    els.visibleToggle.addEventListener("click", async () => {
       els.visibleToggle.classList.toggle("active");
-      els.shareStatus.textContent = els.visibleToggle.classList.contains("active") ? "Visible" : "Privado";
+      const visible = els.visibleToggle.classList.contains("active");
+      els.shareStatus.textContent = visible ? "Visible" : "Private";
+
+      if(!visible){
+        clearMyPublicLayers();
+      }else if(meRealCoords){
+        drawMyPublicZone(meRealCoords.lat, meRealCoords.lng, Number(els.privacyRange.value));
+      }else{
+        try{
+          await captureMyLocation(false);
+        }catch{}
+      }
+    });
+
+    els.liveTrackingToggle.addEventListener("click", () => {
+      els.liveTrackingToggle.classList.toggle("active");
     });
 
     els.privacyRange.addEventListener("input", (e) => {
@@ -1922,14 +2465,17 @@
 
     els.authSubmitBtn.addEventListener("click", loginOrSignup);
 
-    els.continueAnonBtn.addEventListener("click", () => {
+    els.continueAnonBtn.addEventListener("click", async () => {
       els.authOverlay.classList.add("hidden");
       setTimeout(() => map.invalidateSize(), 250);
+      try{
+        await captureMyLocation(true);
+      }catch{}
     });
 
     els.refreshLocationBtn.addEventListener("click", async () => {
       meRealCoords = null;
-      await captureMyLocation();
+      await captureMyLocation(true);
     });
 
     els.savePrivacyBtn.addEventListener("click", savePrivacySettings);
@@ -1938,7 +2484,7 @@
       if(meRealCoords){
         map.setView([meRealCoords.lat, meRealCoords.lng], 11);
       }else{
-        await captureMyLocation();
+        await captureMyLocation(true);
       }
     });
 
@@ -1960,6 +2506,7 @@
     });
 
     els.logoutBtn.addEventListener("click", async () => {
+      stopLocationWatcher();
       await signOut(auth);
       closeProfile();
     });
@@ -1997,26 +2544,34 @@
         if(snap.exists()){
           loadUserIntoUI({ uid: user.uid, ...snap.data() });
         }else{
-          await createUserDoc(user, user.displayName || "Explorador");
+          await createUserDoc(user, user.displayName || "Explorer");
         }
 
         els.authOverlay.classList.add("hidden");
         setTimeout(() => map.invalidateSize(), 250);
-        await captureMyLocation();
+        await captureMyLocation(true);
       }else{
+        stopLocationWatcher();
         currentUserData = null;
         meRealCoords = null;
         myCountry = null;
+        lastSavedZoneKey = null;
         els.authOverlay.classList.remove("hidden");
-        els.shareStatus.textContent = "Privado";
+        els.shareStatus.textContent = "Private";
         els.zonesCount.textContent = "0";
         els.countriesCount.textContent = "0";
+        els.rankCount.textContent = "—";
+        els.liveZoneInfo.textContent = "Waiting for location… your next discovered zone will appear here.";
         clearExploreLayers();
         clearMyPublicLayers();
+        clearMyLiveLayers();
       }
     });
 
     setAuthMode("login");
+    setMapMode("zones");
+    setPanel("privacy");
+    setCollectionMode("zones");
     updatePrivacyText(3);
     setupUsersRealtime();
     applySheetState("mid", false);
