@@ -5,6 +5,7 @@
   <link rel="icon" href="/favicon.png" type="image/png">
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Hodely Games</title>
+
   <style>
     html, body {
       width: 100%;
@@ -23,18 +24,14 @@
       display: block;
     }
 
-    /* =========================
-       MENU BUTTON
-       ========================= */
-
     .menu-btn{
       position:fixed;
       bottom:18px;
       left:18px;
       width:42px;
       height:42px;
-      border:1px solid rgba(255,255,255,0.18);
-      background:rgba(255,255,255,0.14);
+      border:1px solid rgba(255,255,255,0.08);
+      background:rgba(0,0,0,0.42);
       backdrop-filter: blur(10px);
       -webkit-backdrop-filter: blur(10px);
       border-radius:12px;
@@ -43,15 +40,15 @@
       place-items:center;
       z-index:100;
       transition: opacity .2s ease, transform .2s ease, background .2s ease, border .2s ease;
-      opacity:.82;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.24);
+      opacity:.72;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.18);
     }
 
     .menu-btn:hover{
-      opacity:1;
+      opacity:.92;
       transform:translateY(-1px);
-      background:rgba(255,255,255,0.20);
-      border-color:rgba(255,255,255,0.28);
+      background:rgba(0,0,0,0.56);
+      border-color:rgba(255,255,255,0.14);
     }
 
     .burger{
@@ -67,28 +64,26 @@
       height:2px;
       background:#fff;
       border-radius:2px;
-      opacity:.95;
+      opacity:.9;
       transition: transform .2s ease, opacity .2s ease;
     }
 
     .menu-btn.active .burger span:nth-child(1){
       transform: translateY(5px) rotate(45deg);
     }
+
     .menu-btn.active .burger span:nth-child(2){
       opacity:0;
     }
+
     .menu-btn.active .burger span:nth-child(3){
       transform: translateY(-5px) rotate(-45deg);
     }
 
-    /* =========================
-       OVERLAY
-       ========================= */
-
     .overlay{
       position:fixed;
       inset:0;
-      background:rgba(0,0,0,0.24);
+      background:rgba(0,0,0,0.18);
       backdrop-filter: blur(2px);
       -webkit-backdrop-filter: blur(2px);
       opacity:0;
@@ -102,20 +97,16 @@
       pointer-events:auto;
     }
 
-    /* =========================
-       SIDEBAR
-       ========================= */
-
     .sidebar{
       position:fixed;
       top:0;
       left:0;
       height:100vh;
       width:290px;
-      background:rgba(255,255,255,0.12);
+      background:rgba(0,0,0,0.78);
       backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
-      border-right:1px solid rgba(255,255,255,0.14);
+      border-right:1px solid rgba(255,255,255,0.08);
       transform: translateX(-105%);
       transition: transform .26s cubic-bezier(.2,.8,.2,1);
       z-index:95;
@@ -123,7 +114,7 @@
       display:flex;
       flex-direction:column;
       gap:14px;
-      box-shadow: 18px 0 50px rgba(0,0,0,.28);
+      box-shadow: 18px 0 50px rgba(0,0,0,.22);
     }
 
     .sidebar.open{
@@ -135,7 +126,7 @@
       align-items:baseline;
       justify-content:space-between;
       padding:8px 8px 12px;
-      border-bottom:1px solid rgba(255,255,255,.12);
+      border-bottom:1px solid rgba(255,255,255,.08);
     }
 
     .side-title .brand{
@@ -148,7 +139,7 @@
     .side-title .mini{
       font-size:.72rem;
       letter-spacing:2px;
-      opacity:.62;
+      opacity:.55;
       text-transform:uppercase;
       font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
       color:#fff;
@@ -167,15 +158,15 @@
     }
 
     .nav::-webkit-scrollbar-thumb{
-      background:rgba(255,255,255,.16);
+      background:rgba(255,255,255,.12);
       border-radius:999px;
     }
 
     .nav a{
       text-decoration:none;
       color:#fff;
-      border:1px solid rgba(255,255,255,0.12);
-      background:rgba(255,255,255,0.06);
+      border:1px solid rgba(255,255,255,0.08);
+      background:rgba(255,255,255,0.04);
       border-radius:14px;
       padding:13px 12px;
       display:flex;
@@ -186,12 +177,12 @@
 
     .nav a:hover{
       transform: translateX(4px);
-      background:rgba(255,255,255,.11);
-      border-color:rgba(255,255,255,.20);
+      background:rgba(255,255,255,.08);
+      border-color:rgba(255,255,255,.14);
       box-shadow: 0 10px 24px rgba(0,0,0,.12);
     }
 
-    .nav a .left{
+    .left{
       display:flex;
       gap:10px;
       align-items:center;
@@ -209,15 +200,15 @@
       font-size:.76rem;
       padding:4px 8px;
       border-radius:999px;
-      border:1px solid rgba(255,255,255,.16);
-      background:rgba(255,255,255,.06);
-      opacity:.92;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(255,255,255,.05);
+      opacity:.9;
       flex-shrink:0;
       color:#fff;
     }
 
     .arrow{
-      opacity:.52;
+      opacity:.42;
       transition: transform .16s ease, opacity .16s ease;
       flex-shrink:0;
       margin-left:10px;
@@ -225,7 +216,7 @@
     }
 
     .nav a:hover .arrow{
-      opacity:.84;
+      opacity:.76;
       transform: translateX(2px);
     }
 
@@ -234,7 +225,7 @@
       padding:12px 10px 4px;
       font-size:.8rem;
       line-height:1.5;
-      color:rgba(255,255,255,.62);
+      color:rgba(255,255,255,.56);
     }
 
     @media (max-width: 760px){
@@ -250,6 +241,7 @@
     }
   </style>
 </head>
+
 <body>
 
   <button class="menu-btn" id="menuBtn" aria-label="Open menu" aria-expanded="false" aria-controls="sidebar">
@@ -267,7 +259,7 @@
     </div>
 
     <nav class="nav">
-      <a href="https://hodely.net" title="Go to hodely.net">
+      <a href="https://hodely.net">
         <div class="left">
           <span class="pill">/</span>
           <span class="link-label">Home</span>
@@ -275,7 +267,7 @@
         <span class="arrow">↗</span>
       </a>
 
-      <a href="https://hodely.net/a" title="Go to hodely.net/a">
+      <a href="https://hodely.net/a">
         <div class="left">
           <span class="pill">/a</span>
           <span class="link-label">A</span>
@@ -283,23 +275,23 @@
         <span class="arrow">↗</span>
       </a>
 
-       <a href="https://hodely.net/Ai/">
-          <div class="nav-left">
-            <span class="pill">/Ai</span>
-            <span class="nav-label">Hodely Ai</span>
-          </div>
-          <span class="arrow">↗</span>
-        </a>
+      <a href="https://hodely.net/Ai/">
+        <div class="left">
+          <span class="pill">/Ai</span>
+          <span class="link-label">Hodely Ai</span>
+        </div>
+        <span class="arrow">↗</span>
+      </a>
 
-        <a href="https://hodely.net/Bones/">
-          <div class="nav-left">
-            <span class="pill">/Bones</span>
-            <span class="nav-label">Extinct Bones</span>
-          </div>
-          <span class="arrow">↗</span>
-        </a>
+      <a href="https://hodely.net/Bones/">
+        <div class="left">
+          <span class="pill">/Bones</span>
+          <span class="link-label">Extinct Bones</span>
+        </div>
+        <span class="arrow">↗</span>
+      </a>
 
-      <a href="https://hodely.net/VerdaNet" title="Go to hodely.net/VerdaNet">
+      <a href="https://hodely.net/VerdaNet">
         <div class="left">
           <span class="pill">/VerdaNet</span>
           <span class="link-label">VerdaNet</span>
@@ -307,8 +299,7 @@
         <span class="arrow">↗</span>
       </a>
 
-
-      <a href="https://hodely.net/screenshot" title="Go to hodely.net/screenshot">
+      <a href="https://hodely.net/screenshot">
         <div class="left">
           <span class="pill">/screenshot</span>
           <span class="link-label">Screenshot</span>
@@ -316,7 +307,7 @@
         <span class="arrow">↗</span>
       </a>
 
-      <a href="https://www.hodely.net/schedule" title="Go to hodely.net/schedule">
+      <a href="https://www.hodely.net/schedule">
         <div class="left">
           <span class="pill">/schedule</span>
           <span class="link-label">Schedule</span>
@@ -324,7 +315,7 @@
         <span class="arrow">↗</span>
       </a>
 
-      <a href="https://hodely.net/periodictable" title="Go to hodely.net/periodictable">
+      <a href="https://hodely.net/periodictable">
         <div class="left">
           <span class="pill">/table</span>
           <span class="link-label">Periodic Table</span>
@@ -332,21 +323,23 @@
         <span class="arrow">↗</span>
       </a>
 
-      <a href="https://hodely.net/HodelyOS" title="Go to hodely.net/HodelyOS">
+      <a href="https://hodely.net/HodelyOS">
         <div class="left">
           <span class="pill">/OS</span>
           <span class="link-label">HodelyOS</span>
         </div>
         <span class="arrow">↗</span>
       </a>
-<a href="https://hodely.net/Atlas/" title="Go to hodely.net/Atlas/">
+
+      <a href="https://hodely.net/Atlas/">
         <div class="left">
           <span class="pill">/atlas</span>
-          <span>Atlas</span>
+          <span class="link-label">Atlas</span>
         </div>
         <span class="arrow">↗</span>
       </a>
-      <a href="https://hodely.net/Classifactsmuseum/" title="Go to hodely.net/Classifactsmuseum/">
+
+      <a href="https://hodely.net/Classifactsmuseum/">
         <div class="left">
           <span class="pill">/Museum</span>
           <span class="link-label">Classifacts</span>
@@ -354,7 +347,7 @@
         <span class="arrow">↗</span>
       </a>
 
-      <a href="https://hodely.net/HodelyGames" title="Go to hodely.net/HodelyGames">
+      <a href="https://hodely.net/HodelyGames">
         <div class="left">
           <span class="pill">/Games</span>
           <span class="link-label">HodelyGames</span>
@@ -403,5 +396,6 @@
       if(e.key === 'Escape') closeMenu();
     });
   </script>
+
 </body>
 </html>
