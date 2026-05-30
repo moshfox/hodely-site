@@ -316,6 +316,26 @@
       gap:14px;
     }
 
+
+    .moreUseBtn{
+      width:100%;
+      margin-top:12px;
+      border:1px solid rgba(255,255,255,.16);
+      background:rgba(255,255,255,.06);
+      color:var(--text);
+      border-radius:14px;
+      padding:12px 14px;
+      cursor:pointer;
+      font-weight:800;
+      letter-spacing:.2px;
+    }
+    .moreUseBtn:hover{background:rgba(255,255,255,.09)}
+    .extraUses{
+      display:none;
+      margin-top:10px;
+    }
+    .extraUses.show{display:grid}
+
     /* Modal */
     .overlay{
       position:fixed; inset:0;
@@ -531,6 +551,19 @@
           <div class="item">
             <b>Choose materials and applications</b>
             <span>Categories hint at properties: noble gases are inert, alkali metals are highly reactive, transition metals conduct well.</span>
+          </div>
+        </div>
+
+        <button id="usesMoreBtn" class="moreUseBtn" type="button" aria-expanded="false">+</button>
+
+        <div id="extraUses" class="list extraUses" aria-hidden="true">
+          <div class="item">
+            <b>Compare neighboring elements</b>
+            <span>Elements next to each other can show gradual changes in size, ionization energy, and bonding behavior.</span>
+          </div>
+          <div class="item">
+            <b>Connect symbols to real substances</b>
+            <span>Element symbols help identify what materials, compounds, gases, and metals are made from.</span>
           </div>
         </div>
       </section>
@@ -942,6 +975,18 @@
       legendList.appendChild(d);
     });
 
+    // Uses page extra section gate
+    const usesMoreBtn = document.getElementById("usesMoreBtn");
+    const extraUses = document.getElementById("extraUses");
+    let usesMoreUnlocked = false;
+
+    usesMoreBtn.addEventListener("click", ()=>{
+      usesMoreUnlocked = true;
+      const shown = extraUses.classList.toggle("show");
+      extraUses.setAttribute("aria-hidden", shown ? "false" : "true");
+      usesMoreBtn.setAttribute("aria-expanded", shown ? "true" : "false");
+    });
+
     // ---------------------------
     // Hidden sequence + modal chain (no on-page hints)
     // ---------------------------
@@ -991,27 +1036,16 @@
       if (e.key === "Enter") okModal();
     });
 
-    // Sequence listener ONLY on "More Information" page
-    const secret = ["A","S","T","O","P"];
-    let idx = 0;
-
-    function onSequenceKey(e){
-      if (!pages["page-info"].classList.contains("active")) return;
-
-      const k = (e.key || "").toUpperCase();
-      if (k === secret[idx]) {
-        idx++;
-        if (idx === secret.length) {
-          idx = 0;
-          runHiddenFlow();
-        }
-      } else {
-        idx = (k === secret[0]) ? 1 : 0;
-      }
-    }
-    document.addEventListener("keydown", onSequenceKey);
+    // Sequence listener: gated by page, selected element, Uses unlock, zoom and current minute.
+    let sequenceBuffer = "";
 
     function pad2(n){ return String(n).padStart(2,"0"); }
+
+    function getMinuteSequence(){
+      const now = new Date();
+      return `ASTOP${pad2(now.getMinutes())}`;
+    }
+
     function getRotatedTimeCode(){
       const now = new Date();
       const hh = pad2(now.getHours());
@@ -1020,16 +1054,59 @@
       return `${mm}${hh}`;
     }
 
+    function isOganessonSelected(){
+      return !!selectedEl && selectedEl.dataset.sym === "Og" && selectedEl.dataset.z === "118";
+    }
+
+    function isZoom90(){
+      const dpr = Number(window.devicePixelRatio || 1);
+      const visualScale = window.visualViewport ? Number(window.visualViewport.scale || 1) : 1;
+      return Math.abs(dpr - 0.90) <= 0.035 || Math.abs(visualScale - 0.90) <= 0.035;
+    }
+
+    function canStartHiddenFlow(){
+      return (
+        pages["page-info"].classList.contains("active") &&
+        isOganessonSelected() &&
+        usesMoreUnlocked &&
+        isZoom90()
+      );
+    }
+
+    function onSequenceKey(e){
+      if (overlay.classList.contains("show") || stage.classList.contains("show")) return;
+      if (!canStartHiddenFlow()) {
+        sequenceBuffer = "";
+        return;
+      }
+
+      const key = (e.key || "").toUpperCase();
+      if (!/^[A-Z0-9]$/.test(key)) return;
+
+      sequenceBuffer = (sequenceBuffer + key).slice(-7);
+      if (sequenceBuffer === getMinuteSequence()) {
+        sequenceBuffer = "";
+        runHiddenFlow();
+      }
+    }
+    document.addEventListener("keydown", onSequenceKey);
+
     async function runHiddenFlow(){
+      if (!canStartHiddenFlow()) return;
+
       // Step 1
       const r1 = await openModal("Enter code");
       if (!r1.ok) return;
       if ((r1.value || "").trim() !== "1469") return;
 
+      if (!canStartHiddenFlow()) return;
+
       // Step 2
       const r2 = await openModal("Enter code");
       if (!r2.ok) return;
       if ((r2.value || "").trim() !== getRotatedTimeCode()) return;
+
+      if (!canStartHiddenFlow()) return;
 
       // Success => fullscreen
       closeModal({ok:true,value:""});
