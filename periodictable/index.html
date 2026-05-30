@@ -1058,20 +1058,14 @@
       return !!selectedEl && selectedEl.dataset.sym === "Og" && selectedEl.dataset.z === "118";
     }
 
-    function isZoom90(){
-      const dpr = Number(window.devicePixelRatio || 1);
-      const visualScale = window.visualViewport ? Number(window.visualViewport.scale || 1) : 1;
-      return Math.abs(dpr - 0.90) <= 0.035 || Math.abs(visualScale - 0.90) <= 0.035;
-    }
 
-    function canStartHiddenFlow(){
-      return (
-        pages["page-info"].classList.contains("active") &&
-        isOganessonSelected() &&
-        usesMoreUnlocked &&
-        isZoom90()
-      );
-    }
+function canStartHiddenFlow(){
+  return (
+    pages["page-info"].classList.contains("active") &&
+    isOganessonSelected() &&
+    usesMoreUnlocked
+  );
+}
 
     function onSequenceKey(e){
       if (overlay.classList.contains("show") || stage.classList.contains("show")) return;
