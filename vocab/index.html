@@ -1,0 +1,307 @@
+```html
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vocabulary Test | Hodely</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:Inter,Arial,sans-serif;
+  background:#fff;color:#000;
+  min-height:100vh;padding:22px;
+}
+.app{max-width:1100px;margin:auto}
+header{
+  text-align:center;margin-bottom:25px;
+  animation:show .7s ease forwards;
+}
+h1{font-size:3rem;letter-spacing:-2px}
+.sub{opacity:.6;margin-top:8px}
+.topbar{
+  position:sticky;top:0;z-index:10;
+  background:rgba(255,255,255,.82);
+  backdrop-filter:blur(12px);
+  border:1px solid #ddd;
+  border-radius:20px;
+  padding:14px;margin-bottom:20px;
+}
+.controls{
+  display:flex;gap:10px;flex-wrap:wrap;
+  justify-content:space-between;align-items:center;
+}
+button{
+  border:1px solid #000;background:#000;color:#fff;
+  padding:11px 16px;border-radius:14px;
+  cursor:pointer;font-weight:800;
+}
+button:hover{transform:translateY(-1px)}
+.secondary{background:#fff;color:#000}
+.timer{font-weight:800}
+.dots{
+  display:flex;flex-wrap:wrap;gap:7px;margin-top:14px;
+}
+.dot{
+  width:32px;height:32px;border-radius:10px;
+  border:1px solid #bbb;background:#fff;
+  display:grid;place-items:center;
+  cursor:pointer;font-weight:800;font-size:.85rem;
+}
+.dot.ok{background:#d8ffd8;border-color:#16a34a}
+.dot.bad{background:#ffd8d8;border-color:#dc2626}
+.card{
+  border:1px solid #ddd;border-radius:24px;
+  padding:18px;margin-bottom:14px;
+  box-shadow:0 10px 28px rgba(0,0,0,.04);
+  animation:show .45s ease forwards;
+}
+.qhead{display:flex;justify-content:space-between;gap:10px;margin-bottom:12px}
+.cat{
+  font-size:.8rem;border:1px solid #ddd;
+  padding:5px 10px;border-radius:999px;opacity:.7;
+}
+.catalan{
+  font-size:1.4rem;font-weight:900;margin-bottom:12px;
+}
+.row{display:flex;gap:10px;flex-wrap:wrap}
+input{
+  flex:1;min-width:220px;
+  padding:14px;border-radius:15px;
+  border:1px solid #ccc;font-size:1rem;
+}
+input:focus{outline:none;border-color:#000}
+.answer{
+  margin-top:10px;padding:10px;border-radius:14px;
+  background:#f4f4f4;display:none;
+}
+.answer.show{display:block}
+.result{
+  border:2px solid #000;border-radius:24px;
+  padding:20px;margin:20px 0;display:none;
+}
+.result.show{display:block}
+.history{
+  margin-top:25px;border-top:1px solid #ddd;padding-top:18px;
+}
+.histItem{
+  padding:12px;border:1px solid #ddd;border-radius:16px;
+  margin-top:10px;display:flex;justify-content:space-between;
+}
+.correct{border-color:#16a34a;background:#f2fff2}
+.wrong{border-color:#dc2626;background:#fff2f2}
+@keyframes show{
+  from{opacity:0;transform:translateY(15px)}
+  to{opacity:1;transform:none}
+}
+@media(max-width:650px){
+  h1{font-size:2.2rem}
+  .controls{display:block}
+  .controls>*{margin-bottom:10px}
+}
+</style>
+</head>
+<body>
+<div class="app">
+<header>
+  <h1>Vocabulary Test</h1>
+  <p class="sub">Català → English · 20 random questions</p>
+</header>
+
+<div class="topbar">
+  <div class="controls">
+    <button onclick="newTest()">Nuevo test</button>
+    <button onclick="checkTest()">Enviar test</button>
+    <button class="secondary" onclick="clearHistory()">Borrar historial</button>
+    <div class="timer">Tiempo: <span id="time">00:00</span></div>
+  </div>
+  <div class="dots" id="dots"></div>
+</div>
+
+<div id="quiz"></div>
+
+<div class="result" id="result"></div>
+
+<div class="history">
+  <h2>Tests guardados</h2>
+  <div id="history"></div>
+</div>
+</div>
+
+<script>
+const vocab = [
+["barbecue","barbacoa"],["bit of cake","una mica de pastís"],["boil","bullir"],
+["bottle","ampolla"],["bowl","bol"],["break","pausa, pati"],["burn","cremar"],
+["can","llauna"],["cheers","salut"],["chopsticks","bastonets xinesos"],
+["cook","cuiner/a, cuinar"],["cup","tassa"],["cut","tallar"],["dish","plat"],
+["drink","beguda / beure"],["eat","menjar"],["fork","forquilla"],["fried","fregit"],
+["fry","fregir"],["glass","got, copa"],["grill","fer a la graella"],
+["grilled","fet a la graella"],["hungry","afamat / tenir gana"],["knife","ganivet"],
+["main course","plat principal"],["meal","àpat"],["menu","menú"],["picnic","pícnic"],
+["piece","tros"],["piece of cake","un tros de pastís"],["roast","rostit / rostir"],
+["smell","olorar"],["slice","llesca, rodanxa, tall"],["snack","aperitiu"],
+["soup","sopa"],["spoon","cullera"],["sweet","dolç"],["taste","tastar / tenir gust"],
+["thirsty","assedegat / tenir set"],["wash up","rentar els plats"],
+["biscuit","galeta (British)"],["cookie","galeta (American)"],["bread","pa"],
+["butter","mantega"],["cake","pastís"],["candy","caramel"],["cheese","formatge"],
+["chips","patates fregides (British)"],["fries","patates fregides (American)"],
+["chocolate","xocolata"],["cream","nata"],["egg","ou"],["fish","peix"],
+["flour","farina"],["food","menjar (no verb)"],["ice cream","gelat"],
+["jam","melmelada"],["oil","oli"],["omelette","truita"],["pasta","pasta"],
+["pizza","pizza"],["rice","arròs"],["salad","amanida"],["salt","sal"],
+["sandwich","entrepà"],["sugar","sucre"],["coffee","cafè"],
+["Coke","refresc de cola"],["Juice","suc"],["lemonade","llimonada"],
+["milk","llet"],["fruit juice","suc de fruita"],["orange juice","suc de taronja"],
+["tea","te"],["mineral water","aigua mineral"],["still water","aigua"],
+["tap water","aigua de l'aixeta"],["chicken","pollastre"],["meat","carn"],
+["sausage","satsitxa"],["steak","bistec"],["hamburger","hamburgesa (long)"],
+["burger","hamburgesa (short)"],["apple","poma"],["banana","plàtan"],
+["cocounat","coco"],["fruit","fruita"],["grape","raim"],["lemon","llimona"],
+["lime","llima"],["mango","mango"],["orange","taronja"],["pear","pera"],
+["pineapple","pinya"],["watermelon","síndria"],["bean","mongeta"],
+["carrot","pastanaga"],["onion","ceba"],["pea","pesol"],["pepper","pebrot, pebre"],
+["potato","patata"],["tomato","tomaquet"],["vegetable","verdura"],
+["breakfast","esmorza"],["lunch","dinar"],["dinner","sopar, dinar copiós"],
+["supper","sopar"],["bake","enfornar"],["bitter","amarg"],["buffet","bufet"],
+["dessert","postres"],["diet","dieta"],["fresh","fresc"],
+["ingredients","ingredients"],["loaf","pa (de motlle, rodó)"],
+["recipe","recepta"],["refreshments","refrigeris"],
+["roll","rotlle / panet / entrepà"],["saucer","platet"],
+["sour","agre, àcid"],["vegetarian","vegetarià"],["cabbage","col"],
+["cauliflower","coliflor"],["celery","api"],["cucumber","cogombre"],
+["lettuce","enciam"],["mushroom","bolet"],["spinach","espinac"],
+["melon","meló"],["strawberry","maduixa"],["lamb","xai"],
+["turkey","gall d'indi"],["cereal","cereal"],["cocoa","cacao"],
+["corn","cereal, blat, blat de moro"],["honey","mel"],["toast","torrada"],
+["peanut","cacahuet"],["mustard","mostassa"],
+["pastry","massa/pasta d'un pastis"],["pie","pastís farcit"],
+["vanilla","vainilla"],["curry","curri"]
+];
+
+let test = [];
+let seconds = 0;
+let timer;
+let sent = false;
+
+function normalize(x){
+  return x.trim().toLowerCase().replace(/\s+/g," ");
+}
+
+function shuffle(arr){
+  return [...arr].sort(() => Math.random() - 0.5);
+}
+
+function newTest(){
+  sent = false;
+  test = shuffle(vocab).slice(0,20);
+  seconds = 0;
+  clearInterval(timer);
+  timer = setInterval(() => {
+    seconds++;
+    document.getElementById("time").textContent =
+      String(Math.floor(seconds/60)).padStart(2,"0") + ":" +
+      String(seconds%60).padStart(2,"0");
+  },1000);
+
+  document.getElementById("result").classList.remove("show");
+
+  const quiz = document.getElementById("quiz");
+  const dots = document.getElementById("dots");
+  quiz.innerHTML = "";
+  dots.innerHTML = "";
+
+  test.forEach((item,i)=>{
+    dots.innerHTML += `<div class="dot" id="dot${i}" onclick="goQuestion(${i})">${i+1}</div>`;
+
+    quiz.innerHTML += `
+    <div class="card" id="q${i}">
+      <div class="qhead">
+        <b>Pregunta ${i+1}</b>
+        <span class="cat">Català → English</span>
+      </div>
+      <div class="catalan">${item[1]}</div>
+      <div class="row">
+        <input id="input${i}" placeholder="Escribe en inglés tal cual...">
+        <button class="secondary" onclick="hint(${i})">Pista</button>
+      </div>
+      <div class="answer" id="ans${i}"></div>
+    </div>`;
+  });
+}
+
+function goQuestion(i){
+  document.getElementById("q"+i).scrollIntoView({behavior:"smooth",block:"center"});
+}
+
+function hint(i){
+  document.getElementById("ans"+i).innerHTML = "Respuesta: <b>" + test[i][0] + "</b>";
+  document.getElementById("ans"+i).classList.add("show");
+}
+
+function checkTest(){
+  if(sent) return;
+  sent = true;
+  clearInterval(timer);
+
+  let correct = 0;
+  let details = "";
+
+  test.forEach((item,i)=>{
+    const user = document.getElementById("input"+i).value;
+    const ok = normalize(user) === normalize(item[0]);
+
+    if(ok) correct++;
+    document.getElementById("q"+i).classList.add(ok ? "correct" : "wrong");
+    document.getElementById("dot"+i).classList.add(ok ? "ok" : "bad");
+
+    document.getElementById("ans"+i).innerHTML =
+      `${ok ? "✅ Correcto" : "❌ Fallo"}<br>
+      Tu respuesta: <b>${user || "vacío"}</b><br>
+      Respuesta correcta: <b>${item[0]}</b>`;
+    document.getElementById("ans"+i).classList.add("show");
+
+    details += `<p>${i+1}. ${item[1]} → <b>${item[0]}</b> ${ok ? "✅" : "❌"}</p>`;
+  });
+
+  const mark = (correct / 20 * 10).toFixed(2);
+  const result = document.getElementById("result");
+  result.innerHTML = `
+    <h2>Nota: ${mark}/10</h2>
+    <p>Aciertos: ${correct}/20 · Fallos: ${20-correct}/20 · Tiempo: ${document.getElementById("time").textContent}</p>
+    <br>${details}`;
+  result.classList.add("show");
+
+  saveHistory(mark, correct);
+}
+
+function saveHistory(mark, correct){
+  const data = JSON.parse(localStorage.getItem("vocabHistory") || "[]");
+  data.unshift({
+    mark, correct,
+    time: document.getElementById("time").textContent,
+    date: new Date().toLocaleString()
+  });
+  localStorage.setItem("vocabHistory", JSON.stringify(data.slice(0,20)));
+  loadHistory();
+}
+
+function loadHistory(){
+  const data = JSON.parse(localStorage.getItem("vocabHistory") || "[]");
+  document.getElementById("history").innerHTML = data.length ? data.map(x=>`
+    <div class="histItem">
+      <span>${x.date}</span>
+      <b>${x.mark}/10 · ${x.correct}/20 · ${x.time}</b>
+    </div>`).join("") : "<p>No hay tests guardados todavía.</p>";
+}
+
+function clearHistory(){
+  localStorage.removeItem("vocabHistory");
+  loadHistory();
+}
+
+newTest();
+loadHistory();
+</script>
+</body>
+</html>
+```
